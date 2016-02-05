@@ -11,7 +11,7 @@
  * @param s points to the beginning of the next token
  * @param t stores the result
  */
-void nextToken(char *s, Token &t);
+void nextToken(const char *s, Token &t);
 
 /// reads the next token, writes result to Token t and points to next token in n
 /**
@@ -25,4 +25,4 @@ void nextToken(char *s, Token &t);
  * @param t stores the result
  * @param n stores the next token
  */
-void nextToken(char *s, Token &t, char** n);
+void nextToken(const char *s, Token &t, char** n);

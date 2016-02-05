@@ -1,21 +1,28 @@
 #pragma once
-#include <String>
 
-public enum tokenType {Identifier, Number, Exit, Newline,
+typedef enum {Identifier, Number, Exit, Newline, EOP,
 								Def, Main, Call,
 							 	Madd, Msub,
 								Uadd, Usub, Uclear, Ucopy, Ujmp,
 								Preproc, Setreg, LRM, URM,
-								nil};
+								nil}
+					tokenType;
 
 class Token
 {
-	private String content; 
-	private numericalValue; 
+	private:
+	char content[64]; 
+	char* longcontent; 
+	long long int numericalValue; 
 	tokenType type;
-	Token () : content(""), type(nil), numericalValue(0);
-	Token (String s, tokenType t) : content(s), type(t), numericalValue(0);
-	String getContent();
-	void setContent(String s);
+
+	Token () : content(""), longcontent((char*)0), type(nil), numericalValue(0);
+	Token (const char *s, tokenType t) : content(s), longcontent((char*)0), type(t), numericalValue(0);
+
+	tokenType get_type( );
+	void set_type(tokenType t);
+
+	const char* get_content();
+	void set_content(const char *s);
 }
 
