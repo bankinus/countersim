@@ -4,7 +4,7 @@ PREPROCESSORCOMMAND	:= <#> {SETMACHINEFLAG,SETREGISTER} <newline>
 SETMACHINEFLAG	:=	<machine>(MACHINE)
 MACHINE	:= {<minsky>, <urm>, LRMMACHINE}
 LRMMACHINE := <lrm> <integer>
-SETREGISTER	:= <setreg>(<integer>, <integer>)
+SETREGISTER	:= <set>(<integer>, <integer>)
 
 MINSKYPROG := [MINSKYSUB* <main> <newline>]([LABEL :] MINSKYINSTRUCTION <newline>)*
 MINSKYSUB := <def> SUBROUTINENAME REGISTERNAME* \[EXITNAME*\] <newline> ([LABEL :] MINSKYINSTRUCTION <newline>)*
