@@ -1,6 +1,6 @@
 #pragma once
-#include <token.h>
-#include <simulator_command.h>
+#include "token.h"
+#include "simulator_command.h"
 
 bool parse_simulator_program(char *s);
 
