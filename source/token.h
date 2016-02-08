@@ -16,6 +16,7 @@ class Token
 	long long int numericalValue; 
 	tokenType type;
 
+	public:
 	Token () : content(), longcontent((char*)0), type(nil), numericalValue(0) {
 		content[0] = 0;
 	}
