@@ -25,77 +25,129 @@ const char* skip(const char *s, const char *d, int n){
 	return s;
 }
 
+bool tokencmpr (const char *s, const char *t) {
+	for (; t!=0; s++,t++){
+		if (*s!=*t) return false;
+	}
+	if (*s==' ' || *s=='\t' || *s==0 || *s=='\n') return true;
+	else return false;
+}
+
 const char * _nextToken(const char *s, class Token &t, bool next) {
-	skip(s, " \t", 2);
-	if (*s==0) {
+	s = skip(s, " \t", 2);
+	if (s[0]==0) {
 		t.set_type(EOP);
 		t.set_content("EOP");
 	}
-	else if (*s=='#') {
+	else if (s[0]=='\n') {
+		t.set_type(Newline);
+		t.set_content("\n");
+		s+=1;
+	}
+	else if (tokencmpr(s, "#")) {
 		t.set_type(Preproc);
 		t.set_content("#");
+		s+=1;
 	}
 	else if (*s>='0' && *s<='9') {
-		t.set_type(Number);
-		//TODO insert actual number
-		t.set_content("number");
+		long long number = 0;
+		for (int i=0; ;i++) {
+			if (s[i]>='0' && s[i]<='9') {
+				number*=10;
+				number+=s[i]-'0';
+				t.set_content(s[i], i);
+			}
+			else if (tokencmpr(s+i, "")) {
+				t.set_type(Number);
+				s+=i;
+				break;
+			}
+			else {
+				t.set_content("lexing error");
+				return NULL;
+			}
+		}
 	}
-	else if (*s=='p' && (s[1]=='\t' || s[1]==' ')) {
+	else if (tokencmpr(s, "p")) {
 		t.set_type(Uadd);
 		t.set_content("p");
+		s+=1;
 	}
-	else if (*s=='d' && (s[1]=='\t' || s[1]==' ')) {
+	else if (tokencmpr(s, "d")) {
 		t.set_type(Usub);
 		t.set_content("d");
+		s+=1;
 	}
-	else if (*s=='c' && (s[1]=='\t' || s[1]==' ')) {
+	else if (tokencmpr(s, "c")) {
 		t.set_type(Ucopy);
 		t.set_content("c");
+		s+=1;
 	}
-	else if (*s=='o' && (s[1]=='\t' || s[1]==' ')) {
+	else if (tokencmpr(s, "o")) {
 		t.set_type(Uclear);
 		t.set_content("o");
+		s+=1;
 	}
-	else if (*s=='j' && (s[1]=='\t' || s[1]==' ')) {
+	else if (tokencmpr(s, "j")) {
 		t.set_type(Ujmp);
 		t.set_content("j");
+		s+=1;
 	}
-	else if (*s=='a' && s[1]=='d' && s[2]=='d' && (s[3]=='\t' || s[3]==' ')) {
+	else if (tokencmpr(s, "add")) {
 		t.set_type(Madd);
 		t.set_content("add");
+		s+=3;
 	}
-	else if (*s=='s' && s[1]=='u' && s[2]=='b' && (s[3]=='\t' || s[3]==' ')) {
+	else if (tokencmpr(s, "sub")) {
 		t.set_type(Msub);
 		t.set_content("sub");
+		s+=3;
 	}
-	else if (*s=='d' && s[1]=='e' && s[2]=='f' && (s[3]=='\t' || s[3]==' ')) {
+	else if (tokencmpr(s, "def")) {
 		t.set_type(Def);
 		t.set_content("def");
+		s+=3;
 	}
-	else if (*s=='s' && s[1]=='e' && s[2]=='t' && (s[3]=='\t' || s[3]==' ')) {
+	else if (tokencmpr(s, "set")) {
 		t.set_type(Setreg);
 		t.set_content("set");
+		s+=3;
 	}
-	else if (*s=='l' && s[1]=='r' && s[2]=='m' && (s[3]=='\t' || s[3]==' ')) {
+	else if (tokencmpr(s, "lrm")) {
 		t.set_type(LRM);
 		t.set_content("lrm");
+		s+=3;
 	}
-	else if (*s=='u' && s[1]=='r' && s[2]=='m' && (s[3]=='\t' || s[3]==' ')) {
+	else if (tokencmpr(s, "urm")) {
 		t.set_type(URM);
 		t.set_content("urm");
+		s+=3;
 	}
-	else if (*s=='c' && s[1]=='a' && s[2]=='l' && s[3]=='l' && (s[4]=='\t' || s[4]==' ')) {
+	else if (tokencmpr(s, "call")) {
 		t.set_type(Call);
 		t.set_content("call");
+		s+=4;
 	}
-	else if (*s=='m' && s[1]=='a' && s[2]=='i' && s[3]=='n' && (s[4]=='\t' || s[4]==' ')) {
+	else if (tokencmpr(s, "main")) {
 		t.set_type(Main);
 		t.set_content("main");
+		s+=4;
 	}
 	else if (*s>='a' && *s<='Z') {
-		t.set_type(Identifier);
-		//TODO insert actual identifier
-		t.set_content("identifier");
+		for (int i=0; ;i++) {
+			if ((s[i]>='a' && s[i]<='Z') || (s[i]>='0' && s[i]<='9')) {
+				t.set_content(s[i], i);
+			}
+			else if (tokencmpr(s+i, "")) {
+				t.set_type(Identifier);
+				s+=i;
+				break;
+			}
+			else {
+				t.set_content("lexing error");
+				return NULL;
+			}
+		}
 	}
 	else {
 		t.set_content("lexing error");
