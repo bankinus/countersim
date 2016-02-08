@@ -29,5 +29,6 @@ class Token
 
 	const char* get_content();
 	void set_content(const char *s);
+	void set_content(const char c, unsigned long long i);
 };
 

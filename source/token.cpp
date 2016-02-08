@@ -18,6 +18,23 @@ const char * Token::get_content()
 
 void Token::set_content(const char *s)
 {
-	//TODO
+	int i;
+	for (i=0; s[i]!=0; i++) {
+		if (i >= 64) {
+			//TODO long content
+			break;
+		}
+		content[i] = s[i];
+	}
+	content[i] = 0;
+}
+
+void Token::set_content(const char c, unsigned long long i)
+{
+		if (i >= 64) {
+			//TODO long content
+			return;
+		}
+		content[i] = c;
 }
 
