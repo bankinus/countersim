@@ -16,13 +16,17 @@ class Token
 	long long int numericalValue; 
 	tokenType type;
 
-	Token () : content(""), longcontent((char*)0), type(nil), numericalValue(0);
-	Token (const char *s, tokenType t) : content(s), longcontent((char*)0), type(t), numericalValue(0);
+	Token () : content(), longcontent((char*)0), type(nil), numericalValue(0) {
+		content[0] = 0;
+	}
+	Token (const char *s, tokenType t) : longcontent((char*)0), type(t), numericalValue(0) {
+		content[0] = 0;
+	}
 
 	tokenType get_type( );
 	void set_type(tokenType t);
 
 	const char* get_content();
 	void set_content(const char *s);
-}
+};
 
