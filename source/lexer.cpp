@@ -26,7 +26,7 @@ const char* skip(const char *s, const char *d, int n){
 }
 
 bool tokencmpr (const char *s, const char *t) {
-	for (; t!=0; s++,t++){
+	for (; *t!=0; s++,t++){
 		if (*s!=*t) return false;
 	}
 	if (*s==' ' || *s=='\t' || *s==0 || *s=='\n') return true;
