@@ -4,7 +4,6 @@ DEPDIR= ./dep
 SOURCES= $(shell find $(SOURCEDIR) -name "*.cpp")
 OBJECTS= $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.cpp=.o)))
 DEPS= $(shell find $(DEPDIR) -name "*.d")
--DEPS= $(addprefix $(DEPDIR)/,$(notdir $(SOURCES:.cpp=.d)))
 
 .DEFAULT_GOAL := all
 
@@ -13,7 +12,11 @@ include $(DEPS)
 CC=g++
 CFLAGS=
 LFLAGS=
-DEBUG= -g
+DEBUG= -g3 -DDEBUG
+
+debug: CCFLAGS += $(DEBUG)
+debug: LFLAGS += $(DEBUG)
+debug: all
 
 all: countermachine
 
@@ -30,4 +33,4 @@ countermachine: $(OBJECTS)
 	$(CC) $^ -o $@ $(LFLAGS)
 
 clean:
-	rm -f countermachine $(OBJECTS) $(DEPS) 
+	rm -f countermachine $(OBJECTS) $(DEPS)
