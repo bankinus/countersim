@@ -159,11 +159,11 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 	return s;
 }
 
-void nextToken(const char *s, Token &t) {
+void Lexer::nextToken(const char *s, Token &t) {
 	_nextToken (s, t, false);
 }
 
-void nextToken(const char *s, Token &t, const char** n) {
+void Lexer::nextToken(const char *s, Token &t, const char** n) {
 	*n = _nextToken (s, t, true);
 }
 
