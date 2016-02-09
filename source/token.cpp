@@ -26,7 +26,7 @@ void Token::set_content(const char *s)
 		}
 		content[i] = s[i];
 	}
-	content[i] = 0;
+	content[i] = '\0';
 }
 
 void Token::set_content(const char c, unsigned long long i)
