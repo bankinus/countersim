@@ -25,7 +25,7 @@ $(OBJDIR)/%.o : $(SOURCEDIR)/%.cpp
 	@rm -f $(DEPDIR)/$*.d.tmp
 
 countermachine: $(OBJECTS)
-	$(CC) $< -o $@ $(LFLAGS)
+	$(CC) $^ -o $@ $(LFLAGS)
 
 clean:
 	rm -f countermachine $(OBJECTS) $(DEPS) 
