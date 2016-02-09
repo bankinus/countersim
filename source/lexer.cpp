@@ -59,6 +59,7 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 			}
 			else if (tokencmpr(s+i, "")) {
 				t.set_type(Number);
+				t.set_content('\0', i);
 				s+=i;
 				break;
 			}
@@ -140,6 +141,7 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 			}
 			else if (tokencmpr(s+i, "")) {
 				t.set_type(Identifier);
+				t.set_content('\0', i);
 				s+=i;
 				break;
 			}
