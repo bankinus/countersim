@@ -18,10 +18,12 @@ class Token
 
 	public:
 	Token () : content(), longcontent((char*)0), type(nil), numericalValue(0) {
-		content[0] = 0;
+		content[0] = '\0';
+		content[63] = '\0';
 	}
 	Token (const char *s, tokenType t) : longcontent((char*)0), type(t), numericalValue(0) {
-		content[0] = 0;
+		content[0] = '\0';
+		content[63] = '\0';
 	}
 
 	tokenType get_type( );

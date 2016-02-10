@@ -20,7 +20,7 @@ void Token::set_content(const char *s)
 {
 	int i;
 	for (i=0; s[i]!=0; i++) {
-		if (i >= 64) {
+		if (i >= 63) {
 			//TODO long content
 			break;
 		}
@@ -31,7 +31,7 @@ void Token::set_content(const char *s)
 
 void Token::set_content(const char c, unsigned long long i)
 {
-		if (i >= 64) {
+		if (i >= 63) {
 			//TODO long content
 			return;
 		}
