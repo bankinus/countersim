@@ -13,7 +13,9 @@ void lexertest() {
 		pos = s;
 		while (1) {
 			Lexer::nextToken(pos, t, &pos);
+			if (pos == NULL) break;
 			std::cout << "<" << t.get_content() << ">";
+			std::cout.flush();
 			if (t.get_type()==Newline) break;
 			if (t.get_type()==EOP) break;
 			if (t.get_type()==nil) break;
