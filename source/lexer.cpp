@@ -29,7 +29,7 @@ bool tokencmpr (const char *s, const char *t) {
 	for (; *t!=0; s++,t++){
 		if (*s!=*t) return false;
 	}
-	if (*s==' ' || *s=='\t' || *s==0 || *s=='\n') return true;
+	if (*s==' ' || *s=='\t' || *s==0 || *s=='\n' || *s==':' || *s=='#'|| *s=='['|| *s==']') return true;
 	else return false;
 }
 
@@ -57,6 +57,11 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 	else if (s[0]==']') {
 		t.set_type(BracketR);
 		t.set_content("]");
+		s+=1;
+	}
+	else if (s[0]==':') {
+		t.set_type(Colon);
+		t.set_content(":");
 		s+=1;
 	}
 	else if (*s>='0' && *s<='9') {
