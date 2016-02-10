@@ -49,6 +49,16 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("#");
 		s+=1;
 	}
+	else if (s[0]=='[') {
+		t.set_type(BracketL);
+		t.set_content("[");
+		s+=1;
+	}
+	else if (s[0]==']') {
+		t.set_type(BracketR);
+		t.set_content("]");
+		s+=1;
+	}
 	else if (*s>='0' && *s<='9') {
 		long long number = 0;
 		for (int i=0; ;i++) {

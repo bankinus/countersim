@@ -1,7 +1,7 @@
 #pragma once
 
 typedef enum {Identifier, Number, Exit, Newline, EOP,
-								Def, Main, Call,
+								Def, Main, Call, BracketL, BracketR,
 							 	Madd, Msub,
 								Uadd, Usub, Uclear, Ucopy, Ujmp,
 								Preproc, Setreg, LRM, URM,
