@@ -32,5 +32,8 @@ class Token
 	const char* get_content();
 	void set_content(const char *s);
 	void set_content(const char c, unsigned long long i);
+
+	long long int get_numerical_value();
+	void set_numerical_value(long long int i);
 };
 

@@ -38,3 +38,13 @@ void Token::set_content(const char c, unsigned long long i)
 		content[i] = c;
 }
 
+void Token::set_numerical_value(long long int i)
+{
+	numerical_value = i;
+}
+
+long long int Token::get_numerical_value()
+{
+	return numerical_value;
+}
+
