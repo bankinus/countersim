@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include <string>
+#include <iostream>
 
 /// skips characters in d
 /**
@@ -25,11 +26,21 @@ const char* skip(const char *s, const char *d, int n){
 	return s;
 }
 
+bool isdelim(char c) {
+	const char *delim = "\0 \t\n:#[]";
+	const char *pos = delim;
+	do {
+		if (c==*pos) return true;
+		pos++;
+	} while (*pos!='\0');
+	return false;
+}
+
 bool tokencmpr (const char *s, const char *t) {
 	for (; *t!=0; s++,t++){
 		if (*s!=*t) return false;
 	}
-	if (*s==' ' || *s=='\t' || *s==0 || *s=='\n' || *s==':' || *s=='#'|| *s=='['|| *s==']') return true;
+	if (isdelim(*s)) return true;
 	else return false;
 }
 
