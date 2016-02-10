@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 
-void lexertest() {
+void _lexertest() {
 	Token t;
 	char s[5000];
 	const char *pos;

@@ -14,7 +14,7 @@ CFLAGS=
 LFLAGS=
 DEBUG= -g3 -DDEBUG
 
-debug: CCFLAGS += $(DEBUG)
+debug: CFLAGS += $(DEBUG)
 debug: LFLAGS += $(DEBUG)
 debug: all
 
