@@ -44,7 +44,7 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("\n");
 		s+=1;
 	}
-	else if (tokencmpr(s, "#")) {
+	else if (s[0]=='#') {
 		t.set_type(Preproc);
 		t.set_content("#");
 		s+=1;
@@ -134,9 +134,9 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("main");
 		s+=4;
 	}
-	else if (*s>='a' && *s<='Z') {
+	else if ((*s>='A' && *s<='Z') || (*s>='a' && *s<='z')) {
 		for (int i=0; ;i++) {
-			if ((s[i]>='a' && s[i]<='Z') || (s[i]>='0' && s[i]<='9')) {
+			if ((s[i]>='A' && s[i]<='Z') || (s[i]>='a' && s[i]<='z') || (s[i]>='0' && s[i]<='9')) {
 				t.set_content(s[i], i);
 			}
 			else if (tokencmpr(s+i, "")) {
