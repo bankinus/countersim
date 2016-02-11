@@ -32,13 +32,18 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 	Lexer::nextToken(next, t, &next);
 	Simulator_command *command = 0;
 	switch (t.get_type()) {
+		case nil:
+			std::cerr << "lexing error in line " << sub.current_line << std::endl;
+			return false;
 		case Madd:
 			{
 				Madd_command *add_command = new Madd_command();
 				Lexer::nextToken(next, t, &next);
-				//TODO check for lexing error
 				/*target parameter*/
 				switch (t.get_type()){
+					case nil:
+							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							return false;
 					case Identifier:
 						add_command->set_target(t.get_content());
 					case Number:
@@ -52,9 +57,11 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 						return false;
 				}
 				Lexer::nextToken(next, t, &next);
-				//TODO check for lexing error
 				/*next command parameter*/
 				switch (t.get_type()){
+					case nil:
+							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							return false;
 					case Identifier:
 						add_command->set_jump(t.get_content());
 					case Number:
