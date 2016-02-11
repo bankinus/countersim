@@ -6,6 +6,7 @@ class Simulator_command
 	protected:
 		long long int line;
 	public:
+		virtual ~Simulator_command(){}
 		virtual void execute () = 0;
 		virtual std::string toString() = 0;
 
