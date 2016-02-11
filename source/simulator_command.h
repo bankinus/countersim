@@ -16,9 +16,12 @@ class Simulator_command
 class Jump_command : virtual public Simulator_command
 {
 	protected:
-		long long int next;
+		long long int jump;
+		std::string jump_name;
 	public:
+		Jump_command() : jump_name(""){}
 		void set_jump(long long int branch);
+		void set_jump(std::string s);
 };
 
 class Target_command : virtual public Simulator_command
@@ -29,16 +32,22 @@ class Target_command : virtual public Simulator_command
 		 * if target number < 0 target is the negative number of the argument
 		 */
 		long long int target;
+		std::string target_name;
 	public:
+		Target_command() : target_name(""){}
 		void set_target(long long int number);
+		void set_target(std::string s);
 };
 
 class Branch_command : virtual public Simulator_command
 {
 	protected:
 		long long int branch;
+		std::string branch_name;
 	public:
+		Branch_command() : branch_name(""){}
 		void set_branch(long long int branch);
+		void set_branch(std::string s);
 };
 
 class Madd_command : public Target_command, public Jump_command
