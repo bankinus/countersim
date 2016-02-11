@@ -13,15 +13,15 @@ class Token
 	private:
 	char content[64]; 
 	char* longcontent; 
-	long long int numericalValue; 
+	long long int numerical_value; 
 	tokenType type;
 
 	public:
-	Token () : content(), longcontent((char*)0), type(nil), numericalValue(0) {
+	Token () : content(), longcontent((char*)0), type(nil) {
 		content[0] = '\0';
 		content[63] = '\0';
 	}
-	Token (const char *s, tokenType t) : longcontent((char*)0), type(t), numericalValue(0) {
+	Token (const char *s, tokenType t) : longcontent((char*)0), type(t) {
 		content[0] = '\0';
 		content[63] = '\0';
 	}
