@@ -38,7 +38,7 @@ void Madd_command::execute () {
 
 std::string  Madd_command::toString () {
 	std::stringstream ss;
-	ss << "add " << "target" << " " << jump;
+	ss << "add " << target << " " << jump;
 	return ss.str();
 }
 
@@ -47,7 +47,7 @@ void Msub_command::execute () {
 
 std::string  Msub_command::toString () {
 	std::stringstream ss;
-	ss << "sub " << "target" << " " << jump << " " << branch;
+	ss << "sub " << target << " " << jump << " " << branch;
 	return ss.str();
 }
 
