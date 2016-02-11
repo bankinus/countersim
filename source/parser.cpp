@@ -2,28 +2,9 @@
 #include "token.h"
 #include "lexer.h"
 #include "simulator_command.h"
+#include "context.h"
 #include <string>
-
-class Subroutine {
-	private:
-		Simulator_command *subprogram[];
-	public:
-		long long int first_line;
-		long long int last_line;
-		long long int current_line;
-
-		Subroutine () {}
-
-		long long int get_reg(std::string s) {
-			//TODO
-			return -1;
-		}
-
-		long long int get_command(std::string s) {
-			//TODO
-			return -1;
-		}
-};
+#include <iostream>
 
 bool parse_simulator_program(const char *s) {
 	return false;
@@ -44,7 +25,7 @@ bool parse_URM_routine(const char *s) {
 	return false;
 }
 
-bool parse_Minsky_command(const char *s, Simulator_command **res, Subroutine &sub) {
+bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) {
 	Token t;
 	const char *next;
 	next = s;
@@ -107,7 +88,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Subroutine &su
 	return false;
 }
 
-bool parse_URM_command(const char *s, Simulator_command** res, Subroutine &sub) {
+bool parse_URM_command(const char *s, Simulator_command** res, Context &sub) {
 	return false;
 }
 
