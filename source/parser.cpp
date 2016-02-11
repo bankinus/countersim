@@ -36,39 +36,33 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 			{
 				Madd_command *add_command = new Madd_command();
 				Lexer::nextToken(next, t, &next);
+				//TODO check for lexing error
 				/*target parameter*/
 				switch (t.get_type()){
 					case Identifier:
-						//TODO add register target
+						add_command->set_target(t.get_content());
 					case Number:
 						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
-							//TODO error
+							std::cerr << "error: register " << t.get_content() << " is out of range" << std::endl;
 							return false;
 						}
 						add_command->set_target(t.get_numerical_value());
 					default:
-						//TODO error;
+						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
 						return false;
 				}
 				Lexer::nextToken(next, t, &next);
+				//TODO check for lexing error
 				/*next command parameter*/
 				switch (t.get_type()){
 					case Identifier:
-						//TODO add register target
+						add_command->set_jump(t.get_content());
 					case Number:
-						if (t.get_numerical_value() < sub.first_line || t.get_numerical_value() > sub.last_line) {
-							//TODO error
-							return false;
-						}
 						add_command->set_jump(t.get_numerical_value());
 					case Newline:
-						if (sub.current_line == sub.last_line) {
-							//TODO error
-							return false;
-						}
-						add_command->set_jump(sub.current_line+1);
+						add_command->set_jump("_next");
 					default:
-						//TODO error;
+						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
 						return false;
 				}
 				command = add_command;
@@ -77,8 +71,12 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 		case Msub:
 			{
 				Msub_command* sub_command = new Msub_command();
+				//TODO parse args
 				command = sub_command;
 			}
+			break;
+		default:
+			std::cerr << "syntax error: expected minsky machine command, recieved" << t.get_content() << std::endl;
 			break;
 	}
 	if (command!=NULL) {
