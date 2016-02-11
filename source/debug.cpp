@@ -1,6 +1,8 @@
 #include "debug.h"
 #include "token.h"
 #include "lexer.h"
+#include "parser.h"
+#include "context.h"
 #include <stdio.h>
 #include <iostream>
 
@@ -25,5 +27,16 @@ void _lexertest() {
 		}
 	}
 	return;
+}
+
+void _parse_Minsky_test() {
+	Simulator_command *command;
+	Context con;
+	parse_Minsky_command("add foo 5\n", &command, con);
+	if (command!=NULL) {std::cout << command->toString() << std::endl; delete command;}
+	else {std::cout << "bad parse" << std::endl;}
+	parse_Minsky_command("sub 1 bar\n", &command, con);
+	if (command!=NULL) {std::cout << command->toString() << std::endl;delete command;}
+	else {std::cout << "bad parse" << std::endl;}
 }
 
