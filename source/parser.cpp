@@ -42,16 +42,18 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				/*target parameter*/
 				switch (t.get_type()){
 					case nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
-							return false;
+						std::cerr << "lexing error in line " << sub.current_line << std::endl;
+						return false;
 					case Identifier:
 						add_command->set_target(t.get_content());
+						break;
 					case Number:
 						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
 							std::cerr << "error: register " << t.get_content() << " is out of range" << std::endl;
 							return false;
 						}
 						add_command->set_target(t.get_numerical_value());
+						break;
 					default:
 						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
 						return false;
@@ -60,14 +62,17 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				/*next command parameter*/
 				switch (t.get_type()){
 					case nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
-							return false;
+						std::cerr << "lexing error in line " << sub.current_line << std::endl;
+						return false;
 					case Identifier:
 						add_command->set_jump(t.get_content());
+						break;
 					case Number:
 						add_command->set_jump(t.get_numerical_value());
+						break;
 					case Newline:
 						add_command->set_jump("_next");
+						break;
 					default:
 						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
 						return false;
