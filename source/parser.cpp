@@ -30,7 +30,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 	const char *next;
 	next = s;
 	Lexer::nextToken(next, t, &next);
-	Simulator_command *command = 0;
+	Simulator_command *command = NULL;
 	switch (t.get_type()) {
 		case nil:
 			std::cerr << "lexing error in line " << sub.current_line << std::endl;
@@ -93,6 +93,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 	}
 	if (command!=NULL) {
 		command->set_line(sub.current_line);
+		*res=command;
 		return true;
 	}
 	return false;
