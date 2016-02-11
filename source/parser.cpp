@@ -28,6 +28,7 @@ bool parse_URM_routine(const char *s) {
 bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) {
 	Token t;
 	const char *next;
+	const char *old;
 	next = s;
 	Lexer::nextToken(next, t, &next);
 	Simulator_command *command = NULL;
@@ -49,7 +50,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 						break;
 					case Number:
 						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
-							std::cerr << "error: register " << t.get_content() << " is out of range" << std::endl;
+							std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
 							return false;
 						}
 						add_command->set_target(t.get_numerical_value());
@@ -58,6 +59,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
 						return false;
 				}
+				old = next;
 				Lexer::nextToken(next, t, &next);
 				/*next command parameter*/
 				switch (t.get_type()){
@@ -72,9 +74,19 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 						break;
 					case Newline:
 						add_command->set_jump("_next");
+						next = old;
 						break;
 					default:
 						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
+						return false;
+				}
+				Lexer::nextToken(next, t, &next);
+				/*newline*/
+				switch (t.get_type()){
+					case Newline:
+						break;
+					default:
+						std::cerr << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << std::endl;
 						return false;
 				}
 				command = add_command;
@@ -83,7 +95,74 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 		case Msub:
 			{
 				Msub_command* sub_command = new Msub_command();
-				//TODO parse args
+				Lexer::nextToken(next, t, &next);
+				/*target parameter*/
+				switch (t.get_type()){
+					case nil:
+						std::cerr << "lexing error in line " << sub.current_line << std::endl;
+						return false;
+					case Identifier:
+						sub_command->set_target(t.get_content());
+						break;
+					case Number:
+						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
+							std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
+							return false;
+						}
+						sub_command->set_target(t.get_numerical_value());
+						break;
+					default:
+						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
+						return false;
+				}
+				Lexer::nextToken(next, t, &next);
+				/*next command parameter*/
+				switch (t.get_type()){
+					case nil:
+						std::cerr << "lexing error in line " << sub.current_line << std::endl;
+						return false;
+					case Identifier:
+						sub_command->set_jump(t.get_content());
+						sub_command->set_branch(t.get_content());
+						break;
+					case Number:
+						sub_command->set_jump(t.get_numerical_value());
+						sub_command->set_branch(t.get_numerical_value());
+						break;
+					default:
+						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
+						return false;
+				}
+				old = next;
+				Lexer::nextToken(next, t, &next);
+				/*next command parameter*/
+				switch (t.get_type()){
+					case nil:
+						std::cerr << "lexing error in line " << sub.current_line << std::endl;
+						return false;
+					case Identifier:
+						sub_command->set_branch(t.get_content());
+						break;
+					case Number:
+						sub_command->set_branch(t.get_numerical_value());
+						break;
+					case Newline:
+						sub_command->set_jump("_next");
+						next = old;
+						break;
+					default:
+						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
+						return false;
+				}
+				Lexer::nextToken(next, t, &next);
+				/*newline*/
+				switch (t.get_type()){
+					case Newline:
+						break;
+					default:
+						std::cerr << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << std::endl;
+						return false;
+				}
 				command = sub_command;
 			}
 			break;
