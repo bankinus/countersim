@@ -35,7 +35,7 @@ Context *parse_Minsky_routine(const char *s) {
 	Context * context = new Context();
 	Simulator_command *command;
 	/*parse routine header*/
-	for (Lexer::nextToken(next, t, &next);t.get_type()!=Newline;Lexer::nextToken(next, t, &next)) {
+	for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::Newline;Lexer::nextToken(next, t, &next)) {
 		/*parse name*/
 		//TODO
 		/*parse registers*/
@@ -47,21 +47,21 @@ Context *parse_Minsky_routine(const char *s) {
 		/*check for and parse label*/
 		old = next;
 		Lexer::nextToken(next, t, &next);
-		if (t.get_type()==EOP) break;
+		if (t.get_type()==Token::EOP) break;
 		switch (t.get_type()) {
-			case Identifier:
+			case Token::Identifier:
 				context->set_line(t.get_content(), context->current_line);
 				Lexer::nextToken(next, t, &next);
 				switch (t.get_type()) {
-					case Colon:
+					case Token::Colon:
 						break;
 					default: 
 						//TODO error
 						goto error_parse_Minsky_routine;
 				}
 				break;
-			case Madd:
-			case Msub:
+			case Token::Madd:
+			case Token::Msub:
 				next = old;
 				break;
 			default:
@@ -90,22 +90,22 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 
 	Lexer::nextToken(next, t, &next);
 	switch (t.get_type()) {
-		case nil:
+		case Token::nil:
 			std::cerr << "lexing error in line " << sub.current_line << std::endl;
 			return false;
-		case Madd:
+		case Token::Madd:
 			{
 				Madd_command *add_command = new Madd_command();
 				Lexer::nextToken(next, t, &next);
 				/*target parameter*/
 				switch (t.get_type()){
-					case nil:
+					case Token::nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;
 						return false;
-					case Identifier:
+					case Token::Identifier:
 						add_command->set_target(t.get_content());
 						break;
-					case Number:
+					case Token::Number:
 						if (t.get_numerical_value() > 1) {
 							std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
 							return false;
@@ -120,16 +120,16 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				Lexer::nextToken(next, t, &next);
 				/*next command parameter*/
 				switch (t.get_type()){
-					case nil:
+					case Token::nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;
 						return false;
-					case Identifier:
+					case Token::Identifier:
 						add_command->set_jump(t.get_content());
 						break;
-					case Number:
+					case Token::Number:
 						add_command->set_jump(t.get_numerical_value());
 						break;
-					case Newline:
+					case Token::Newline:
 						add_command->set_jump("_next");
 						next = old;
 						break;
@@ -140,7 +140,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				Lexer::nextToken(next, t, &next);
 				/*newline*/
 				switch (t.get_type()){
-					case Newline:
+					case Token::Newline:
 						break;
 					default:
 						std::cerr << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << std::endl;
@@ -149,19 +149,19 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				command = add_command;
 			}
 			break;
-		case Msub:
+		case Token::Msub:
 			{
 				Msub_command* sub_command = new Msub_command();
 				Lexer::nextToken(next, t, &next);
 				/*target parameter*/
 				switch (t.get_type()){
-					case nil:
+					case Token::nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;
 						return false;
-					case Identifier:
+					case Token::Identifier:
 						sub_command->set_target(t.get_content());
 						break;
-					case Number:
+					case Token::Number:
 						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
 							std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
 							return false;
@@ -175,14 +175,14 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				Lexer::nextToken(next, t, &next);
 				/*jump or branch command parameter*/
 				switch (t.get_type()){
-					case nil:
+					case Token::nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;
 						return false;
-					case Identifier:
+					case Token::Identifier:
 						sub_command->set_jump(t.get_content());
 						sub_command->set_branch(t.get_content());//set in case next token is newline
 						break;
-					case Number:
+					case Token::Number:
 						sub_command->set_jump(t.get_numerical_value());
 						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
 						break;
@@ -194,16 +194,16 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				Lexer::nextToken(next, t, &next);
 				/*branch command parameter*/
 				switch (t.get_type()){
-					case nil:
+					case Token::nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;
 						return false;
-					case Identifier:
+					case Token::Identifier:
 						sub_command->set_branch(t.get_content());
 						break;
-					case Number:
+					case Token::Number:
 						sub_command->set_branch(t.get_numerical_value());
 						break;
-					case Newline:
+					case Token::Newline:
 						sub_command->set_jump("_next");
 						next = old;
 						break;
@@ -214,7 +214,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				Lexer::nextToken(next, t, &next);
 				/*newline*/
 				switch (t.get_type()){
-					case Newline:
+					case Token::Newline:
 						break;
 					default:
 						std::cerr << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << std::endl;

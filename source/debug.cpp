@@ -21,9 +21,9 @@ void _lexertest() {
 				std::cout << std::endl;
 				break;
 			}
-			if (t.get_type()==Newline) break;
-			if (t.get_type()==EOP) break;
-			if (t.get_type()==nil) break;
+			if (t.get_type()==Token::Newline) break;
+			if (t.get_type()==Token::EOP) break;
+			if (t.get_type()==Token::nil) break;
 		}
 	}
 	return;

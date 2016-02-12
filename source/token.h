@@ -1,15 +1,15 @@
 #pragma once
 
-typedef enum {Identifier, Number, Exit, Newline, EOP,
-								Def, Main, Call, BracketL, BracketR, Colon,
-							 	Madd, Msub,
-								Uadd, Usub, Uclear, Ucopy, Ujmp,
-								Preproc, Setreg, LRM, URM,
-								nil}
-					tokenType;
-
 class Token
 {
+	public:
+	typedef enum tokenType_enum {Identifier, Number, Exit, Newline, EOP,
+	                     Def, Main, Call, BracketL, BracketR, Colon,
+	                     Madd, Msub,
+	                     Uadd, Usub, Uclear, Ucopy, Ujmp,
+	                     Preproc, Setreg, LRM, URM,
+	                     nil} tokenType;
+
 	private:
 	char content[64]; 
 	char* longcontent; 
@@ -37,3 +37,4 @@ class Token
 	void set_numerical_value(long long int i);
 };
 
+typedef Token::tokenType tokenType;

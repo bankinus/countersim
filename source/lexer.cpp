@@ -47,31 +47,31 @@ bool tokencmpr (const char *s, const char *t) {
 const char * _nextToken(const char *s, class Token &t, bool next) {
 	s = skip(s, " \t", 2);
 	if (s[0]==0) {
-		t.set_type(EOP);
+		t.set_type(Token::EOP);
 		t.set_content("EOP");
 	}
 	else if (s[0]=='\n') {
-		t.set_type(Newline);
+		t.set_type(Token::Newline);
 		t.set_content("\n");
 		s+=1;
 	}
 	else if (s[0]=='#') {
-		t.set_type(Preproc);
+		t.set_type(Token::Preproc);
 		t.set_content("#");
 		s+=1;
 	}
 	else if (s[0]=='[') {
-		t.set_type(BracketL);
+		t.set_type(Token::BracketL);
 		t.set_content("[");
 		s+=1;
 	}
 	else if (s[0]==']') {
-		t.set_type(BracketR);
+		t.set_type(Token::BracketR);
 		t.set_content("]");
 		s+=1;
 	}
 	else if (s[0]==':') {
-		t.set_type(Colon);
+		t.set_type(Token::Colon);
 		t.set_content(":");
 		s+=1;
 	}
@@ -84,7 +84,7 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 				t.set_content(s[i], i);
 			}
 			else if (tokencmpr(s+i, "")) {
-				t.set_type(Number);
+				t.set_type(Token::Number);
 				t.set_content('\0', i);
 				t.set_numerical_value(number);
 				s+=i;
@@ -97,67 +97,67 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		}
 	}
 	else if (tokencmpr(s, "p")) {
-		t.set_type(Uadd);
+		t.set_type(Token::Uadd);
 		t.set_content("p");
 		s+=1;
 	}
 	else if (tokencmpr(s, "d")) {
-		t.set_type(Usub);
+		t.set_type(Token::Usub);
 		t.set_content("d");
 		s+=1;
 	}
 	else if (tokencmpr(s, "c")) {
-		t.set_type(Ucopy);
+		t.set_type(Token::Ucopy);
 		t.set_content("c");
 		s+=1;
 	}
 	else if (tokencmpr(s, "o")) {
-		t.set_type(Uclear);
+		t.set_type(Token::Uclear);
 		t.set_content("o");
 		s+=1;
 	}
 	else if (tokencmpr(s, "j")) {
-		t.set_type(Ujmp);
+		t.set_type(Token::Ujmp);
 		t.set_content("j");
 		s+=1;
 	}
 	else if (tokencmpr(s, "add")) {
-		t.set_type(Madd);
+		t.set_type(Token::Madd);
 		t.set_content("add");
 		s+=3;
 	}
 	else if (tokencmpr(s, "sub")) {
-		t.set_type(Msub);
+		t.set_type(Token::Msub);
 		t.set_content("sub");
 		s+=3;
 	}
 	else if (tokencmpr(s, "def")) {
-		t.set_type(Def);
+		t.set_type(Token::Def);
 		t.set_content("def");
 		s+=3;
 	}
 	else if (tokencmpr(s, "set")) {
-		t.set_type(Setreg);
+		t.set_type(Token::Setreg);
 		t.set_content("set");
 		s+=3;
 	}
 	else if (tokencmpr(s, "lrm")) {
-		t.set_type(LRM);
+		t.set_type(Token::LRM);
 		t.set_content("lrm");
 		s+=3;
 	}
 	else if (tokencmpr(s, "urm")) {
-		t.set_type(URM);
+		t.set_type(Token::URM);
 		t.set_content("urm");
 		s+=3;
 	}
 	else if (tokencmpr(s, "call")) {
-		t.set_type(Call);
+		t.set_type(Token::Call);
 		t.set_content("call");
 		s+=4;
 	}
 	else if (tokencmpr(s, "main")) {
-		t.set_type(Main);
+		t.set_type(Token::Main);
 		t.set_content("main");
 		s+=4;
 	}
@@ -167,7 +167,7 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 				t.set_content(s[i], i);
 			}
 			else if (tokencmpr(s+i, "")) {
-				t.set_type(Identifier);
+				t.set_type(Token::Identifier);
 				t.set_content('\0', i);
 				s+=i;
 				break;
