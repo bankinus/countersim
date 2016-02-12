@@ -10,32 +10,19 @@ void Token::set_type(tokenType t)
 	type = t;
 }
 
-const char * Token::get_content()
+std::string Token::get_content()
 {
-	if (longcontent) return longcontent;
-	else return content;
+	return content;
 }
 
-void Token::set_content(const char *s)
+void Token::set_content(std::string s)
 {
-	int i;
-	for (i=0; s[i]!=0; i++) {
-		if (i >= 63) {
-			//TODO long content
-			break;
-		}
-		content[i] = s[i];
-	}
-	content[i] = '\0';
+	content=s;
 }
 
-void Token::set_content(const char c, unsigned long long i)
+void Token::add_content(const char c)
 {
-		if (i >= 63) {
-			//TODO long content
-			return;
-		}
-		content[i] = c;
+	content.append(1,c);
 }
 
 void Token::set_numerical_value(long long int i)

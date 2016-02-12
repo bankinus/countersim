@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class Token
 {
@@ -11,27 +12,22 @@ class Token
 	                     nil} tokenType;
 
 	private:
-	char content[64]; 
-	char* longcontent; 
+	std::string content; 
 	long long int numerical_value; 
 	tokenType type;
 
 	public:
-	Token () : content(), longcontent((char*)0), type(nil) {
-		content[0] = '\0';
-		content[63] = '\0';
+	Token () : content(""), type(nil) {
 	}
-	Token (const char *s, tokenType t) : longcontent((char*)0), type(t) {
-		content[0] = '\0';
-		content[63] = '\0';
+	Token (std::string s, tokenType t) : content(s), type(t) {
 	}
 
 	tokenType get_type( );
 	void set_type(tokenType t);
 
-	const char* get_content();
-	void set_content(const char *s);
-	void set_content(const char c, unsigned long long i);
+	std::string get_content();
+	void set_content(std::string);
+	void add_content(const char c);
 
 	long long int get_numerical_value();
 	void set_numerical_value(long long int i);

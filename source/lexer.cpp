@@ -81,11 +81,10 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 			if (s[i]>='0' && s[i]<='9') {
 				number*=10;
 				number+=s[i]-'0';
-				t.set_content(s[i], i);
+				t.add_content(s[i]);
 			}
 			else if (tokencmpr(s+i, "")) {
 				t.set_type(Token::Number);
-				t.set_content('\0', i);
 				t.set_numerical_value(number);
 				s+=i;
 				break;
@@ -164,11 +163,10 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 	else if ((*s>='A' && *s<='Z') || (*s>='a' && *s<='z')) {
 		for (int i=0; ;i++) {
 			if ((s[i]>='A' && s[i]<='Z') || (s[i]>='a' && s[i]<='z') || (s[i]>='0' && s[i]<='9')) {
-				t.set_content(s[i], i);
+				t.add_content(s[i]);
 			}
 			else if (tokencmpr(s+i, "")) {
 				t.set_type(Token::Identifier);
-				t.set_content('\0', i);
 				s+=i;
 				break;
 			}
