@@ -1,9 +1,8 @@
 #pragma once
 #include "token.h"
 
-class Lexer
+namespace Lexer
 {
-	public:
 	/// reads the next token, writes result to Token t
 	/**
 	 * nextToken
@@ -14,7 +13,7 @@ class Lexer
 	 * @param s points to the beginning of the next token
 	 * @param t stores the result
 	 */
-	static void nextToken(const char *s, Token &t);
+	void nextToken(const char *s, Token &t);
 	
 	/// reads the next token, writes result to Token t and points to next token in n
 	/**
@@ -28,6 +27,6 @@ class Lexer
 	 * @param t stores the result
 	 * @param n stores the next token
 	 */
-	static void nextToken(const char *s, Token &t, const char** n);
+	void nextToken(const char *s, Token &t, const char** n);
 };
 
