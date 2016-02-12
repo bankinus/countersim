@@ -9,7 +9,7 @@ DEPS= $(shell find $(DEPDIR) -name "*.d")
 
 include $(DEPS)
 
-CC=g++
+CC=clang++
 CFLAGS= -std=c++11
 LFLAGS=
 DEBUG= -g3 -DDEBUG

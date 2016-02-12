@@ -4,7 +4,7 @@
 
 class Context {
 	private:
-		Simulator_command *subprogram[];
+		Simulator_command **subprogram;
 		std::unordered_map<std::string, long long int> reg_map;
 		std::unordered_map<std::string, long long int> line_map;
 	public:
