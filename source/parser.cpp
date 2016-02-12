@@ -13,6 +13,7 @@ bool parse_simulator_program(const char *s) {
 bool parse_config_command(const char *s) {
 	return false;
 }
+
 bool parse_Minsky_program(const char *s) {
 	return false;
 }
@@ -21,8 +22,12 @@ bool parse_URM_program(const char *s) {
 	return false;
 }
 
-bool parse_URM_routine(const char *s) {
-	return false;
+Context *parse_URM_routine(const char *s) {
+	return NULL;
+}
+
+Context *parse_Minsky_routine(const char *s) {
+	return NULL;
 }
 
 bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) {
@@ -116,18 +121,18 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 						return false;
 				}
 				Lexer::nextToken(next, t, &next);
-				/*next command parameter*/
+				/*jump or branch command parameter*/
 				switch (t.get_type()){
 					case nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;
 						return false;
 					case Identifier:
 						sub_command->set_jump(t.get_content());
-						sub_command->set_branch(t.get_content());
+						sub_command->set_branch(t.get_content());//set in case next token is newline
 						break;
 					case Number:
 						sub_command->set_jump(t.get_numerical_value());
-						sub_command->set_branch(t.get_numerical_value());
+						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
 						break;
 					default:
 						std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
@@ -135,7 +140,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 				}
 				old = next;
 				Lexer::nextToken(next, t, &next);
-				/*next command parameter*/
+				/*branch command parameter*/
 				switch (t.get_type()){
 					case nil:
 						std::cerr << "lexing error in line " << sub.current_line << std::endl;

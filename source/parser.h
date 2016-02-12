@@ -10,7 +10,9 @@ bool parse_Minsky_program(const char *s);
 
 bool parse_URM_program(const char *s);
 
-bool parse_URM_routine(const char *s);
+Context *parse_URM_routine(const char *s);
+
+Context *parse_Minsky_routine(const char *s);
 
 bool parse_Minsky_command(const char *s, Simulator_command **res, Context &con);
 
