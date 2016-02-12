@@ -23,11 +23,55 @@ bool parse_URM_program(const char *s) {
 }
 
 Context *parse_URM_routine(const char *s) {
-	return NULL;
+	Context * context = new Context();
+	return context;
 }
 
 Context *parse_Minsky_routine(const char *s) {
-	return NULL;
+	Token t;
+	const char *old;
+	const char *next;
+	next = s;
+	Context * context = new Context();
+	Simulator_command *command;
+	/*parse routine header*/
+	//TODO
+	while (1) {
+		/*check for label*/
+		old = next;
+		Lexer::nextToken(next, t, &next);
+		if (t.get_type()==EOP) break;
+		switch (t.get_type()) {
+			case Identifier:
+				context->set_line(t.get_content(), context->current_line);
+				Lexer::nextToken(next, t, &next);
+				switch (t.get_type()) {
+					case Colon:
+						break;
+					default: 
+						//TODO error
+						goto error_parse_Minsky_routine;
+				}
+				break;
+			case Madd:
+			case Msub:
+				next = old;
+				break;
+			default:
+				//TODO error
+				goto error_parse_Minsky_routine;
+		}
+		/*parse command*/
+		if (!parse_Minsky_command(next, &command, *context)){
+			goto error_parse_Minsky_routine;
+		}
+	}
+	/*replace labels*/
+	//TODO
+	return context;
+	error_parse_Minsky_routine:
+		delete context;
+		return NULL;
 }
 
 bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) {
@@ -35,8 +79,9 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 	const char *next;
 	const char *old;
 	next = s;
-	Lexer::nextToken(next, t, &next);
 	Simulator_command *command = NULL;
+
+	Lexer::nextToken(next, t, &next);
 	switch (t.get_type()) {
 		case nil:
 			std::cerr << "lexing error in line " << sub.current_line << std::endl;
@@ -54,7 +99,7 @@ bool parse_Minsky_command(const char *s, Simulator_command **res, Context &sub) 
 						add_command->set_target(t.get_content());
 						break;
 					case Number:
-						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
+						if (t.get_numerical_value() > 1) {
 							std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
 							return false;
 						}
