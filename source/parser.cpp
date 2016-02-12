@@ -35,9 +35,16 @@ Context *parse_Minsky_routine(const char *s) {
 	Context * context = new Context();
 	Simulator_command *command;
 	/*parse routine header*/
-	//TODO
+	for (Lexer::nextToken(next, t, &next);t.get_type()!=Newline;Lexer::nextToken(next, t, &next)) {
+		/*parse name*/
+		//TODO
+		/*parse registers*/
+		//TODO
+		/*parse exits*/
+		//TODO
+	}
 	while (1) {
-		/*check for label*/
+		/*check for and parse label*/
 		old = next;
 		Lexer::nextToken(next, t, &next);
 		if (t.get_type()==EOP) break;
