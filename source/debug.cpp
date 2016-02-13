@@ -32,9 +32,9 @@ void _lexertest() {
 void _parse_Minsky_test() {
 	Simulator_command *command;
 	Context con;
-	if (parse_Minsky_command("add foo 5\n", &command, con)) {std::cout << command->toString() << std::endl; delete command;}
+	if (Parser::parse_Minsky_command("add foo 5\n", &command, con)) {std::cout << command->toString() << std::endl; delete command;}
 	else {std::cout << "bad parse" << std::endl;}
-	if (parse_Minsky_command("sub 1 bar\n", &command, con)) {std::cout << command->toString() << std::endl;delete command;}
+	if (Parser::parse_Minsky_command("sub 1 bar\n", &command, con)) {std::cout << command->toString() << std::endl;delete command;}
 	else {std::cout << "bad parse" << std::endl;}
 }
 
