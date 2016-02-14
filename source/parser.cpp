@@ -4,7 +4,7 @@
 #include "simulator_command.h"
 #include "context.h"
 #include <string>
-#include <iostream>
+#include "error_stream.h"
 
 namespace Parser {
 	bool parse_simulator_program(const char *s) {
@@ -92,7 +92,7 @@ namespace Parser {
 		Lexer::nextToken(next, t, &next);
 		switch (t.get_type()) {
 			case Token::nil:
-				std::cerr << "lexing error in line " << sub.current_line << std::endl;
+				error_stream << "lexing error in line " << sub.current_line << Error_stream::endl;
 				return false;
 			case Token::Madd:
 				{
@@ -101,20 +101,20 @@ namespace Parser {
 					/*target parameter*/
 					switch (t.get_type()){
 						case Token::nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							error_stream << "lexing error in line " << sub.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
 							add_command->set_target(t.get_content());
 							break;
 						case Token::Number:
 							if (t.get_numerical_value() > 1) {
-								std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
+								error_stream << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << Error_stream::endl;
 								return false;
 							}
 							add_command->set_target(t.get_numerical_value());
 							break;
 						default:
-							std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
+							error_stream << "syntax error: " << t.get_content() << " is not a valid argument for add" << Error_stream::endl;
 							return false;
 					}
 					old = next;
@@ -122,7 +122,7 @@ namespace Parser {
 					/*next command parameter*/
 					switch (t.get_type()){
 						case Token::nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							error_stream << "lexing error in line " << sub.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
 							add_command->set_jump(t.get_content());
@@ -135,7 +135,7 @@ namespace Parser {
 							next = old;
 							break;
 						default:
-							std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for add" << std::endl;
+							error_stream << "syntax error: " << t.get_content() << " is not a valid argument for add" << Error_stream::endl;
 							return false;
 					}
 					Lexer::nextToken(next, t, &next);
@@ -144,7 +144,7 @@ namespace Parser {
 						case Token::Newline:
 							break;
 						default:
-							std::cerr << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << std::endl;
+							error_stream << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << Error_stream::endl;
 							return false;
 					}
 					command = add_command;
@@ -157,27 +157,27 @@ namespace Parser {
 					/*target parameter*/
 					switch (t.get_type()){
 						case Token::nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							error_stream << "lexing error in line " << sub.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
 							sub_command->set_target(t.get_content());
 							break;
 						case Token::Number:
 							if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
-								std::cerr << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << std::endl;
+								error_stream << "error in line " << sub.current_line << ": register " << t.get_content() << " is out of range" << Error_stream::endl;
 								return false;
 							}
 							sub_command->set_target(t.get_numerical_value());
 							break;
 						default:
-							std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
+							error_stream << "syntax error: " << t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
 							return false;
 					}
 					Lexer::nextToken(next, t, &next);
 					/*jump or branch command parameter*/
 					switch (t.get_type()){
 						case Token::nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							error_stream << "lexing error in line " << sub.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
 							sub_command->set_jump(t.get_content());
@@ -188,7 +188,7 @@ namespace Parser {
 							sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
 							break;
 						default:
-							std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
+							error_stream << "syntax error: " << t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
 							return false;
 					}
 					old = next;
@@ -196,7 +196,7 @@ namespace Parser {
 					/*branch command parameter*/
 					switch (t.get_type()){
 						case Token::nil:
-							std::cerr << "lexing error in line " << sub.current_line << std::endl;
+							error_stream << "lexing error in line " << sub.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
 							sub_command->set_branch(t.get_content());
@@ -209,7 +209,7 @@ namespace Parser {
 							next = old;
 							break;
 						default:
-							std::cerr << "syntax error: " << t.get_content() << " is not a valid argument for sub" << std::endl;
+							error_stream << "syntax error: " << t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
 							return false;
 					}
 					Lexer::nextToken(next, t, &next);
@@ -218,14 +218,14 @@ namespace Parser {
 						case Token::Newline:
 							break;
 						default:
-							std::cerr << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << std::endl;
+							error_stream << "syntax error in line " << sub.current_line << ": expected newline received" << t.get_content() << Error_stream::endl;
 							return false;
 					}
 					command = sub_command;
 				}
 				break;
 			default:
-				std::cerr << "syntax error: expected minsky machine command, recieved" << t.get_content() << std::endl;
+				error_stream << "syntax error: expected minsky machine command, recieved" << t.get_content() << Error_stream::endl;
 				break;
 		}
 		if (command!=NULL) {
