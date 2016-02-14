@@ -16,3 +16,9 @@ void Context::set_line(std::string s, long long int i) {
 	line_map[s]=i;
 }
 
+std::string Context::get_name(){
+	return name;
+}
+void Context::set_name(std::string n){
+	name = n;
+}

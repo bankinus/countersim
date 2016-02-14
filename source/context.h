@@ -5,6 +5,7 @@
 class Context {
 	private:
 		Simulator_command **subprogram;
+		std::string name;
 		std::unordered_map<std::string, long long int> reg_map;
 		std::unordered_map<std::string, long long int> line_map;
 	public:
@@ -19,5 +20,8 @@ class Context {
 
 		long long int get_line(std::string s);
 		void set_line(std::string s, long long int i);
+
+		std::string get_name();
+		void set_name(std::string n);
 };
 
