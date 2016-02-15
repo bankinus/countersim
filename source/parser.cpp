@@ -87,6 +87,7 @@ namespace Parser {
 		Lexer::nextToken(next, t, &next);
 		switch (t.get_type()) {
 			case Token::Newline:
+				context->current_line=1;
 				break;
 			default:
 				error_stream << "syntax error in line " << context->current_line << ": "
@@ -128,6 +129,9 @@ namespace Parser {
 			/*parse command*/
 			if (!parse_Minsky_command(next, &command, *context)){
 				goto error_parse_Minsky_routine;
+			}
+			else {
+				context->current_line++;
 			}
 		}
 		/*replace labels*/
