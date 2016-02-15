@@ -165,7 +165,7 @@ namespace Parser {
 							error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
-							add_command->set_target(t.get_content());
+							add_command->set_target_name(t.get_content());
 							break;
 						case Token::Number:
 							if (t.get_numerical_value() > 1) {
@@ -188,13 +188,13 @@ namespace Parser {
 							error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
-							add_command->set_jump(t.get_content());
+							add_command->set_jump_name(t.get_content());
 							break;
 						case Token::Number:
 							add_command->set_jump(t.get_numerical_value());
 							break;
 						case Token::Newline:
-							add_command->set_jump("_next");
+							add_command->set_jump_name("_next");
 							next = old;
 							break;
 						default:
@@ -225,7 +225,7 @@ namespace Parser {
 							error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
-							sub_command->set_target(t.get_content());
+							sub_command->set_target_name(t.get_content());
 							break;
 						case Token::Number:
 							if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
@@ -247,8 +247,8 @@ namespace Parser {
 							error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
-							sub_command->set_jump(t.get_content());
-							sub_command->set_branch(t.get_content());//set in case next token is newline
+							sub_command->set_jump_name(t.get_content());
+							sub_command->set_branch_name(t.get_content());//set in case next token is newline
 							break;
 						case Token::Number:
 							sub_command->set_jump(t.get_numerical_value());
@@ -267,13 +267,13 @@ namespace Parser {
 							error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 							return false;
 						case Token::Identifier:
-							sub_command->set_branch(t.get_content());
+							sub_command->set_branch_name(t.get_content());
 							break;
 						case Token::Number:
 							sub_command->set_branch(t.get_numerical_value());
 							break;
 						case Token::Newline:
-							sub_command->set_jump("_next");
+							sub_command->set_jump_name("_next");
 							next = old;
 							break;
 						default:

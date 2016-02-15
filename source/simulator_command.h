@@ -24,7 +24,8 @@ class Jump_command : virtual public Simulator_command
 	public:
 		Jump_command() : jump_name(""){}
 		void set_jump(long long int branch);
-		void set_jump(std::string s);
+		void set_jump_name(std::string s);
+		std::string get_jump_name();
 };
 
 class Target_command : virtual public Simulator_command
@@ -39,7 +40,8 @@ class Target_command : virtual public Simulator_command
 	public:
 		Target_command() : target_name(""){}
 		void set_target(long long int number);
-		void set_target(std::string s);
+		void set_target_name(std::string s);
+		std::string get_target_name();
 };
 
 class Branch_command : virtual public Simulator_command
@@ -50,23 +52,24 @@ class Branch_command : virtual public Simulator_command
 	public:
 		Branch_command() : branch_name(""){}
 		void set_branch(long long int branch);
-		void set_branch(std::string s);
+		void set_branch_name(std::string s);
+		std::string get_branch_name();
 };
 
 class Madd_command : public Target_command, public Jump_command
 {
 	public:
-		virtual void execute ();
-		virtual void accept (Routine_visitor *visitor);
-		virtual std::string toString();
+		virtual void execute () override;
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
 };
 
 class Msub_command : public Target_command, public Jump_command, public Branch_command
 {
 	public:
-		virtual void execute ();
-		virtual void accept (Routine_visitor *visitor);
-		virtual std::string toString();
+		virtual void execute () override;
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
 };
 #include "routine_visitor.h"
 
