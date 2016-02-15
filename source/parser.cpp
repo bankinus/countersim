@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "simulator_command.h"
 #include "context.h"
+#include "routine_name_resolver.h"
 #include <string>
 #include "error_stream.h"
 
@@ -136,7 +137,7 @@ namespace Parser {
 			}
 		}
 		/*replace labels*/
-		//TODO
+		Routine_name_resolver(*context).visitc(*context);
 		return context;
 		error_parse_Minsky_routine:
 			delete context;
