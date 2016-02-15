@@ -26,6 +26,6 @@ class Context {
 		void set_name(std::string n);
 
 		void add_command(Simulator_command* command);
-		std::vector<Simulator_command*>::iterator get_program();
+		std::vector<Simulator_command*> get_program();
 };
 

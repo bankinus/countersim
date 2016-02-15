@@ -1,4 +1,5 @@
 #pragma once
+class Routine_visitor;
 #include <string>
 
 class Simulator_command
@@ -8,6 +9,7 @@ class Simulator_command
 	public:
 		virtual ~Simulator_command(){}
 		virtual void execute () = 0;
+		virtual void accept (Routine_visitor *visitor);
 		virtual std::string toString() = 0;
 
 		long long int get_line();
@@ -55,6 +57,7 @@ class Madd_command : public Target_command, public Jump_command
 {
 	public:
 		virtual void execute ();
+		virtual void accept (Routine_visitor *visitor);
 		virtual std::string toString();
 };
 
@@ -62,6 +65,8 @@ class Msub_command : public Target_command, public Jump_command, public Branch_c
 {
 	public:
 		virtual void execute ();
+		virtual void accept (Routine_visitor *visitor);
 		virtual std::string toString();
 };
+#include "routine_visitor.h"
 
