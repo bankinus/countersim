@@ -1,6 +1,6 @@
 #include "routine_visitor.h"
 
-void Routine_visitor::visit(Context context) {
+void Routine_visitor::visitc(Context &context) {
 	for (Simulator_command *command: context.get_program()) {
 		command->accept(this);
 	}
