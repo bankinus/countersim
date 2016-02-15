@@ -22,3 +22,11 @@ std::string Context::get_name(){
 void Context::set_name(std::string n){
 	name = n;
 }
+
+void Context::add_command(Simulator_command* command) {
+	subprogram.push_back(command);
+}
+
+std::vector<Simulator_command*>::iterator Context::get_program() {
+	return subprogram.begin();
+}

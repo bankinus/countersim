@@ -131,6 +131,7 @@ namespace Parser {
 				goto error_parse_Minsky_routine;
 			}
 			else {
+				context->add_command(command);
 				context->current_line++;
 			}
 		}

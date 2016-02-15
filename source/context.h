@@ -1,10 +1,11 @@
 #pragma once
 #include "simulator_command.h"
 #include <unordered_map>
+#include <vector>
 
 class Context {
 	private:
-		Simulator_command **subprogram;
+		std::vector<Simulator_command*> subprogram;
 		std::string name;
 		std::unordered_map<std::string, long long int> reg_map;
 		std::unordered_map<std::string, long long int> line_map;
@@ -23,5 +24,8 @@ class Context {
 
 		std::string get_name();
 		void set_name(std::string n);
+
+		void add_command(Simulator_command* command);
+		std::vector<Simulator_command*>::iterator get_program();
 };
 
