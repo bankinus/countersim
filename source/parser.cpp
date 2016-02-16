@@ -35,7 +35,7 @@ namespace Parser {
 		const char *next;
 		int i;
 		next = s;
-		Context * context = new Context();
+		Context *context = new Context();
 		Simulator_command *command;
 		/*parse routine header*/
 		Lexer::nextToken(next, t, &next);
@@ -96,10 +96,13 @@ namespace Parser {
 				goto error_parse_Minsky_routine;
 		}
 		while (1) {
-			/*check for and parse label*/
 			old = next;
 			Lexer::nextToken(next, t, &next);
+			/*check for end of routine*/
 			if (t.get_type()==Token::EOP) break;
+			if (t.get_type()==Token::Def) break;
+			if (t.get_type()==Token::Main) break;
+			/*check for and parse label*/
 			switch (t.get_type()) {
 				case Token::Identifier:
 					context->set_line(t.get_content(), context->current_line);
@@ -136,6 +139,7 @@ namespace Parser {
 				context->current_line++;
 			}
 		}
+		context->next=old;
 		/*replace labels*/
 		Routine_name_resolver(*context).visitc(*context);
 		return context;

@@ -13,6 +13,7 @@ class Context {
 		long long int first_line;
 		long long int last_line;
 		long long int current_line;
+		const char *next;
 
 		Context () : reg_map(), line_map(){}
 
