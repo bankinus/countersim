@@ -4,7 +4,7 @@
 class Token
 {
 	public:
-	typedef enum tokenType_enum {Identifier, Number, Exit, Newline, EOP,
+	typedef enum tokenType_enum {Identifier, Number, Exit, Newline, EOP, Exit0,
 	                     Def, Main, Call, BracketL, BracketR, Colon,
 	                     Madd, Msub,
 	                     Uadd, Usub, Uclear, Ucopy, Ujmp,

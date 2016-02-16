@@ -160,6 +160,11 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("main");
 		s+=4;
 	}
+	else if (tokencmpr(s, "exit0")) {
+		t.set_type(Token::Exit0);
+		t.set_content("exit0");
+		s+=5;
+	}
 	else if ((*s>='A' && *s<='Z') || (*s>='a' && *s<='z')) {
 		for (int i=0; ;i++) {
 			if ((s[i]>='A' && s[i]<='Z') || (s[i]>='a' && s[i]<='z') || (s[i]>='0' && s[i]<='9')) {
