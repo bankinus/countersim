@@ -49,6 +49,7 @@ void _parse_Minsky_program_test() {
 		clast = fgetc(stdin);
 		*c = (char) clast;
 	}
+	*(c-1) = '\0';
 	Parser::parse_simulator_program(buf);
 }
 

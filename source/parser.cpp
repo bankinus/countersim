@@ -15,12 +15,13 @@ namespace Parser {
 		std::vector<Context*> routines;
 		Context *context;
 		next = s;
-		old = next;
 		context = new Context();
 		context->current_line = 1;
+		old = next;
 		Lexer::nextToken(next, t, &next);
 		while (t.get_type()==Token::Preproc) {
 			parse_config_command(next, context, &next);
+			old = next;
 			Lexer::nextToken(next, t, &next);
 			context->current_line++;
 		}
@@ -77,6 +78,15 @@ namespace Parser {
 					"expected config command, received " << t.get_content() << Error_stream::endl;
 				goto error_config_command;
 		}
+		Lexer::nextToken(next, t, &next);
+		switch (t.get_type()) {
+			case Token::Newline:
+				break;
+			default:
+				error_stream << "syntax error in line " << context->current_line << ": "
+					"expected newline, received " << t.get_content() << Error_stream::endl;
+				goto error_config_command;
+		}
 		*resnext = next;
 		return true;
 		error_config_command:
@@ -98,6 +108,7 @@ namespace Parser {
 			switch (t.get_type()) {
 				case Token::Def:
 					context = parse_Minsky_sub_routine(old);
+					if (context==NULL) goto error_parse_Minsky_program;
 					routines.push_back(context);
 					next = context->next;
 					break;
@@ -116,6 +127,7 @@ namespace Parser {
 			}
 		}
 		context = parse_Minsky_main_routine(next);
+		if (context==NULL) goto error_parse_Minsky_program;
 		/*cleanup*/
 		for (auto c: routines) {
 			delete c;
