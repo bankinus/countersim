@@ -15,7 +15,7 @@ class Context {
 		long long int current_line;
 		const char *next;
 
-		Context () : reg_map(), line_map(){}
+		Context () : reg_map(), line_map(), current_line(0){}
 
 		long long int get_reg(std::string s);
 		void set_reg(std::string s, long long int i);
