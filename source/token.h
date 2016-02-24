@@ -8,7 +8,7 @@ class Token
 	                     Def, Main, Call, BracketL, BracketR, Colon,
 	                     Madd, Msub,
 	                     Uadd, Usub, Uclear, Ucopy, Ujmp,
-	                     Preproc, Setreg, LRM, URM,
+	                     Preproc, Machine, Setreg, LRM, URM, Minsky,
 	                     nil} tokenType;
 
 	private:

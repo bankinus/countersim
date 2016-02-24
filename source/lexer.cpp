@@ -165,7 +165,18 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("exit0");
 		s+=5;
 	}
+	else if (tokencmpr(s, "minsky")) {
+		t.set_type(Token::Minsky);
+		t.set_content("minsky");
+		s+=6;
+	}
+	else if (tokencmpr(s, "machine")) {
+		t.set_type(Token::Machine);
+		t.set_content("machine");
+		s+=7;
+	}
 	else if ((*s>='A' && *s<='Z') || (*s>='a' && *s<='z')) {
+		t.set_content("");
 		for (int i=0; ;i++) {
 			if ((s[i]>='A' && s[i]<='Z') || (s[i]>='a' && s[i]<='z') || (s[i]>='0' && s[i]<='9')) {
 				t.add_content(s[i]);
