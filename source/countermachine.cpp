@@ -6,5 +6,5 @@
 
 int main (int argc, char ** argv) {
 	//TODO stub
-	parse_Minsky_test();
+	parse_Minsky_program_test();
 }

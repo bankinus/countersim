@@ -38,3 +38,17 @@ void _parse_Minsky_test() {
 	else {std::cout << "bad parse" << std::endl;}
 }
 
+void _parse_Minsky_program_test() {
+	Simulator_command *command;
+	Context con;
+	char buf[2500000];
+	char *c;
+	int clast = ~EOF;
+	c = buf;
+	for (c=buf; clast!=EOF; c++) {
+		clast = fgetc(stdin);
+		*c = (char) clast;
+	}
+	Parser::parse_simulator_program(buf);
+}
+
