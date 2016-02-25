@@ -3,13 +3,11 @@
 def moveto0 [finished]
 loop: sub 1 finished
 add 0 loop
-
 def mult2 [finished]
 loop: sub 0 cleanup
 add 1
 add 1 loop
 cleanup: call moveto0 finished
-
 def mult5 [finished]
 loop: sub 0 cleanup
 add 1
@@ -18,7 +16,6 @@ add 1
 add 1
 add 1 loop
 cleanup: call moveto0 finished
-
 def mult7 [finished]
 loop: sub 0 cleanup
 add 1
@@ -29,7 +26,6 @@ add 1
 add 1
 add 1 loop
 cleanup: call moveto0 finished
-
 def div3 [finished fail]
 div70	:sub 0 cleanup
 div71	:sub 0 reverse1
@@ -54,7 +50,6 @@ add 0
 add 0
 add 0 reverse
 cleanup: call moveto0 finished
-
 def div3 [finished fail]
 div30	:sub 0 cleanup
 div31	:sub 0 reverse1
@@ -67,8 +62,6 @@ add 0
 add 0
 add 0 reverse
 cleanup: call moveto0 finished
-
-
 def div2 [finished fail]
 div20	:sub 0 cleanup
 div21	:sub 0 reverse1
@@ -78,7 +71,6 @@ reverse	: sub 1 fail
 add 0
 add 0 reverse
 cleanup: call moveto0 finished
-
 main
 loop0: call div3 loop1 exit0
 loop1: call div2 inc refill
