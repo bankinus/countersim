@@ -193,7 +193,16 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		}
 	}
 	else {
-		t.set_content("lexing error");
+		char c;
+		int i;
+		i = 0;
+		t.set_content("");
+		c = s[i];
+		while (!isdelim(c) && i<64) {
+			t.add_content(c);
+			i++;
+			c = s[i];
+		}
 		return NULL;
 	}
 	if (next) {
