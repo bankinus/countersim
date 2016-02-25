@@ -24,6 +24,7 @@ class Jump_command : virtual public Simulator_command
 	public:
 		Jump_command() : jump_name(""){}
 		void set_jump(long long int branch);
+		long long int get_jump();
 		void set_jump_name(std::string s);
 		std::string get_jump_name();
 };
@@ -40,6 +41,7 @@ class Target_command : virtual public Simulator_command
 	public:
 		Target_command() : target_name(""){}
 		void set_target(long long int number);
+		long long int get_target();
 		void set_target_name(std::string s);
 		std::string get_target_name();
 };
@@ -52,6 +54,7 @@ class Branch_command : virtual public Simulator_command
 	public:
 		Branch_command() : branch_name(""){}
 		void set_branch(long long int branch);
+		long long int get_branch();
 		void set_branch_name(std::string s);
 		std::string get_branch_name();
 };

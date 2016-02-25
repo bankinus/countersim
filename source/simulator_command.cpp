@@ -17,6 +17,10 @@ void Target_command::set_target(long long int number) {
 	target = number;
 }
 
+long long int Target_command::get_target() {
+	return target;
+}
+
 std::string Target_command::get_target_name() {
 	return target_name;
 }
@@ -29,6 +33,10 @@ void Jump_command::set_jump(long long int number) {
 	jump = number;
 }
 
+long long int Jump_command::get_jump() {
+	return jump;
+}
+
 std::string Jump_command::get_jump_name() {
 	return jump_name;
 }
@@ -39,6 +47,10 @@ void Jump_command::set_jump_name(std::string s) {
 
 void Branch_command::set_branch(long long int number) {
 	branch = number;
+}
+
+long long int Branch_command::get_branch() {
+	return branch;
 }
 
 std::string Branch_command::get_branch_name() {
