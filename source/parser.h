@@ -18,7 +18,7 @@ namespace Parser {
 
 	Context *parse_Minsky_main_routine(const char *s);
 
-	bool parse_Minsky_command(const char *s, Simulator_command **res, Context &con);
+	bool parse_Minsky_command(const char *s, const char **next, Simulator_command **res, Context &con);
 
-	bool parse_URM_command(const char *s, Simulator_command **res, Context &con);
+	bool parse_URM_command(const char *s, const char **next, Simulator_command **res, Context &con);
 }

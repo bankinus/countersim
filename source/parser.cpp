@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "simulator_command.h"
 #include "context.h"
+#include "debug.h"
 #include "routine_name_resolver.h"
 #include <string>
 #include "error_stream.h"
@@ -103,12 +104,16 @@ namespace Parser {
 		main = false;
 		next = s;
 		old = next;
-		Lexer::nextToken(next, t, &next);
 		while (!main) {
+			debug << "next" << (void *)next << std::endl;
+			Lexer::nextToken(next, t, &next);
 			switch (t.get_type()) {
 				case Token::Def:
+					Lexer::nextToken(next, t);
+					debug << "parsing routine " << t.get_content() << std::endl;
 					context = parse_Minsky_sub_routine(old);
 					if (context==NULL) goto error_parse_Minsky_program;
+					debug << "parsed routine " << context->get_name() << std::endl;
 					routines.push_back(context);
 					next = context->next;
 					break;
@@ -118,7 +123,17 @@ namespace Parser {
 				case Token::EOP:
 					next=old;
 				case Token::Main:
-					main = true;
+					Lexer::nextToken(next, t, &next);
+					switch (t.get_type()) {
+						case Token::Newline:
+							main = true;
+							break;
+						default:
+							error_stream << "syntax error in line " << context->current_line << ": "
+								"expected newline, received " << t.get_content() << Error_stream::endl;
+							goto error_parse_Minsky_program;
+							break;
+					}
 					break;
 				default:
 					error_stream << "syntax error in line " << context->current_line << ": "
@@ -214,7 +229,16 @@ namespace Parser {
 					"expected ], received " << t.get_content() << Error_stream::endl;
 				goto error_parse_Minsky_routine;
 		}
-		if (parse_Minsky_routine(s, context)!=NULL) {
+		Lexer::nextToken(next, t, &next);
+		switch (t.get_type()) {
+			case Token::Newline:
+				break;
+			default:
+				error_stream << "syntax error in line " << context->current_line << ": "
+					"expected newline, received " << t.get_content() << Error_stream::endl;
+				goto error_parse_Minsky_routine;
+		}
+		if (parse_Minsky_routine(next, context)!=NULL) {
 			return context;
 		}
 		error_parse_Minsky_routine:
@@ -228,6 +252,7 @@ namespace Parser {
 		next = s;
 		Simulator_command *command;
 		while (1) {
+			debug << "next command" << (void *)next << std::endl;
 			old = next;
 			Lexer::nextToken(next, t, &next);
 			/*check for end of routine*/
@@ -263,7 +288,7 @@ namespace Parser {
 					goto error_parse_Minsky_routine;
 			}
 			/*parse command*/
-			if (!parse_Minsky_command(next, &command, *context)){
+			if (!parse_Minsky_command(next, &next, &command, *context)){
 				goto error_parse_Minsky_routine;
 			}
 			else {
@@ -280,7 +305,7 @@ namespace Parser {
 			return NULL;
 	}
 
-	bool parse_Minsky_command(const char *s, Simulator_command **res, Context &con) {
+	bool parse_Minsky_command(const char *s, const char**resnext, Simulator_command **res, Context &con) {
 		Token t;
 		const char *next;
 		const char *old;
@@ -453,12 +478,13 @@ namespace Parser {
 		if (command!=NULL) {
 			command->set_line(con.current_line);
 			*res=command;
+			*resnext=next;
 			return true;
 		}
 		return false;
 	}
 
-	bool parse_URM_command(const char *s, Simulator_command** res, Context &con) {
+	bool parse_URM_command(const char *s, const char **next, Simulator_command** res, Context &con) {
 		return false;
 	}
 }
