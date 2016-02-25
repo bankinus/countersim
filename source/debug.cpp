@@ -40,7 +40,7 @@ void _lexertest() {
 
 void _parse_Minsky_program_test() {
 	Simulator_command *command;
-	Context con;
+	Context *con;
 	Parser parser;
 	char buf[2500000];
 	char *c;
@@ -51,6 +51,10 @@ void _parse_Minsky_program_test() {
 		*c = (char) clast;
 	}
 	*(c-1) = '\0';
-	parser.parse_simulator_program(buf);
+	con = parser.parse_simulator_program(buf);
+	if (con==NULL) return;
+	for (auto c: con->get_program()) {
+		debug << c->toString() << std::endl;
+	}
 }
 
