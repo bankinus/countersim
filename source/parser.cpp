@@ -5,6 +5,7 @@
 #include "context.h"
 #include "debug.h"
 #include "routine_name_resolver.h"
+#include "subroutine_inserter.h"
 #include <string>
 #include "error_stream.h"
 
@@ -108,6 +109,7 @@ Context *Parser::parse_Minsky_program(const char *s) {
 		switch (t.get_type()) {
 			case Token::Def:
 				Lexer::nextToken(next, t);
+				debug << t.get_content() << std::endl;
 				context = parse_Minsky_sub_routine(old);
 				if (context==NULL) goto error_parse_Minsky_program;
 				context_map[context->get_name()]=context;
@@ -284,7 +286,7 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 		if (!parse_Minsky_command(next, &next, &command, *context)){
 			goto error_parse_Minsky_routine;
 		}
-		else {
+		else if (command!=NULL){
 			context->add_command(command);
 			context->current_line++;
 		}
@@ -294,6 +296,10 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 	Routine_name_resolver(*context).visitc(*context);
 	return context;
 	error_parse_Minsky_routine:
+		for (Simulator_command*c: context->get_program()) {
+			debug << c << ":" << std::flush;
+			debug << c->toString() << std::endl;
+		}
 		delete context;
 		return NULL;
 }
@@ -316,13 +322,17 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 			return false;
 		case Token::Call:
-			//TODO insert subroutine
 			/*parse name*/
 			Lexer::nextToken(next, t, &next);
 			switch (t.get_type()) {
 				case Token::Identifier:
 					routine_name = t.get_content();
 					subroutine=context_map[routine_name];
+					if (subroutine==NULL) {
+						error_stream << "error in line " << con.current_line << ": "
+						" undefined reference to " << routine_name << Error_stream::endl;
+						return false;
+					}
 					break;
 				default:
 					error_stream << "syntax error in line " << con.current_line << ": "
@@ -358,12 +368,18 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			//TODO fix number of args
 			exits=std::vector<int>();
 			exit_names=std::vector<std::string>();
-			for (Lexer::nextToken(next, t, &next);t.get_type()==Token::Identifier; Lexer::nextToken(next, t, &next)) {
+			for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::BracketR; Lexer::nextToken(next, t, &next)) {
 				switch (t.get_type()) {
+					case Token::Exit0:
+						exits.push_back(0);
+						exit_names.push_back("");
+						break;
 					case Token::Number:
 						exits.push_back(t.get_numerical_value());
+						exit_names.push_back("");
 						break;
 					case Token::Identifier:
+						exits.push_back(0);
 						exit_names.push_back(t.get_content());
 						break;
 					default:
@@ -389,8 +405,11 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						"expected newline, received " << t.get_content() << Error_stream::endl;
 					return false;
 			}
-			//TODO insert subroutine code
-			break;
+			{
+				Subroutine_inserter(con, registers, exits, exit_names).visitc(*subroutine);
+			}
+			*resnext=next;
+			return true;
 
 		case Token::Madd:
 			{
@@ -428,6 +447,9 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 						delete add_command;
 						return false;
+					case Token::Exit0:
+						add_command->set_jump(0);
+						break;
 					case Token::Identifier:
 						add_command->set_jump_name(t.get_content());
 						break;
@@ -493,6 +515,10 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 						delete sub_command;
 						return false;
+					case Token::Exit0:
+						sub_command->set_jump(0);
+						sub_command->set_branch(0);//set in case next token is newline
+						break;
 					case Token::Identifier:
 						sub_command->set_jump_name(t.get_content());
 						sub_command->set_branch_name(t.get_content());//set in case next token is newline
@@ -515,6 +541,9 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 						delete sub_command;
 						return false;
+					case Token::Exit0:
+						sub_command->set_branch(0);
+						break;
 					case Token::Identifier:
 						sub_command->set_branch_name(t.get_content());
 						break;
