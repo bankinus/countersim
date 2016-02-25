@@ -176,6 +176,7 @@ namespace Parser {
 				goto error_parse_Minsky_routine;
 		}
 		/*parse name*/
+		Lexer::nextToken(next, t, &next);
 		switch (t.get_type()) {
 			case Token::Identifier:
 				context->set_name(t.get_content());
