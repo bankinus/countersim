@@ -26,7 +26,7 @@ add 1
 add 1
 add 1 loop
 cleanup: call moveto0 [finished]
-def div3 [finished fail]
+def div7 [finished fail]
 div70	:sub 0 cleanup
 div71	:sub 0 reverse1
 div72	:sub 0 reverse2
@@ -65,7 +65,7 @@ cleanup: call moveto0 [finished]
 def div2 [finished fail]
 div20	:sub 0 cleanup
 div21	:sub 0 reverse1
-add 1 div30
+add 1 div20
 reverse1	: add 0
 reverse	: sub 1 fail
 add 0
