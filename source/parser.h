@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 class Parser {
-	std::unordered_map<std::string, Context> context_map;
+	std::unordered_map<std::string, Context*> context_map;
 	public:
 	Parser () : context_map(){}
 	Context *parse_simulator_program(const char *s);

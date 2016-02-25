@@ -19,7 +19,6 @@ Context *Parser::parse_simulator_program(const char *s) {
 	old = next;
 	Lexer::nextToken(next, t, &next);
 	while (t.get_type()==Token::Preproc) {
-		debug << "next" << (void *)next << std::endl;
 		if (!parse_config_command(next, context, &next)) return NULL;
 		old = next;
 		Lexer::nextToken(next, t, &next);
@@ -32,9 +31,7 @@ bool Parser::parse_config_command(const char *s, Context *context, const char **
 	Token t;
 	const char* next;
 	next = s;
-	debug << "next" << (void *)next << std::endl;
 	Lexer::nextToken(next, t, &next);
-	debug << "next" << (void *)next << std::endl;
 	switch (t.get_type()) {
 		case Token::Machine:
 			Lexer::nextToken(next, t, &next);
@@ -101,23 +98,19 @@ Context *Parser::parse_Minsky_program(const char *s) {
 	Token t;
 	const char *old;
 	const char *next;
-	std::vector<Context*> routines;
 	Context *context;
 	bool main;
 	main = false;
 	next = s;
 	while (!main) {
-		debug << "next" << (void *)next << std::endl;
 		old = next;
 		Lexer::nextToken(next, t, &next);
 		switch (t.get_type()) {
 			case Token::Def:
 				Lexer::nextToken(next, t);
-				debug << "parsing routine " << t.get_content() << std::endl;
 				context = parse_Minsky_sub_routine(old);
 				if (context==NULL) goto error_parse_Minsky_program;
-				debug << "parsed routine " << context->get_name() << std::endl;
-				routines.push_back(context);
+				context_map[context->get_name()]=context;
 				next = context->next;
 				break;
 			case Token::Identifier:
@@ -147,14 +140,14 @@ Context *Parser::parse_Minsky_program(const char *s) {
 	context = parse_Minsky_main_routine(next);
 	if (context==NULL) goto error_parse_Minsky_program;
 	/*cleanup*/
-	for (auto c: routines) {
-		delete c;
+	for (auto c: context_map) {
+		delete c.second;
 	}
 	return context;
 
 	error_parse_Minsky_program:
-		for (auto c: routines) {
-			delete c;
+		for (auto c: context_map) {
+			delete c.second;
 		}
 		return NULL;
 }
@@ -255,7 +248,6 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 	next = s;
 	Simulator_command *command;
 	while (1) {
-		debug << "next command" << (void *)next << std::endl;
 		old = next;
 		Lexer::nextToken(next, t, &next);
 		/*check for end of routine*/
@@ -279,10 +271,8 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 				break;
 			case Token::Madd:
 			case Token::Msub:
-				next = old;
-				break;
 			case Token::Call:
-				//TODO insert subroutine
+				next = old;
 				break;
 			default:
 				Lexer::nextToken(old, t, &next);
@@ -312,6 +302,11 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 	Token t;
 	const char *next;
 	const char *old;
+	std::string routine_name;
+	std::vector<int> registers;
+	std::vector<int> exits;
+	std::vector<std::string> exit_names;
+	Context *subroutine;
 	next = s;
 	Simulator_command *command = NULL;
 
@@ -320,6 +315,83 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 		case Token::nil:
 			error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
 			return false;
+		case Token::Call:
+			//TODO insert subroutine
+			/*parse name*/
+			Lexer::nextToken(next, t, &next);
+			switch (t.get_type()) {
+				case Token::Identifier:
+					routine_name = t.get_content();
+					subroutine=context_map[routine_name];
+					break;
+				default:
+					error_stream << "syntax error in line " << con.current_line << ": "
+						"expected identifier, received " << t.get_content() << Error_stream::endl;
+					return false;
+			}
+			/*parse registers*/
+			//TODO fix number of args
+			registers=std::vector<int>();
+			for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::BracketL; Lexer::nextToken(next, t, &next)) {
+				switch (t.get_type()) {
+					case Token::Number:
+						registers.push_back(t.get_numerical_value());
+						break;
+					case Token::Identifier:
+						registers.push_back(con.get_reg(t.get_content()));
+						break;
+					default:
+						error_stream << "syntax error in line " << con.current_line << ": "
+							"expected identifier or integer, received " << t.get_content() << Error_stream::endl;
+						return false;
+				}
+			}
+			switch (t.get_type()) {
+				case Token::BracketL:
+					break;
+				default:
+					error_stream << "syntax error in line " << con.current_line << ": "
+						"expected [, received " << t.get_content() << Error_stream::endl;
+					return false;
+			}
+			/*parse exits*/
+			//TODO fix number of args
+			exits=std::vector<int>();
+			exit_names=std::vector<std::string>();
+			for (Lexer::nextToken(next, t, &next);t.get_type()==Token::Identifier; Lexer::nextToken(next, t, &next)) {
+				switch (t.get_type()) {
+					case Token::Number:
+						exits.push_back(t.get_numerical_value());
+						break;
+					case Token::Identifier:
+						exit_names.push_back(t.get_content());
+						break;
+					default:
+						error_stream << "syntax error in line " << con.current_line << ": "
+							"expected identifier or integer, received " << t.get_content() << Error_stream::endl;
+						return false;
+				}
+			}
+			switch (t.get_type()) {
+				case Token::BracketR:
+					break;
+				default:
+					error_stream << "syntax error in line " << con.current_line << ": "
+						"expected ], received " << t.get_content() << Error_stream::endl;
+					return false;
+			}
+			Lexer::nextToken(next, t, &next);
+			switch (t.get_type()) {
+				case Token::Newline:
+					break;
+				default:
+					error_stream << "syntax error in line " << con.current_line << ": "
+						"expected newline, received " << t.get_content() << Error_stream::endl;
+					return false;
+			}
+			//TODO insert subroutine code
+			break;
+
 		case Token::Madd:
 			{
 				Madd_command *add_command = new Madd_command();
@@ -474,7 +546,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			}
 			break;
 		default:
-			error_stream << "syntax error in line " << con.current_line << ": expected minsky machine command, recieved"
+			error_stream << "syntax error in line " << con.current_line << ": expected minsky machine command, received "
 				<< t.get_content() << Error_stream::endl;
 			break;
 	}
