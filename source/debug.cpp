@@ -7,9 +7,12 @@
 #include <iostream>
 
 #ifndef DEBUG
-template <typename T> DebugStream &DebugStream::operator<<(T) {
-	return *this;
+DebugStream& DebugStream::operator<<(std::ostream& (*f)(std::ostream&))
+{
+    f(std::cout);
+    return *this;
 }
+DebugStream debug;
 #endif
 
 void _lexertest() {
@@ -35,19 +38,10 @@ void _lexertest() {
 	return;
 }
 
-void _parse_Minsky_test() {
-	Simulator_command *command;
-	Context con;
-	const char *next;
-	if (Parser::parse_Minsky_command("add foo 5\n", &next, &command, con)) {std::cout << command->toString() << std::endl; delete command;}
-	else {std::cout << "bad parse" << std::endl;}
-	if (Parser::parse_Minsky_command("sub 1 bar\n", &next, &command, con)) {std::cout << command->toString() << std::endl;delete command;}
-	else {std::cout << "bad parse" << std::endl;}
-}
-
 void _parse_Minsky_program_test() {
 	Simulator_command *command;
 	Context con;
+	Parser parser;
 	char buf[2500000];
 	char *c;
 	int clast = ~EOF;
@@ -57,6 +51,6 @@ void _parse_Minsky_program_test() {
 		*c = (char) clast;
 	}
 	*(c-1) = '\0';
-	Parser::parse_simulator_program(buf);
+	parser.parse_simulator_program(buf);
 }
 
