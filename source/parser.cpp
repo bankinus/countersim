@@ -103,9 +103,9 @@ namespace Parser {
 		bool main;
 		main = false;
 		next = s;
-		old = next;
 		while (!main) {
 			debug << "next" << (void *)next << std::endl;
+			old = next;
 			Lexer::nextToken(next, t, &next);
 			switch (t.get_type()) {
 				case Token::Def:
