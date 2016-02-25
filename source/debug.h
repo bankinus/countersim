@@ -1,6 +1,12 @@
 #pragma once
 
 #ifdef DEBUG
+#include <iostream>
+#else
+#endif
+
+
+#ifdef DEBUG
 #define lexer_test() _lexer_test()
 #define parse_Minsky_test() _parse_Minsky_test()
 #define parse_Minsky_program_test() _parse_Minsky_program_test()
@@ -18,3 +24,14 @@ void _parse_Minsky_test();
 void _parse_Minsky_program_test();
 #endif
 
+#ifndef DEBUG
+class DebugStream {
+	DebugStream() {}
+
+	template <typename T> DebugStream& operator<<(T);
+};
+
+extern DebugStream debug;
+#else
+#define debug std::cout
+#endif

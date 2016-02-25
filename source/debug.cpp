@@ -6,6 +6,12 @@
 #include <stdio.h>
 #include <iostream>
 
+#ifndef DEBUG
+template <typename T> DebugStream &DebugStream::operator<<(T) {
+	return *this;
+}
+#endif
+
 void _lexertest() {
 	Token t;
 	char s[5000];
