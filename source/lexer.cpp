@@ -20,7 +20,7 @@ const char* skip(const char *s, const char *d, int n){
 		for (i = 0; i < n; i++) {
 			if (d[i] == *s) break;
 		}
-		if (d[i] == *s) s++;
+		if (i<n) s++;
 		else break;
 	}
 	return s;
@@ -46,7 +46,7 @@ bool tokencmpr (const char *s, const char *t) {
 
 const char * _nextToken(const char *s, class Token &t, bool next) {
 	s = skip(s, " \t", 2);
-	if (s[0]==0) {
+	if (s[0]=='\0') {
 		t.set_type(Token::EOP);
 		t.set_content("EOP");
 	}
