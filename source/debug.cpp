@@ -42,9 +42,10 @@ void _parse_Minsky_program_test() {
 	Simulator_command *command;
 	Context *con;
 	Parser parser;
-	char buf[2500000];
+	char *buf;
 	char *c;
 	int clast = ~EOF;
+	buf = (char *)malloc(sizeof(char)*2500000);
 	c = buf;
 	for (c=buf; clast!=EOF; c++) {
 		clast = fgetc(stdin);
