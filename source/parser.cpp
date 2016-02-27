@@ -3,7 +3,6 @@
 #include "lexer.h"
 #include "simulator_command.h"
 #include "context.h"
-#include "debug.h"
 #include "routine_name_resolver.h"
 #include "subroutine_inserter.h"
 #include <string>
@@ -109,7 +108,6 @@ Context *Parser::parse_Minsky_program(const char *s) {
 		switch (t.get_type()) {
 			case Token::Def:
 				Lexer::nextToken(next, t);
-				debug << t.get_content() << std::endl;
 				context = parse_Minsky_sub_routine(old);
 				if (context==NULL) goto error_parse_Minsky_program;
 				context_map[context->get_name()]=context;
@@ -296,10 +294,6 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 	Routine_name_resolver(*context).visitc(*context);
 	return context;
 	error_parse_Minsky_routine:
-		for (Simulator_command*c: context->get_program()) {
-			debug << c << ":" << std::flush;
-			debug << c->toString() << std::endl;
-		}
 		delete context;
 		return NULL;
 }
@@ -319,7 +313,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 	Lexer::nextToken(next, t, &next);
 	switch (t.get_type()) {
 		case Token::nil:
-			error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
+			error_stream << "lexing error in line " << con.current_line << ": " << t.get_content() << Error_stream::endl;
 			return false;
 		case Token::Call:
 			/*parse name*/
@@ -409,6 +403,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				Subroutine_inserter(con, registers, exits, exit_names).visitc(*subroutine);
 			}
 			*resnext=next;
+			*res=NULL;
 			return true;
 
 		case Token::Madd:
