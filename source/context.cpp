@@ -9,7 +9,7 @@ void Context::set_reg(std::string s, long long int i) {
 }
 
 long long int Context::get_line(std::string s) {
-	return reg_map[s];
+	return line_map[s];
 }
 
 void Context::set_line(std::string s, long long int i) {
