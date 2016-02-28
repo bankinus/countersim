@@ -12,10 +12,9 @@ Context *Parser::parse_simulator_program(const char *s) {
 	Token t;
 	const char *old;
 	const char *next;
-	Context *context;
+	Context *context = new Context();
 	next = s;
-	context = new Context();
-	context->current_line = 1;
+	context->set_name("_config");
 	old = next;
 	Lexer::nextToken(next, t, &next);
 	while (t.get_type()==Token::Preproc) {
@@ -336,6 +335,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			/*parse registers*/
 			//TODO fix number of args
 			registers=std::vector<int>();
+			registers.push_back(0);
 			for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::BracketL; Lexer::nextToken(next, t, &next)) {
 				switch (t.get_type()) {
 					case Token::Number:
@@ -362,6 +362,8 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			//TODO fix number of args
 			exits=std::vector<int>();
 			exit_names=std::vector<std::string>();
+			exits.push_back(0);
+			exit_names.push_back("");
 			for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::BracketR; Lexer::nextToken(next, t, &next)) {
 				switch (t.get_type()) {
 					case Token::Exit0:
