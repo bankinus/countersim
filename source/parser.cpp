@@ -7,6 +7,7 @@
 #include "subroutine_inserter.h"
 #include <string>
 #include "error_stream.h"
+#include "debug.h"
 
 Context *Parser::parse_simulator_program(const char *s) {
 	Token t;

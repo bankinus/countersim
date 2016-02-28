@@ -45,7 +45,7 @@ void Subroutine_inserter::visit(Msub_command *command) {
 		}
 	}
 	if (command->get_branch()>=0) {
-		newcommand->set_branch(command->get_jump()+offset);
+		newcommand->set_branch(command->get_branch()+offset);
 	}
 	else {
 		if (exits[-(command->get_branch())]!=0) {
