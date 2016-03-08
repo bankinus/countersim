@@ -11,7 +11,7 @@ include $(DEPS)
 
 CC=clang++
 CFLAGS= -std=c++11
-LFLAGS=
+LFLAGS= -lboost_program_options
 DEBUG= -g3 -DDEBUG
 
 .PHONY: all clean debug
