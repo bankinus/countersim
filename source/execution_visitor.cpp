@@ -1,11 +1,17 @@
 #include "execution_visitor.h"
 
 void Execution_visitor::visitc(Context &context) {
-	next = 1;
 	while (next!=0) {
-		Simulator_command *command = context.get_program()[next-1];
-		command->accept(this);
+		step_visitc(context);
 	}
+}
+
+bool Execution_visitor::step_visitc(Context &context) {
+	if (next==0) return false;
+	Simulator_command *command = context.get_program()[next-1];
+	command->accept(this);
+	if (next==0) return false;
+	return true;
 }
 
 void Execution_visitor::visit(Madd_command *command) {
