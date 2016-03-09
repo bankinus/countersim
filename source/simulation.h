@@ -17,10 +17,13 @@ class Simulation {
 		std::vector<Register> registers;
 		Machine machine;
 	public:
-		Simulation() : registers() {}
+		Simulation() : registers(), max_reg(0){}
 		void  set_machine(Machine machine);
 		Machine get_machine();
 		Register *get_register(size_t num);
+		const std::vector<Register> get_registers();
 		void run_routine(Context *context);
+		size_t get_max_reg();
+		void set_max_reg(size_t s);
 };
 
