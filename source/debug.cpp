@@ -9,7 +9,6 @@
 #ifndef DEBUG
 DebugStream& DebugStream::operator<<(std::ostream& (*f)(std::ostream&))
 {
-    f(std::cout);
     return *this;
 }
 DebugStream debug;
