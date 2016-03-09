@@ -13,6 +13,8 @@ class Execution_visitor : public Routine_visitor {
 	public:
 		Execution_visitor(Simulation &s) : simulation(s), next(1) {}
 
+		size_t get_next() const;
+
 		virtual void visitc(Context &context) override;
 		bool step_visitc(Context &context);
 

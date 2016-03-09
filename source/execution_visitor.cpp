@@ -31,3 +31,7 @@ void Execution_visitor::visit(Msub_command *command) {
 	}
 }
 
+size_t Execution_visitor::get_next() const{
+	return next;
+}
+
