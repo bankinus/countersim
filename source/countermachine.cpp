@@ -76,6 +76,11 @@ int main (int argc, char ** argv) {
 		//parse program
 		Context *context = Parser().parse_simulator_program(program.c_str());
 		if (context==NULL) return 0;
+		int i = 1;
+		for (Simulator_command *cmd: context->get_program()) {
+			debug << i << ": " << cmd->toString() << std::endl;
+			i++;
+		}
 		//enter registers
 		if (v_map.count("register-file")) {
 			std::ifstream reg_in_stream(v_map["input-file"].as<std::string>());
