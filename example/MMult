@@ -73,7 +73,7 @@ add 0 reverse
 cleanup: call moveto0 [finished]
 main
 loop0: call div3 [loop1 exit0]
-loop1: call div2 [inc refill]
+loop1: call div2 [inc5 refill]
 inc5:	call mult5 [inc7]
 inc7:	call mult7 [loop1]
 refill: call div7 [inc2 loop0]
