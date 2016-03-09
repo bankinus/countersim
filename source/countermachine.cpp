@@ -96,7 +96,6 @@ int main (int argc, char ** argv) {
 				std::cin >> val;
 				if (std::cin.eof()) break;
 				simulation.get_register(i)->set_value(val);
-				std::cin.clear();
 			}
 		}
 		//run program
@@ -105,6 +104,7 @@ int main (int argc, char ** argv) {
 			exe.visitc(*context);
 		}
 		else {
+			std::cin.clear();
 			bool done;
 			while (!done && !std::cin.eof()) {
 				char cmd;
@@ -112,7 +112,8 @@ int main (int argc, char ** argv) {
 				switch (cmd) {
 					case 's':
 						done = exe.step_visitc(*context);
-						//print registers at end of execution
+						if (done) break;
+						//print register content after step
 						std::cout << "register content after step:" << std::endl;
 						for (const Register &reg: simulation.get_registers()) {
 							std::cout << reg.get_value() << std::endl;
@@ -127,6 +128,7 @@ int main (int argc, char ** argv) {
 						break;
 					default:
 						std::cerr << "no valid command:" << cmd << std::endl;
+						std::cin.clear();
 						break;
 				}
 			}
