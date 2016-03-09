@@ -93,8 +93,13 @@ int main (int argc, char ** argv) {
 		else {
 			for (size_t i=0; !std::cin.eof() && (i<simulation.get_max_reg() || simulation.get_max_reg()==0); i++){
 				unsigned long long int val;
-				std::cin >> val;
-				if (std::cin.eof()) break;
+				if (!(std::cin >> val)) {
+					if (std::cin.eof()) break;
+					else {
+						std::cerr << "error: input is not a number" << std::endl;
+						return 0;
+					}
+				}
 				simulation.get_register(i)->set_value(val);
 			}
 		}
@@ -111,13 +116,14 @@ int main (int argc, char ** argv) {
 				std::cin >> cmd;
 				switch (cmd) {
 					case 's':
-						done = exe.step_visitc(*context);
+						done = !exe.step_visitc(*context);
 						if (done) break;
 						//print register content after step
 						std::cout << "register content after step:" << std::endl;
 						for (const Register &reg: simulation.get_registers()) {
 							std::cout << reg.get_value() << std::endl;
 						}
+						std::cout << "next is line:" << exe.get_next() << std::endl;
 						break;
 					case 'r': 
 						exe.visitc(*context);
