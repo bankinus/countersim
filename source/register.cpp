@@ -1,6 +1,6 @@
 #include "register.h"
 
-long long unsigned int Register::get_value(){
+long long unsigned int Register::get_value() const {
 	return value;
 }
 
