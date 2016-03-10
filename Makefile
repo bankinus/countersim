@@ -10,14 +10,14 @@ DEPS= $(shell find $(DEPDIR) -name "*.d")
 include $(DEPS)
 
 CC=clang++
-CFLAGS= -std=c++11
-LFLAGS= -lboost_program_options
+CFLAGS += -std=c++11
+LDLIBS += -lQtCore -lQtGui -lboost_program_options
 DEBUG= -g3 -DDEBUG
 
 .PHONY: all clean debug
 
 debug: CFLAGS += $(DEBUG)
-debug: LFLAGS += $(DEBUG)
+debug: LDFLAGS += $(DEBUG)
 debug: $(OBJECTS:.o=.g)
 	$(CC) $^ -o countermachine $(LFLAGS)
 
@@ -32,6 +32,9 @@ $(OBJDIR)/%.g: $(SOURCEDIR)/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $(DEPDIR)/$*.d
 	@rm -f $(DEPDIR)/$*.d.tmp
 
+$(OBJDIR)/window.o: $(SOURCEDIR)/gui/window.h $(SOURCEDIR)/gui/window.cpp
+	cd source/gui && qmake && make && cp window.o ../../$(OBJDIR)/window.o
+
 $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 	$(CC) -MM $(CFLAGS) $< > $(DEPDIR)/$*.d
@@ -42,7 +45,7 @@ $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 	@rm -f $(DEPDIR)/$*.d.tmp
 
 countermachine: $(OBJECTS)
-	$(CC) $^ -o $@ $(LFLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
 	rm -f countermachine $(OBJECTS) $(OBJECTS:.o=.g) $(DEPS)

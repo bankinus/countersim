@@ -3,6 +3,7 @@
 #include "simulation.h"
 #include "context.h"
 #include "parser.h"
+#include "gui/window.h"
 #include "execution_visitor.h"
 #include <string>
 #include <iostream>
@@ -56,9 +57,7 @@ int main (int argc, char ** argv) {
 
 	if (v_map.count("gui")) {
 		//run in console mode
-		//TODO
-		std::cerr << "error: gui not yet implemented\n";
-		return 0;
+		return graphical_execution(argc, argv, v_map);
 	}
 	else {
 		//run in console mode
