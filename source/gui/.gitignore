@@ -1,0 +1,6 @@
+*.so.*
+*.so
+*.o.*
+*.o
+moc_*
+Makefile
