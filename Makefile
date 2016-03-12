@@ -16,19 +16,19 @@ LDLIBS += -lQtCore -lQtGui -lboost_program_options
 DEBUG= -g3 -DDEBUG
 gui= -DGUI
 
-.PHONY: gf app clean debug gui
+.PHONY: gf app clean debug debug_app gui
 
 debug: CFLAGS += $(DEBUG)
 debug: LDFLAGS += $(DEBUG)
 debug: gui
-debug: GUIOBJECTS+= $(shell find $(SOURCEDIR)/gui -name "*.o")
-debug: $(OBJECTS:.o=.g) $(GUIOBJECTS)
-	$(CC) $^ -o countermachine $(LFLAGS)
+debug: debug_app
+debug_app: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
+debug_app: $(OBJECTS:.o=.g) $(GUIOBJECTS)
+	$(CC) $(OBJECTS:.o=.g) $(GUIOBJECTS) -o countermachine $(LDFLAGS) $(LDLIBS)
 
 gui:
-	cd source/gui && qmake && make clean && make
+	cd source/gui && qmake && make
 gf: gui
-gf: GUIOBJECTS+= $(shell find $(SOURCEDIR)/gui -name "*.o")
 gf: app
 
 app: countermachine
@@ -51,6 +51,7 @@ $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $(DEPDIR)/$*.d
 	@rm -f $(DEPDIR)/$*.d.tmp
 
+countermachine: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
 countermachine: $(OBJECTS) $(GUIOBJECTS)
 	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS) $(GUIOBJECTS)
 
