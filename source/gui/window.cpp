@@ -13,11 +13,13 @@
 #include <iostream>
 #include <fstream>
 #include "simulator_app.h"
+#include "simulation.h"
 
 static bool is_running;
 static QTextEdit *editor;
 QLabel *console;
 Simulator_app *app;
+Simulation simulation;
 QFileDialog *open_dialog;
 QFileDialog *save_dialog;
 
@@ -194,12 +196,27 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	QObject::connect(&run_button, SIGNAL (clicked()), app, SLOT (run()));
 	QObject::connect(&stop_button, SIGNAL (clicked()), app, SLOT (stop()));
 
-	/*check for file to load*/
+	/*check for program file to load*/
 	if(v_map.count("input-file")) {
 		std::stringstream bufstream;
 		std::ifstream filestream(v_map["input-file"].as<std::string>().c_str());
 		bufstream << filestream.rdbuf();
 		editor->setText(bufstream.str().c_str());
+	}
+	/*check for register file to load*/
+	if (v_map.count("register-file")) {
+		std::ifstream reg_in_stream(v_map["input-file"].as<std::string>());
+		if (!reg_in_stream.is_open()) {
+			//TODO proper error stream
+			std::cerr << "error: could not open file:" << v_map["input-file"].as<std::string>() << "\n";
+			return 0;
+		}
+		for (size_t i=0; !reg_in_stream.eof(); i++){
+			unsigned long long int val;
+			reg_in_stream >> val;
+			if (reg_in_stream.eof()) break;
+			simulation.get_register(i)->set_value(val);
+		}
 	}
 
 	window.show();
