@@ -4,6 +4,7 @@
 
 TEMPLATE = lib
 TARGET = window.o
+CONFIG += staticlib
 DEPENDPATH += .
 INCLUDEPATH += .
 
@@ -11,5 +12,5 @@ QT = core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # Input
-HEADERS += window.h
+HEADERS += window.h simulator_app.h
 SOURCES += window.cpp

@@ -14,12 +14,15 @@ CC=clang++
 CFLAGS += -std=c++11 -IQtCore -IQtGui
 LDLIBS += -lQtCore -lQtGui -lboost_program_options
 DEBUG= -g3 -DDEBUG
+gui= -DGUI
 
 .PHONY: gf app clean debug gui
 
 debug: CFLAGS += $(DEBUG)
 debug: LDFLAGS += $(DEBUG)
-debug: $(OBJECTS:.o=.g)
+debug: gui
+debug: GUIOBJECTS+= $(shell find $(SOURCEDIR)/gui -name "*.o")
+debug: $(OBJECTS:.o=.g) $(GUIOBJECTS)
 	$(CC) $^ -o countermachine $(LFLAGS)
 
 gui:

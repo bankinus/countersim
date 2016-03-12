@@ -46,7 +46,7 @@ int main (int argc, char ** argv) {
 	}
 	
 	if (v_map.count("input-file")) {
-		std::cout << "reading program from file: " 
+		debug << "reading program from file: " 
 		     << v_map["input-file"].as<std::string>() << "\n";
 	} else {
 		if (!v_map.count("gui")) {
