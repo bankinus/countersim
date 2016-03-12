@@ -17,7 +17,7 @@ class Simulation {
 		std::vector<Register> registers;
 		Machine machine;
 	public:
-		Simulation() : registers(), max_reg(0){}
+		Simulation() : max_reg(0), registers(){}
 		void  set_machine(Machine machine);
 		Machine get_machine();
 		Register *get_register(size_t num);
