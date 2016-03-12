@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QBoxLayout>
+#include <QFileDialog>
 #include <QFrame>
 #include <QLabel>
 #include <QMenuBar>
@@ -17,15 +18,52 @@ static bool is_running;
 static QTextEdit *editor;
 QLabel *console;
 Simulator_app *app;
+QFileDialog *open_dialog;
+QFileDialog *save_dialog;
 
 void Simulator_app::open() {
-	//TODO replace with real code
-	std::cout << "open" << std::endl; //debug
+	if (is_running) return;
+	QStringList fileNames;
+	if (open_dialog->exec()) {
+	    fileNames = open_dialog->selectedFiles();
+	}
+	if (fileNames.size()!=1) {
+		//TODO error
+	}
+	else {
+		const char *fileName = fileNames.at(0).toUtf8().constData();
+		//load program
+		std::ifstream filestream(fileName);
+		if (!filestream.is_open()) {
+			//TODO error to right console
+			std::cerr << "error: could not open file:" << fileName << "\n";
+			return; 
+		}
+		std::stringstream bufstream;
+		bufstream << filestream.rdbuf();
+		editor->setText(bufstream.str().c_str());
+	}
 }
 
 void Simulator_app::save() {
-	//TODO replace with real code
-	std::cout << "save" << std::endl; //debug
+	QStringList fileNames;
+	if (save_dialog->exec()) {
+	    fileNames = save_dialog->selectedFiles();
+	}
+	if (fileNames.size()!=1) {
+		//TODO error
+	}
+	else {
+		const char *fileName = fileNames.at(0).toUtf8().constData();
+		//write program
+		std::ofstream filestream(fileName);
+		if (!filestream.is_open()) {
+			//TODO error to right console
+			std::cerr << "error: could not open file:" << fileName << "\n";
+			return;
+		}
+		filestream << editor->toPlainText().toUtf8().constData();
+	}
 }
 
 void Simulator_app::step() {
@@ -67,6 +105,11 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	QScrollArea window;
 	QVBoxLayout window_layout;
 	window.setLayout(&window_layout);
+
+	/*Set up FileDialogs*/
+	open_dialog = new QFileDialog(NULL, QString("Open File"), QDir::currentPath(), QString("All files (*)"));
+	save_dialog = new QFileDialog(NULL, QString("Save File"), QDir::currentPath(), QString("All files (*)"));
+	save_dialog->setLabelText( QFileDialog::Accept, "&Save" );
 
 	/*create objects for global pointers*/
 	editor = new QTextEdit();

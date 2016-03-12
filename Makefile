@@ -3,7 +3,7 @@ OBJDIR= ./build
 DEPDIR= ./dep
 SOURCES= $(shell find $(SOURCEDIR) -not -path "$(SOURCEDIR)/gui/*" -name "*.cpp")
 OBJECTS= $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.cpp=.o)))
-GUIOBJECTS=
+GUIOBJECTS=$(shell find $(SOURCEDIR)/gui -name "*.o")
 DEPS= $(shell find $(DEPDIR) -name "*.d")
 
 .DEFAULT_GOAL := gf
@@ -24,7 +24,7 @@ debug: gui
 debug: debug_app
 debug_app: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
 debug_app: $(OBJECTS:.o=.g) $(GUIOBJECTS)
-	$(CC) $(OBJECTS:.o=.g) $(GUIOBJECTS) -o countermachine $(LDFLAGS) $(LDLIBS)
+	$(CC) $^ -o countermachine $(LDFLAGS) $(LDLIBS)
 
 gui:
 	cd source/gui && qmake && make
@@ -53,7 +53,7 @@ $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 
 countermachine: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
 countermachine: $(OBJECTS) $(GUIOBJECTS)
-	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS) $(GUIOBJECTS)
+	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
 	rm -f countermachine $(OBJECTS) $(OBJECTS:.o=.g) $(DEPS)
