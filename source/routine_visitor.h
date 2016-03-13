@@ -6,6 +6,7 @@ class Msub_command;
 class Routine_visitor {
 	public:
 		Routine_visitor(){}
+		~Routine_visitor(){}
 		virtual void visitc(Context &context);
 		virtual void visit(Madd_command *command);
 		virtual void visit(Msub_command *command);

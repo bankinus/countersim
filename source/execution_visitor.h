@@ -12,6 +12,7 @@ class Execution_visitor : public Routine_visitor {
 		size_t next;
 	public:
 		Execution_visitor(Simulation &s) : simulation(s), next(1) {}
+		virtual ~Execution_visitor() {}
 
 		size_t get_next() const;
 

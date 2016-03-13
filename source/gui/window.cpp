@@ -8,20 +8,30 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QTextEdit>
-#include "window.h"
+
 #include <string>
 #include <iostream>
 #include <fstream>
+
+#include "execution_visitor.h"
+#include "parser.h"
 #include "simulator_app.h"
 #include "simulation.h"
+#include "window.h"
 
 static bool is_running;
 static QTextEdit *editor;
 QLabel *console;
 Simulator_app *app;
 Simulation simulation;
+Context *context;
+Execution_visitor *exe;
 QFileDialog *open_dialog;
 QFileDialog *save_dialog;
+
+static void updateRegisters() {
+	
+}
 
 void Simulator_app::open() {
 	if (is_running) return;
@@ -72,33 +82,44 @@ void Simulator_app::step() {
 	if (!is_running){
 		/*start simulation*/
 		editor->setReadOnly(true);
-		//TODO
+		exe = new Execution_visitor(simulation);
+		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
+		is_running=true;
 	}
-	is_running=true;
-	//TODO replace with real code
-	std::cout << "step" << std::endl; //debug
+	exe->step_visitc(*context);
+	updateRegisters();
+	if (exe->get_next()==0) {
+		is_running=false;
+		delete exe;
+		delete context;
+	}
 }
 
 void Simulator_app::run() {
 	if (!is_running){
 		/*start simulation*/
 		editor->setReadOnly(true);
-		//TODO 
+		exe = new Execution_visitor(simulation);
+		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
+		is_running=true;
 	}
-	is_running=true;
-	//TODO replace with real code
-	std::cout << "run" << std::endl;//debug
+	exe->visitc(*context);
+	updateRegisters();
+	if (exe->get_next()==0) {
+		is_running=false;
+		delete exe;
+		delete context;
+	}
 }
 
 void Simulator_app::stop() {
 	if (is_running){
 		/*stop simulation*/
 		editor->setReadOnly(false);
-		//TODO
+		delete exe;
+		delete context;
+		is_running=false;
 	}
-	is_running=false;
-	//TODO replace with real code
-	std::cout << "stop" << std::endl;//debug
 }
 
 int graphical_execution (int argc, char **argv, boost::program_options::variables_map v_map) {
