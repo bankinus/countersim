@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QFrame>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPalette>
 #include <QMenuBar>
 #include <QPalette>
 #include <QPushButton>
@@ -12,25 +14,62 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #include "execution_visitor.h"
 #include "parser.h"
+#include "register.h"
 #include "simulator_app.h"
 #include "simulation.h"
 #include "window.h"
 
+
 static bool is_running;
 static QTextEdit *editor;
 QLabel *console;
-Simulator_app *app;
-Simulation simulation;
-Context *context;
-Execution_visitor *exe;
-QFileDialog *open_dialog;
-QFileDialog *save_dialog;
+static Simulator_app *app;
+static Simulation simulation;
+static Context *context;
+static Execution_visitor *exe;
+static QFileDialog *open_dialog;
+static QFileDialog *save_dialog;
+static QVBoxLayout *registerDisplay;
+
+class RegisterDisplayLine {
+	protected:
+		QFrame line;
+		QHBoxLayout lineLayout;
+		QLabel regNum;
+		QLineEdit edit;
+	public:
+		RegisterDisplayLine(size_t num) {
+			regNum.setText(QString::number(num));
+			edit.setText(QString::number(0));
+			registerDisplay->addWidget(&line);
+			line.setLayout(&lineLayout);
+			lineLayout.addWidget(&regNum);
+			lineLayout.addWidget(&edit);
+		}
+		~RegisterDisplayLine() {
+			registerDisplay->removeWidget(&line);
+		}
+		void display(unsigned long long int val) {
+			edit.setText(QString::number(val));
+		}
+};
+
+static std::vector<RegisterDisplayLine*> registerDisplayLines;
 
 static void updateRegisters() {
-	
+	size_t i=0;
+	for (; i<registerDisplayLines.size();i++) {
+		registerDisplayLines[i]->display(simulation.get_register(i)->get_value());
+	}
+	for (; i<simulation.get_registers().size();i++) {
+		RegisterDisplayLine *display = new RegisterDisplayLine(i);
+		registerDisplayLines.push_back(display);
+		display->display(simulation.get_register(i)->get_value());
+	}
 }
 
 void Simulator_app::open() {
@@ -89,6 +128,7 @@ void Simulator_app::step() {
 	exe->step_visitc(*context);
 	updateRegisters();
 	if (exe->get_next()==0) {
+		editor->setReadOnly(false);
 		is_running=false;
 		delete exe;
 		delete context;
@@ -105,7 +145,9 @@ void Simulator_app::run() {
 	}
 	exe->visitc(*context);
 	updateRegisters();
+	std::cout << exe->get_next() << std::endl;
 	if (exe->get_next()==0) {
+		editor->setReadOnly(false);
 		is_running=false;
 		delete exe;
 		delete context;
@@ -210,6 +252,8 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	actionbar_layout.addWidget(&stop_button);
 	simulator_layout.addWidget(&actionbar);
 	QScrollArea register_frame;
+	registerDisplay = new QVBoxLayout();
+	register_frame.setLayout(registerDisplay);
 	simulator_layout.addWidget(&register_frame);
 
 	/*connect button signals to slots*/
@@ -226,10 +270,10 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	}
 	/*check for register file to load*/
 	if (v_map.count("register-file")) {
-		std::ifstream reg_in_stream(v_map["input-file"].as<std::string>());
+		std::ifstream reg_in_stream(v_map["register-file"].as<std::string>());
 		if (!reg_in_stream.is_open()) {
 			//TODO proper error stream
-			std::cerr << "error: could not open file:" << v_map["input-file"].as<std::string>() << "\n";
+			std::cerr << "error: could not open file:" << v_map["register-file"].as<std::string>() << "\n";
 			return 0;
 		}
 		for (size_t i=0; !reg_in_stream.eof(); i++){
@@ -238,6 +282,7 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 			if (reg_in_stream.eof()) break;
 			simulation.get_register(i)->set_value(val);
 		}
+		updateRegisters();
 	}
 
 	window.show();
