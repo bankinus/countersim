@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QLabel>
 #include <QLineEdit>
+#include <QLocale>
 #include <QPalette>
 #include <QMenuBar>
 #include <QPalette>
@@ -26,6 +27,7 @@
 
 static bool is_running;
 static QTextEdit *editor;
+static QLineEdit *step_field;
 QLabel *console;
 static Simulator_app *app;
 static Simulation simulation;
@@ -125,7 +127,12 @@ void Simulator_app::step() {
 		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
 		is_running=true;
 	}
-	exe->step_visitc(*context);
+	unsigned long long int count = 0;
+	qulonglong steps = QLocale().toULongLong(step_field->text());
+	do {
+		exe->step_visitc(*context);
+		count++;
+	} while (count < steps);
 	updateRegisters();
 	if (exe->get_next()==0) {
 		editor->setReadOnly(false);
@@ -145,7 +152,6 @@ void Simulator_app::run() {
 	}
 	exe->visitc(*context);
 	updateRegisters();
-	std::cout << exe->get_next() << std::endl;
 	if (exe->get_next()==0) {
 		editor->setReadOnly(false);
 		is_running=false;
@@ -244,6 +250,9 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	QFrame actionbar;
 	QHBoxLayout actionbar_layout;
 	actionbar.setLayout(&actionbar_layout);
+	step_field = new QLineEdit();
+	step_field->setText(QString::number(1));
+	actionbar_layout.addWidget(step_field);
 	QPushButton step_button ("step");
 	actionbar_layout.addWidget(&step_button);
 	QPushButton run_button ("run");
