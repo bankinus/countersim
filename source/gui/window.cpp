@@ -173,9 +173,9 @@ void Simulator_app::stop() {
 int graphical_execution (int argc, char **argv, boost::program_options::variables_map v_map) {
 	is_running = false;
 	app = new Simulator_app(argc, argv);
-	QScrollArea window;
-	QVBoxLayout window_layout;
-	window.setLayout(&window_layout);
+	QScrollArea *window = new QScrollArea();
+	QVBoxLayout *window_layout = new QVBoxLayout();
+	window->setLayout(window_layout);
 
 	/*Set up FileDialogs*/
 	open_dialog = new QFileDialog(NULL, QString("Open File"), QDir::currentPath(), QString("All files (*)"));
@@ -188,25 +188,25 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 
 	/*set up menu bar*/
 	/*file*/
-	QMenuBar menubar(&window);
-	QMenu *file_menu = menubar.addMenu("&File");
+	QMenuBar *menubar = new QMenuBar(window);
+	QMenu *file_menu = menubar->addMenu("&File");
 	QAction *open_action = file_menu->addAction("&open..");
 	QAction *save_action = file_menu->addAction("&save..");
 	QAction *close_action = file_menu->addAction("&close");
 	/*edit*/
-	QMenu *edit_menu = menubar.addMenu("&Edit");
+	QMenu *edit_menu = menubar->addMenu("&Edit");
 	QAction *undo_action = edit_menu->addAction("&undo");
 	QAction *redo_action = edit_menu->addAction("&redo");
 	QAction *clear_action = edit_menu->addAction("&clear");
 	/*simulator*/
-	QMenu *simulator_menu = menubar.addMenu("&Simulator");
+	QMenu *simulator_menu = menubar->addMenu("&Simulator");
 	QAction *step_action = simulator_menu->addAction("&step");
 	QAction *run_action = simulator_menu->addAction("&run");
 	QAction *stop_action = simulator_menu->addAction("&stop");
 	/*help*/
-	QMenu *help_menu = menubar.addMenu("&Help");
+	QMenu *help_menu = menubar->addMenu("&Help");
 	help_menu->addAction("&about");
-	window_layout.setMenuBar(&menubar);
+	window_layout->setMenuBar(menubar);
 
 	/*connect action signals to slots*/
 	/*file*/
@@ -224,51 +224,51 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	/*help*/
 
 	/*set body frame*/
-	QFrame body;
-	QHBoxLayout body_layout;
-	body.setLayout(&body_layout);
-	window_layout.addWidget(&body);
+	QFrame *body = new QFrame();
+	QHBoxLayout *body_layout = new QHBoxLayout();
+	body->setLayout(body_layout);
+	window_layout->addWidget(body);
 
 	/*text boxes*/
-	QFrame text_frame;
-	QVBoxLayout text_layout;
-	body_layout.addWidget(&text_frame, 3);
-	text_frame.setLayout(&text_layout);
-	text_layout.addWidget(editor, 3);
-	QScrollArea console_frame;
-	console->setParent(&console_frame);
-	text_layout.addWidget(&console_frame, 1);
+	QFrame *text_frame = new QFrame();
+	QVBoxLayout *text_layout = new QVBoxLayout();
+	body_layout->addWidget(text_frame, 3);
+	text_frame->setLayout(text_layout);
+	text_layout->addWidget(editor, 3);
+	QScrollArea *console_frame = new QScrollArea();
+	console->setParent(console_frame);
+	text_layout->addWidget(console_frame, 1);
 	editor->setStyleSheet(QString("QTextEdit[readOnly=\"true\"] { background-color: lightGray }"));
 
 	/*simulator interface*/
-	QFrame simulator_interface;
-	QVBoxLayout simulator_layout;
-	simulator_interface.setLayout(&simulator_layout);
-	body_layout.addWidget(&simulator_interface, 1);
+	QFrame *simulator_interface = new QFrame();
+	QVBoxLayout *simulator_layout = new QVBoxLayout();
+	simulator_interface->setLayout(simulator_layout);
+	body_layout->addWidget(simulator_interface, 1);
 
 	/*set up action bar*/
-	QFrame actionbar;
-	QHBoxLayout actionbar_layout;
-	actionbar.setLayout(&actionbar_layout);
+	QFrame *actionbar = new QFrame();
+	QHBoxLayout *actionbar_layout = new QHBoxLayout();
+	actionbar->setLayout(actionbar_layout);
 	step_field = new QLineEdit();
 	step_field->setText(QString::number(1));
-	actionbar_layout.addWidget(step_field);
-	QPushButton step_button ("step");
-	actionbar_layout.addWidget(&step_button);
-	QPushButton run_button ("run");
-	actionbar_layout.addWidget(&run_button);
-	QPushButton stop_button ("stop");
-	actionbar_layout.addWidget(&stop_button);
-	simulator_layout.addWidget(&actionbar);
-	QScrollArea register_frame;
+	actionbar_layout->addWidget(step_field);
+	QPushButton *step_button = new QPushButton("step");
+	actionbar_layout->addWidget(step_button);
+	QPushButton *run_button = new QPushButton("run");
+	actionbar_layout->addWidget(run_button);
+	QPushButton *stop_button = new QPushButton("stop");
+	actionbar_layout->addWidget(stop_button);
+	simulator_layout->addWidget(actionbar);
+	QScrollArea *register_frame = new QScrollArea();
 	registerDisplay = new QVBoxLayout();
-	register_frame.setLayout(registerDisplay);
-	simulator_layout.addWidget(&register_frame);
+	register_frame->setLayout(registerDisplay);
+	simulator_layout->addWidget(register_frame);
 
 	/*connect button signals to slots*/
-	QObject::connect(&step_button, SIGNAL (clicked()), app, SLOT (step()));
-	QObject::connect(&run_button, SIGNAL (clicked()), app, SLOT (run()));
-	QObject::connect(&stop_button, SIGNAL (clicked()), app, SLOT (stop()));
+	QObject::connect(step_button, SIGNAL (clicked()), app, SLOT (step()));
+	QObject::connect(run_button, SIGNAL (clicked()), app, SLOT (run()));
+	QObject::connect(stop_button, SIGNAL (clicked()), app, SLOT (stop()));
 
 	/*check for program file to load*/
 	if(v_map.count("input-file")) {
@@ -294,7 +294,7 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 		updateRegisters();
 	}
 
-	window.show();
+	window->show();
 	return app->exec();
 }
 
