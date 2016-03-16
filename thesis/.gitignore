@@ -1,0 +1,9 @@
+README.txt
+*.pdf
+*.aux
+*.out
+*.gz
+*.toc
+*.fls
+*.log
+*.fdb_latexmk

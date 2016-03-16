@@ -1,0 +1,84 @@
+\documentclass[a4paper,11pt,twopage,numbers=noenddot]{scrbook}
+
+\usepackage[top=2cm,lmargin=1in,rmargin=1in,bottom=3cm,hmarginratio=1:1]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{thmtools}
+\usepackage{fancyvrb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{xspace}
+\usepackage[pdftex,
+  pdfauthor={Michael Banken},
+  pdftitle={Simulation of countermachines},
+] {hyperref}
+\usepackage{makeidx}
+\usepackage{graphicx}
+%\usepackage[right]{showlabels}
+%\usepackage[justific=raggedright,totoc]{idxlayout}
+
+\addto\extrasenglish{%
+  \renewcommand{\chapterautorefname}{Section}
+  \renewcommand{\sectionautorefname}{Section}
+  \renewcommand{\subsectionautorefname}{Subsection}
+  }
+
+\newcommand\chap[1]{%
+  \chapter*{#1}%
+  \chaptermark{#1}%
+  \addcontentsline{toc}{chapter}{#1}}
+
+\declaretheorem[name=Definition,style=definition,numberwithin=chapter]{definition}
+\declaretheorem[name=Example,style=definition,sibling=definition]{example}
+\declaretheorem[style=definition,numbered=no]{exercise}
+\declaretheorem[name=Remark,style=definition,sibling=definition]{remark}
+\declaretheorem[name=Assumption,style=definition,sibling=definition]{assumption}
+\declaretheorem[name=Observation,style=definition,sibling=definition]{observation}
+\declaretheorem[name=Theorem,sibling=definition]{theorem}
+\declaretheorem[sibling=definition]{corollary}
+\declaretheorem[name=Fact,sibling=definition]{fact}
+\declaretheorem[sibling=definition]{lemma}
+\declaretheorem[sibling=lemma]{proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                         %
+%                   Spacing settings                                      %
+%                                                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlength{\marginparsep}{0cm}
+
+% kill those ugly red rectangles around links
+\hypersetup{
+  colorlinks,%
+  citecolor=black,%
+  filecolor=black,%
+  linkcolor=black,%
+  urlcolor=black,
+}
+
+\usepackage{newunicodechar}
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{∃}{\ensuremath{\exists}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{ø}{\ensuremath{\emptyset}}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{→}{\ensuremath{\to}}
+\newunicodechar{⊆}{\ensuremath{\subseteq}}
+\newunicodechar{⊗}{\ensuremath{\otimes}}
+\newunicodechar{∧}{\ensuremath{\wedge}}
+
+
+\begin{document}
+\pagestyle{plain}
+\input{src/titlepage}%
+\tableofcontents
+%\include{src/examples}
+\end{document}
+
+% vim: tw=80 nospell spelllang=en nocul
