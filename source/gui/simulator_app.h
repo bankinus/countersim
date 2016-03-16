@@ -8,6 +8,7 @@ public:
 	Simulator_app(int argc, char **argv) : QApplication(argc, argv) {};
 	virtual ~Simulator_app() {};
 public slots:
+	void add_register();
 	void open();
 	void save();
 	void step();

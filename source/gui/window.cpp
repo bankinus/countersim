@@ -41,15 +41,16 @@ class RegisterDisplayLine {
 	protected:
 		QFrame line;
 		QHBoxLayout lineLayout;
-		QLabel regNum;
+		size_t regNum;
+		QLabel regNumLabel;
 		QLineEdit edit;
 	public:
-		RegisterDisplayLine(size_t num) {
-			regNum.setText(QString::number(num));
+		RegisterDisplayLine(size_t num) : regNum(num){
+			regNumLabel.setText(QString::number(num));
 			edit.setText(QString::number(0));
 			registerDisplay->addWidget(&line);
 			line.setLayout(&lineLayout);
-			lineLayout.addWidget(&regNum);
+			lineLayout.addWidget(&regNumLabel);
 			lineLayout.addWidget(&edit);
 		}
 		~RegisterDisplayLine() {
@@ -57,6 +58,14 @@ class RegisterDisplayLine {
 		}
 		void display(unsigned long long int val) {
 			edit.setText(QString::number(val));
+		}
+		void lock() {
+			edit.setReadOnly(true);
+			unsigned long long int val = QLocale().toULongLong(edit.text());
+			simulation.get_register(regNum)->set_value(val);
+		}
+		void unlock() {
+			edit.setReadOnly(false);
 		}
 };
 
@@ -71,6 +80,15 @@ static void updateRegisters() {
 		RegisterDisplayLine *display = new RegisterDisplayLine(i);
 		registerDisplayLines.push_back(display);
 		display->display(simulation.get_register(i)->get_value());
+	}
+}
+
+void Simulator_app::add_register() {
+	if (is_running) return;
+	if (simulation.get_registers().size()<simulation.get_max_reg() || simulation.get_max_reg()==0) {
+		RegisterDisplayLine *display = new RegisterDisplayLine(simulation.get_registers().size());
+		registerDisplayLines.push_back(display);
+		display->display(simulation.get_register(simulation.get_registers().size())->get_value());
 	}
 }
 
@@ -123,6 +141,9 @@ void Simulator_app::step() {
 	if (!is_running){
 		/*start simulation*/
 		editor->setReadOnly(true);
+		for (RegisterDisplayLine *line : registerDisplayLines) {
+			line->lock();
+		}
 		exe = new Execution_visitor(simulation);
 		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
 		is_running=true;
@@ -135,6 +156,9 @@ void Simulator_app::step() {
 	} while (count < steps);
 	updateRegisters();
 	if (exe->get_next()==0) {
+		for (RegisterDisplayLine *line : registerDisplayLines) {
+			line->unlock();
+		}
 		editor->setReadOnly(false);
 		is_running=false;
 		delete exe;
@@ -146,6 +170,9 @@ void Simulator_app::run() {
 	if (!is_running){
 		/*start simulation*/
 		editor->setReadOnly(true);
+		for (RegisterDisplayLine *line : registerDisplayLines) {
+			line->lock();
+		}
 		exe = new Execution_visitor(simulation);
 		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
 		is_running=true;
@@ -153,6 +180,9 @@ void Simulator_app::run() {
 	exe->visitc(*context);
 	updateRegisters();
 	if (exe->get_next()==0) {
+		for (RegisterDisplayLine *line : registerDisplayLines) {
+			line->unlock();
+		}
 		editor->setReadOnly(false);
 		is_running=false;
 		delete exe;
@@ -163,6 +193,9 @@ void Simulator_app::run() {
 void Simulator_app::stop() {
 	if (is_running){
 		/*stop simulation*/
+		for (RegisterDisplayLine *line : registerDisplayLines) {
+			line->unlock();
+		}
 		editor->setReadOnly(false);
 		delete exe;
 		delete context;
@@ -260,15 +293,21 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	QPushButton *stop_button = new QPushButton("stop");
 	actionbar_layout->addWidget(stop_button);
 	simulator_layout->addWidget(actionbar);
+
+	/*set up register frame*/
 	QScrollArea *register_frame = new QScrollArea();
 	registerDisplay = new QVBoxLayout();
+	registerDisplay->setAlignment(Qt::AlignTop);
 	register_frame->setLayout(registerDisplay);
 	simulator_layout->addWidget(register_frame);
+	QPushButton *add_register_button = new QPushButton("add register");
+	registerDisplay->addWidget(add_register_button);
 
 	/*connect button signals to slots*/
 	QObject::connect(step_button, SIGNAL (clicked()), app, SLOT (step()));
 	QObject::connect(run_button, SIGNAL (clicked()), app, SLOT (run()));
 	QObject::connect(stop_button, SIGNAL (clicked()), app, SLOT (stop()));
+	QObject::connect(add_register_button, SIGNAL (clicked()), app, SLOT (add_register()));
 
 	/*check for program file to load*/
 	if(v_map.count("input-file")) {
