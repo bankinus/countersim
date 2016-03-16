@@ -14,6 +14,7 @@ class Error_stream {
 		Error_stream &operator<<(char val);
 		Error_stream &operator<<(std::string val);
 		Error_stream &operator<<(long long int val);
+		Error_stream &operator<<(unsigned long long int val);
 		Error_stream &operator<<(Error_stream &(*f)(Error_stream &));
 		static Error_stream &endl(Error_stream &);
 };

@@ -47,6 +47,16 @@ Error_stream &Error_stream::operator<<(long long int val) {
 	return *this;
 }
 
+Error_stream &Error_stream::operator<<(unsigned long long int val) {
+	if (console) {
+		std::cerr<<val;
+	}
+	else {
+		buf << val;
+	}
+	return *this;
+}
+
 Error_stream &Error_stream::operator<<(Error_stream &(*f)(Error_stream &)) {
 	f(*this);
 	return *this;

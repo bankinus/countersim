@@ -47,7 +47,7 @@ bool Parser::parse_config_command(const char *s, Context *context, const char **
 					//TODO set config
 					break;
 				default:
-					error_stream << "syntax error in line " << context->current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected machine type, received " << t.get_content() << Error_stream::endl;
 					goto error_config_command;
 			}
@@ -59,7 +59,7 @@ bool Parser::parse_config_command(const char *s, Context *context, const char **
 					//TODO set config
 					break;
 				default:
-					error_stream << "syntax error in line " << context->current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected integer, received " << t.get_content() << Error_stream::endl;
 					goto error_config_command;
 			}
@@ -69,13 +69,13 @@ bool Parser::parse_config_command(const char *s, Context *context, const char **
 					//TODO set config
 					break;
 				default:
-					error_stream << "syntax error in line " << context->current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected integer, received " << t.get_content() << Error_stream::endl;
 					goto error_config_command;
 			}
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected config command, received " << t.get_content() << Error_stream::endl;
 			goto error_config_command;
 	}
@@ -84,7 +84,7 @@ bool Parser::parse_config_command(const char *s, Context *context, const char **
 		case Token::Newline:
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected newline, received " << t.get_content() << Error_stream::endl;
 			goto error_config_command;
 	}
@@ -127,14 +127,14 @@ Context *Parser::parse_Minsky_program(const char *s) {
 						line++;
 						break;
 					default:
-						error_stream << "syntax error in line " << context->current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							"expected newline, received " << t.get_content() << Error_stream::endl;
 						goto error_parse_Minsky_program;
 						break;
 				}
 				break;
 			default:
-				error_stream << "syntax error in line " << context->current_line << ": "
+				error_stream << "syntax error in line " << line << ": "
 					"expected routine definition, received " << t.get_content() << Error_stream::endl;
 				goto error_parse_Minsky_program;
 		}
@@ -184,7 +184,7 @@ Context *Parser::parse_Minsky_sub_routine(const char *s) {
 		case Token::Def:
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected def, received " << t.get_content() << Error_stream::endl;
 			goto error_parse_Minsky_routine;
 	}
@@ -195,7 +195,7 @@ Context *Parser::parse_Minsky_sub_routine(const char *s) {
 			context->set_name(t.get_content());
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected identifier, received " << t.get_content() << Error_stream::endl;
 			goto error_parse_Minsky_routine;
 	}
@@ -209,7 +209,7 @@ Context *Parser::parse_Minsky_sub_routine(const char *s) {
 		case Token::BracketL:
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected [, received " << t.get_content() << Error_stream::endl;
 			goto error_parse_Minsky_routine;
 	}
@@ -223,7 +223,7 @@ Context *Parser::parse_Minsky_sub_routine(const char *s) {
 		case Token::BracketR:
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected ], received " << t.get_content() << Error_stream::endl;
 			goto error_parse_Minsky_routine;
 	}
@@ -233,7 +233,7 @@ Context *Parser::parse_Minsky_sub_routine(const char *s) {
 			line++;
 			break;
 		default:
-			error_stream << "syntax error in line " << context->current_line << ": "
+			error_stream << "syntax error in line " << line << ": "
 				"expected newline, received " << t.get_content() << Error_stream::endl;
 			goto error_parse_Minsky_routine;
 	}
@@ -267,7 +267,7 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 						break;
 					default:
 						Lexer::nextToken(old, t, &next);
-						error_stream << "syntax error in line " << context->current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							<< t.get_content() << " is not a valid command or label declaration" << Error_stream::endl;
 						goto error_parse_Minsky_routine;
 				}
@@ -279,7 +279,7 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 				break;
 			default:
 				Lexer::nextToken(old, t, &next);
-				error_stream << "syntax error in line " << context->current_line << ": "
+				error_stream << "syntax error in line " << line << ": "
 					<< t.get_content() << " is not a valid command or label declaration" << Error_stream::endl;
 				goto error_parse_Minsky_routine;
 		}
@@ -317,7 +317,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 	Lexer::nextToken(next, t, &next);
 	switch (t.get_type()) {
 		case Token::nil:
-			error_stream << "lexing error in line " << con.current_line << ": " << t.get_content() << Error_stream::endl;
+			error_stream << "lexing error in line " << line << ": " << t.get_content() << Error_stream::endl;
 			return false;
 		case Token::Call:
 			/*parse name*/
@@ -327,13 +327,13 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 					routine_name = t.get_content();
 					subroutine=context_map[routine_name];
 					if (subroutine==NULL) {
-						error_stream << "error in line " << con.current_line << ": "
+						error_stream << "error in line " << line << ": "
 						" undefined reference to " << routine_name << Error_stream::endl;
 						return false;
 					}
 					break;
 				default:
-					error_stream << "syntax error in line " << con.current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected identifier, received " << t.get_content() << Error_stream::endl;
 					return false;
 			}
@@ -350,7 +350,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						registers.push_back(con.get_reg(t.get_content()));
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							"expected identifier or integer, received " << t.get_content() << Error_stream::endl;
 						return false;
 				}
@@ -359,7 +359,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				case Token::BracketL:
 					break;
 				default:
-					error_stream << "syntax error in line " << con.current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected [, received " << t.get_content() << Error_stream::endl;
 					return false;
 			}
@@ -384,7 +384,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						exit_names.push_back(t.get_content());
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							"expected identifier or integer, received " << t.get_content() << Error_stream::endl;
 						return false;
 				}
@@ -393,7 +393,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				case Token::BracketR:
 					break;
 				default:
-					error_stream << "syntax error in line " << con.current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected ], received " << t.get_content() << Error_stream::endl;
 					return false;
 			}
@@ -402,7 +402,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				case Token::Newline:
 					break;
 				default:
-					error_stream << "syntax error in line " << con.current_line << ": "
+					error_stream << "syntax error in line " << line << ": "
 						"expected newline, received " << t.get_content() << Error_stream::endl;
 					return false;
 			}
@@ -420,7 +420,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				/*target parameter*/
 				switch (t.get_type()){
 					case Token::nil:
-						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
+						error_stream << "lexing error in line " << line << Error_stream::endl;
 						delete add_command;
 						return false;
 					case Token::Identifier:
@@ -428,7 +428,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						break;
 					case Token::Number:
 						if (t.get_numerical_value() > 1) {
-							error_stream << "error in line " << con.current_line << ": register "
+							error_stream << "error in line " << line << ": register "
 								<< t.get_content() << " is out of range" << Error_stream::endl;
 							delete add_command;
 							return false;
@@ -436,7 +436,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						add_command->set_target(t.get_numerical_value());
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							<< t.get_content() << " is not a valid argument for add" << Error_stream::endl;
 						delete add_command;
 						return false;
@@ -446,7 +446,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				/*next command parameter*/
 				switch (t.get_type()){
 					case Token::nil:
-						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
+						error_stream << "lexing error in line " << line << Error_stream::endl;
 						delete add_command;
 						return false;
 					case Token::Exit0:
@@ -463,7 +463,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						next = old;
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							<< t.get_content() << " is not a valid argument for add" << Error_stream::endl;
 						delete add_command;
 						return false;
@@ -474,7 +474,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 					case Token::Newline:
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": expected newline received "
+						error_stream << "syntax error in line " << line << ": expected newline received "
 							<< t.get_content() << Error_stream::endl;
 						delete add_command;
 						return false;
@@ -489,7 +489,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				/*target parameter*/
 				switch (t.get_type()){
 					case Token::nil:
-						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
+						error_stream << "lexing error in line " << line << Error_stream::endl;
 						delete sub_command;
 						return false;
 					case Token::Identifier:
@@ -497,7 +497,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						break;
 					case Token::Number:
 						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
-							error_stream << "error in line " << con.current_line << ": register "
+							error_stream << "error in line " << line << ": register "
 								<< t.get_content() << " is out of range" << Error_stream::endl;
 							delete sub_command;
 							return false;
@@ -505,7 +505,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						sub_command->set_target(t.get_numerical_value());
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							<< t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
 						delete sub_command;
 						return false;
@@ -514,7 +514,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				/*jump or branch command parameter*/
 				switch (t.get_type()){
 					case Token::nil:
-						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
+						error_stream << "lexing error in line " << line << Error_stream::endl;
 						delete sub_command;
 						return false;
 					case Token::Exit0:
@@ -530,7 +530,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							<< t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
 						delete sub_command;
 						return false;
@@ -540,7 +540,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 				/*branch command parameter*/
 				switch (t.get_type()){
 					case Token::nil:
-						error_stream << "lexing error in line " << con.current_line << Error_stream::endl;
+						error_stream << "lexing error in line " << line << Error_stream::endl;
 						delete sub_command;
 						return false;
 					case Token::Exit0:
@@ -557,7 +557,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						next = old;
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": "
+						error_stream << "syntax error in line " << line << ": "
 							<< t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
 						delete sub_command;
 						return false;
@@ -568,7 +568,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 					case Token::Newline:
 						break;
 					default:
-						error_stream << "syntax error in line " << con.current_line << ": expected newline received "
+						error_stream << "syntax error in line " << line << ": expected newline received "
 							<< t.get_content() << Error_stream::endl;
 						delete sub_command;
 						return false;
@@ -577,7 +577,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			}
 			break;
 		default:
-			error_stream << "syntax error in line " << con.current_line << ": expected minsky machine command, received "
+			error_stream << "syntax error in line " << line << ": expected minsky machine command, received "
 				<< t.get_content() << Error_stream::endl;
 			break;
 	}
