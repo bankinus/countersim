@@ -9,6 +9,14 @@ void Simulator_command::set_line (long long int i) {
 	line = i;
 }
 
+long long int Simulator_command::get_actual_line () {
+	return actual_line;
+}
+
+void Simulator_command::set_actual_line (long long int i) {
+	actual_line = i;
+}
+
 void Simulator_command::accept (Routine_visitor *visitor) {
 	visitor->visit(this);
 }

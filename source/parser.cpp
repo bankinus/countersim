@@ -23,6 +23,7 @@ Context *Parser::parse_simulator_program(const char *s) {
 		old = next;
 		Lexer::nextToken(next, t, &next);
 		context->current_line++;
+		line++;
 	}
 	return parse_Minsky_program(old);
 }
@@ -123,6 +124,7 @@ Context *Parser::parse_Minsky_program(const char *s) {
 				switch (t.get_type()) {
 					case Token::Newline:
 						main = true;
+						line++;
 						break;
 					default:
 						error_stream << "syntax error in line " << context->current_line << ": "
@@ -228,6 +230,7 @@ Context *Parser::parse_Minsky_sub_routine(const char *s) {
 	Lexer::nextToken(next, t, &next);
 	switch (t.get_type()) {
 		case Token::Newline:
+			line++;
 			break;
 		default:
 			error_stream << "syntax error in line " << context->current_line << ": "
@@ -287,6 +290,7 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 		else if (command!=NULL){
 			context->add_command(command);
 			context->current_line++;
+			line++;
 		}
 	}
 	context->next=old;
@@ -579,6 +583,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 	}
 	if (command!=NULL) {
 		command->set_line(con.current_line);
+		command->set_actual_line(line);
 		*res=command;
 		*resnext=next;
 		return true;

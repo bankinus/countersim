@@ -3,6 +3,7 @@
 #include "simulation.h"
 #include "context.h"
 #include "parser.h"
+#include "error_stream.h"
 #include "gui/window.h"
 #include "execution_visitor.h"
 #include <string>
@@ -57,6 +58,7 @@ int main (int argc, char ** argv) {
 
 	if (v_map.count("gui")) {
 		//run in console mode
+		error_stream.set_console(false);
 		return graphical_execution(argc, argv, v_map);
 	}
 	else {

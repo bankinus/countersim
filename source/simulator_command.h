@@ -6,6 +6,7 @@ class Simulator_command
 {
 	protected:
 		long long int line;
+		long long int actual_line;
 	public:
 		virtual ~Simulator_command(){}
 		virtual void execute () = 0;
@@ -14,6 +15,8 @@ class Simulator_command
 
 		long long int get_line();
 		void set_line(long long int i);
+		long long int get_actual_line();
+		void set_actual_line(long long int i);
 };
 
 class Jump_command : virtual public Simulator_command

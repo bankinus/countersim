@@ -9,6 +9,7 @@ class Error_stream {
 		Error_stream() : console(true), buf(){}
 		Error_stream(bool b) : console(b), buf(){}
 
+		void set_console(bool b);
 		void flush();
 		Error_stream &operator<<(char val);
 		Error_stream &operator<<(std::string val);

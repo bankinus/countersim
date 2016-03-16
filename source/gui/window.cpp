@@ -141,11 +141,15 @@ void Simulator_app::step() {
 	if (!is_running){
 		/*start simulation*/
 		editor->setReadOnly(true);
+		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
+		if (context==NULL) {
+			editor->setReadOnly(false);
+			return;
+		}
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->lock();
 		}
 		exe = new Execution_visitor(simulation);
-		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
 		is_running=true;
 	}
 	unsigned long long int count = 0;
@@ -170,11 +174,15 @@ void Simulator_app::run() {
 	if (!is_running){
 		/*start simulation*/
 		editor->setReadOnly(true);
+		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
+		if (context==NULL) {
+			editor->setReadOnly(false);
+			return;
+		}
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->lock();
 		}
 		exe = new Execution_visitor(simulation);
-		context = Parser().parse_simulator_program(editor->toPlainText().toUtf8().constData());
 		is_running=true;
 	}
 	exe->visitc(*context);
@@ -201,6 +209,11 @@ void Simulator_app::stop() {
 		delete context;
 		is_running=false;
 	}
+}
+
+void writeToConsole(std::string s) {
+	console->setText(console->text().append(QString(s.c_str())));
+	console->adjustSize();
 }
 
 int graphical_execution (int argc, char **argv, boost::program_options::variables_map v_map) {

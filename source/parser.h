@@ -4,9 +4,11 @@
 #include <unordered_map>
 
 class Parser {
+	protected:
 	std::unordered_map<std::string, Context*> context_map;
+	unsigned long long int line;
 	public:
-	Parser () : context_map(){}
+	Parser () : context_map(), line(1){}
 	Context *parse_simulator_program(const char *s);
 
 	protected:
