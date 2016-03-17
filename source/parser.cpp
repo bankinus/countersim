@@ -164,6 +164,7 @@ Context *Parser::parse_URM_routine(const char *s) {
 
 Context *Parser::parse_Minsky_main_routine(const char *s) {
 	Context *context = new Context();
+	context->set_name("main");
 	if (parse_Minsky_routine(s, context)!=NULL) {
 		return context;
 	}
