@@ -58,3 +58,9 @@ void _parse_Minsky_program_test() {
 	}
 }
 
+void _print_prog(Context *con) {
+	for (Simulator_command *com : con->get_program()) {
+		debug << com->get_actual_line() << ": " << com->toString() << std::endl;
+	}
+}
+
