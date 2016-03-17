@@ -36,6 +36,8 @@ static Execution_visitor *exe;
 static QFileDialog *open_dialog;
 static QFileDialog *save_dialog;
 static QVBoxLayout *registerDisplay;
+static QLabel *lastLine;
+static QLabel *nextLine;
 
 class RegisterDisplayLine {
 	protected:
@@ -154,12 +156,22 @@ void Simulator_app::step() {
 	}
 	unsigned long long int count = 0;
 	qulonglong steps = QLocale().toULongLong(step_field->text());
+	size_t last;
 	do {
+		last = exe->get_next();
 		exe->step_visitc(*context);
 		count++;
-	} while (count < steps);
+	} while (count < steps && exe->get_next()!=0);
+	/*update simulator interface*/
+	lastLine->setText(QString("last: ") + QString::number(context->get_program()[last-1]->get_actual_line()));
+	lastLine->adjustSize();
+	nextLine->setText(QString("next: ") + QString::number(((exe->get_next()) > 0)?
+	                                                        context->get_program()[exe->get_next()-1]->get_actual_line():
+	                                                        0));
+	nextLine->adjustSize();
 	updateRegisters();
 	if (exe->get_next()==0) {
+		/*end simulation*/
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->unlock();
 		}
@@ -167,6 +179,7 @@ void Simulator_app::step() {
 		is_running=false;
 		delete exe;
 		delete context;
+		nextLine->setText(QString("next: ") + QString::number(0));
 	}
 }
 
@@ -185,9 +198,21 @@ void Simulator_app::run() {
 		exe = new Execution_visitor(simulation);
 		is_running=true;
 	}
-	exe->visitc(*context);
+	size_t last;
+	do {
+		last = exe->get_next();
+		exe->step_visitc(*context);
+	} while (exe->get_next()!=0);
+	/*update simulator interface*/
+	lastLine->setText(QString("last: ") + QString::number(context->get_program()[last-1]->get_actual_line()));
+	lastLine->adjustSize();
+	nextLine->setText(QString("next: ") + QString::number(((exe->get_next()) > 0)?
+	                                                        context->get_program()[exe->get_next()-1]->get_actual_line():
+	                                                        0));
+	nextLine->adjustSize();
 	updateRegisters();
 	if (exe->get_next()==0) {
+		/*end simulation*/
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->unlock();
 		}
@@ -195,12 +220,13 @@ void Simulator_app::run() {
 		is_running=false;
 		delete exe;
 		delete context;
+		nextLine->setText(QString("next: ") + QString::number(0));
 	}
 }
 
 void Simulator_app::stop() {
 	if (is_running){
-		/*stop simulation*/
+		/*end simulation*/
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->unlock();
 		}
@@ -208,6 +234,7 @@ void Simulator_app::stop() {
 		delete exe;
 		delete context;
 		is_running=false;
+		nextLine->setText(QString("next: ") + QString::number(0));
 	}
 }
 
@@ -306,6 +333,14 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	QPushButton *stop_button = new QPushButton("stop");
 	actionbar_layout->addWidget(stop_button);
 	simulator_layout->addWidget(actionbar);
+
+	/*line state info*/
+	lastLine = new QLabel();
+	lastLine->setText(QString("last: ") + QString::number(0));
+	simulator_layout->addWidget(lastLine);
+	nextLine = new QLabel();
+	nextLine->setText(QString("next: ") + QString::number(0));
+	simulator_layout->addWidget(nextLine);
 
 	/*set up register frame*/
 	QScrollArea *register_frame = new QScrollArea();

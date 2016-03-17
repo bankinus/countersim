@@ -3,6 +3,7 @@
 void Subroutine_inserter::visit(Madd_command *command) {
 	Madd_command *newcommand = new Madd_command();
 	newcommand->set_line(command->get_line());
+	newcommand->set_actual_line(command->get_actual_line());
 	if (command->get_target()>=0) {
 		newcommand->set_target(command->get_target());
 	}
@@ -27,6 +28,7 @@ void Subroutine_inserter::visit(Madd_command *command) {
 void Subroutine_inserter::visit(Msub_command *command) {
 	Msub_command *newcommand = new Msub_command();
 	newcommand->set_line(command->get_line());
+	newcommand->set_actual_line(command->get_actual_line());
 	if (command->get_target()>=0) {
 		newcommand->set_target(command->get_target());
 	}

@@ -291,8 +291,8 @@ Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
 		else if (command!=NULL){
 			context->add_command(command);
 			context->current_line++;
-			line++;
 		}
+		line++;
 	}
 	context->next=old;
 	/*replace labels*/

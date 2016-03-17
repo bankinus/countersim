@@ -8,6 +8,7 @@ class Simulator_command
 		long long int line;
 		long long int actual_line;
 	public:
+		Simulator_command() : line(0), actual_line(0){};
 		virtual ~Simulator_command(){}
 		virtual void execute () = 0;
 		virtual void accept (Routine_visitor *visitor);
