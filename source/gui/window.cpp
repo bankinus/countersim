@@ -175,6 +175,9 @@ void Simulator_app::step() {
 	                                                        context->get_program()[exe->get_next()-1]->get_actual_line():
 	                                                        0));
 	nextLine->adjustSize();
+	editor->highlightLine((((exe->get_next()) > 0)?
+	                         context->get_program()[exe->get_next()-1]->get_actual_line():
+	                         0));
 	updateRegisters();
 	if (exe->get_next()==0) {
 		/*end simulation*/
@@ -216,6 +219,9 @@ void Simulator_app::run() {
 	                                                        context->get_program()[exe->get_next()-1]->get_actual_line():
 	                                                        0));
 	nextLine->adjustSize();
+	editor->highlightLine((((exe->get_next()) > 0)?
+	                         context->get_program()[exe->get_next()-1]->get_actual_line():
+	                         0));
 	updateRegisters();
 	if (exe->get_next()==0) {
 		/*end simulation*/

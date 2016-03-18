@@ -150,3 +150,23 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     }
 }
 
+void CodeEditor::highlightLine(int num){
+    QList<QTextEdit::ExtraSelection> extraSelections;
+    if (num>0) {
+        QTextDocument *doc = this->document();
+        QTextBlock text_block = doc->findBlockByLineNumber(num-1);
+    
+    
+        QTextEdit::ExtraSelection selection;
+    
+        QColor lineColor = QColor(Qt::yellow).lighter(160);
+    
+        selection.format.setBackground(lineColor);
+        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+        selection.cursor = QTextCursor(text_block);
+        selection.cursor.clearSelection();
+        extraSelections.append(selection);
+    }
+    setExtraSelections(extraSelections);
+}
+
