@@ -1,3 +1,4 @@
+/*includes from qt*/
 #include <QApplication>
 #include <QBoxLayout>
 #include <QFileDialog>
@@ -12,21 +13,26 @@
 #include <QScrollArea>
 #include <QTextEdit>
 
+/*includes from c++ stl*/
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
 
+/*includes from gui*/
+#include "codeeditor.h"
+#include "simulator_app.h"
+#include "window.h"
+
+/*includes from simulator*/
 #include "execution_visitor.h"
 #include "parser.h"
 #include "register.h"
-#include "simulator_app.h"
 #include "simulation.h"
-#include "window.h"
 
 
 static bool is_running;
-static QTextEdit *editor;
+static CodeEditor *editor;
 static QLineEdit *step_field;
 QLabel *console;
 static Simulator_app *app;
@@ -114,7 +120,7 @@ void Simulator_app::open() {
 		}
 		std::stringstream bufstream;
 		bufstream << filestream.rdbuf();
-		editor->setText(bufstream.str().c_str());
+		editor->setPlainText(bufstream.str().c_str());
 	}
 }
 
@@ -256,7 +262,7 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	save_dialog->setLabelText( QFileDialog::Accept, "&Save" );
 
 	/*create objects for global pointers*/
-	editor = new QTextEdit();
+	editor = new CodeEditor();
 	console = new QLabel();
 
 	/*set up menu bar*/
@@ -362,7 +368,7 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 		std::stringstream bufstream;
 		std::ifstream filestream(v_map["input-file"].as<std::string>().c_str());
 		bufstream << filestream.rdbuf();
-		editor->setText(bufstream.str().c_str());
+		editor->setPlainText(bufstream.str().c_str());
 	}
 	/*check for register file to load*/
 	if (v_map.count("register-file")) {

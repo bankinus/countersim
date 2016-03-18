@@ -13,5 +13,5 @@ QT = core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # Input
-HEADERS += window.h simulator_app.h
-SOURCES += window.cpp
+HEADERS += window.h simulator_app.h codeeditor.h
+SOURCES += window.cpp codeeditor.cpp
