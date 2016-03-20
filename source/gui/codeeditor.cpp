@@ -1,3 +1,7 @@
+/*
+ * the member functions in this file are largely taken from http://doc.qt.io/qt-4.8/qt-widgets-codeeditor-example.html
+ */
+
 /****************************************************************************
  * **
  * ** Copyright (C) 2015 The Qt Company Ltd.
@@ -150,6 +154,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     }
 }
 
+/*added for this project*/
 void CodeEditor::highlightLine(int num){
     QList<QTextEdit::ExtraSelection> extraSelections;
     if (num>0) {

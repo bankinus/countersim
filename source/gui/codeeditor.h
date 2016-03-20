@@ -1,3 +1,7 @@
+/*
+ * the class definition in this file are largely taken from http://doc.qt.io/qt-4.8/qt-widgets-codeeditor-example.html
+ */
+
 /****************************************************************************
  * **
  * ** Copyright (C) 2015 The Qt Company Ltd.
@@ -61,7 +65,7 @@ public:
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
-    void highlightLine(int num);
+    void highlightLine(int num); //added for this project
 
 protected:
     void resizeEvent(QResizeEvent *event);
