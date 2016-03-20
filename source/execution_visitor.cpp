@@ -10,6 +10,7 @@ bool Execution_visitor::step_visitc(Context &context) {
 	if (next==0) return false;
 	Simulator_command *command = context.get_program()[next-1];
 	command->accept(this);
+	cyclecount++;
 	if (next==0) return false;
 	return true;
 }
@@ -33,5 +34,9 @@ void Execution_visitor::visit(Msub_command *command) {
 
 size_t Execution_visitor::get_next() const{
 	return next;
+}
+
+size_t Execution_visitor::get_cycle_count() const{
+	return cyclecount;
 }
 

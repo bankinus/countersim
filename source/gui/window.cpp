@@ -11,6 +11,7 @@
 #include <QPalette>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QTextEdit>
 
 /*includes from c++ stl*/
@@ -18,6 +19,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <chrono>
+#include <ctime>
 
 /*includes from gui*/
 #include "codeeditor.h"
@@ -34,7 +37,7 @@
 static bool is_running;
 static CodeEditor *editor;
 static QLineEdit *step_field;
-QLabel *console;
+QPlainTextEdit *console;
 static Simulator_app *app;
 static Simulation simulation;
 static Context *context;
@@ -181,6 +184,7 @@ void Simulator_app::step() {
 	updateRegisters();
 	if (exe->get_next()==0) {
 		/*end simulation*/
+		writeToConsole("finished execution after "+std::to_string(exe->get_cycle_count())+" steps\n");
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->unlock();
 		}
@@ -207,6 +211,8 @@ void Simulator_app::run() {
 		exe = new Execution_visitor(simulation);
 		is_running=true;
 	}
+	writeToConsole(exe->get_cycle_count()>0?"began running after"+std::to_string(exe->get_cycle_count())+"\n":"began running\n");
+	app->processEvents();
 	size_t last;
 	do {
 		last = exe->get_next();
@@ -225,6 +231,7 @@ void Simulator_app::run() {
 	updateRegisters();
 	if (exe->get_next()==0) {
 		/*end simulation*/
+		writeToConsole("finished execution after "+std::to_string(exe->get_cycle_count())+" steps\n");
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->unlock();
 		}
@@ -250,9 +257,12 @@ void Simulator_app::stop() {
 	}
 }
 
-void writeToConsole(std::string s) {
-	console->setText(console->text().append(QString(s.c_str())));
-	console->adjustSize();
+void writeToConsole(const std::string &s) {
+   std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::stringstream ss;
+	ss << "> " << std::asctime( std::localtime(&time)) << s;
+	console->setPlainText(console->toPlainText().append(QString(ss.str().c_str())));
+	console->verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);
 }
 
 int graphical_execution (int argc, char **argv, boost::program_options::variables_map v_map) {
@@ -269,7 +279,7 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 
 	/*create objects for global pointers*/
 	editor = new CodeEditor();
-	console = new QLabel();
+	console = new QPlainTextEdit();
 
 	/*set up menu bar*/
 	/*file*/
@@ -320,9 +330,9 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	body_layout->addWidget(text_frame, 3);
 	text_frame->setLayout(text_layout);
 	text_layout->addWidget(editor, 3);
-	QScrollArea *console_frame = new QScrollArea();
-	console->setParent(console_frame);
-	text_layout->addWidget(console_frame, 1);
+	console->setParent(text_frame);
+	console->setReadOnly(true);
+	text_layout->addWidget(console, 1);
 	editor->setStyleSheet(QString("QTextEdit[readOnly=\"true\"] { background-color: lightGray }"));
 
 	/*simulator interface*/
@@ -356,6 +366,7 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 
 	/*set up register frame*/
 	QScrollArea *register_frame = new QScrollArea();
+	register_frame->setWidgetResizable(true);
 	registerDisplay = new QVBoxLayout();
 	registerDisplay->setAlignment(Qt::AlignTop);
 	register_frame->setLayout(registerDisplay);
