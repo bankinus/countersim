@@ -7,3 +7,5 @@ README.txt
 *.fls
 *.log
 *.fdb_latexmk
+*.bbl
+*.blg

@@ -13,6 +13,9 @@ fast:
 	# enforce tex execution
 	pdflatex -synctex=1 $(src)
 
+show: all
+	evince $(pdf)
+
 clean:
 	latexmk -C $(src)
 	rm -f $(wildcard *.out *.nls *.nlo *.bbl *.blg *-blx.bib *.run.xml *.bcf *.synctex.gz *.fdb_latexmk *.fls *.toc)

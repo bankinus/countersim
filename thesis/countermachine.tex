@@ -42,6 +42,7 @@
 \declaretheorem[name=Fact,sibling=definition]{fact}
 \declaretheorem[sibling=definition]{lemma}
 \declaretheorem[sibling=lemma]{proposition}
+\declaretheorem[name=Instruction set,style=definition,numberwithin=chapter]{instructionset}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                         %
@@ -84,6 +85,8 @@
 \include{src/limitations}
 \include{src/future_work}
 \include{src/conclusions}
+\bibliography{bib}{}
+\bibliographystyle{plain}
 \end{document}
 
 % vim: tw=80 nospell spelllang=en nocul

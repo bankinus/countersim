@@ -1,5 +1,64 @@
 \chapter{Theoretical background}
 \section{Counter machines}
+
 \section{Minsky machine}
+One counter machine that is of particular interest for this work is the Minsky machine, named after Marvin L. Minsky who proposed it back in 1961. Minsky originally described these machines in a paper discussing the recursive unsolvability of \cite{10.2307/1970290}. In this paper he defines them as a restricted form of the 2-band Turing machine, as follows below.
+\begin{definition}{Two tape non-writing Turing machine:}
+The two tape non-writing Turing machine consists of
+\begin{itemize}
+\item a finite state machine
+\item 2 semi infinite bands
+\end{itemize}
+Both bands are initialized with a symbol marking their respective ends and are otherwise filled blanks.
+The machine can neither write, nor delete the symbols on either band.
+\end{definition}
+This means the state of the machine can be effectively described by a tuple $(p_0, p_1, s)$ with $p_0$, $p_1$ being the bands respective head positions and $s$ being the state of the finite state machine.
+Minsky showed that any given Turing machine T can be represented by a two tape non-writing Turing machine T*\cite{10.2307/1970290}. He does this by first converting T to the equivalent 2-symbol Turing machine T' which can be obtained as described by Shannon\cite{Shannon1971-SHAAUT-2}. Then the resulting machine T' is converted to a two tape non-writing Turing machine. This thesis will not discuss the exact nature of this proof, but it can be found in the original paper. However we will utilize a similar idea  when we discuss how to write programs for the Minsky machine.
+It is immediately obvious that with the machine not being able to write or write on the tape, the machine can only move either of its heads left or right and check if it has reached the end of a tape. This means a more natural approach to viewing this machine would be to represent the tapes as counters $x_1$ and $x_2$. Accordingly the state machine could be represented as a program counter $I_p$ and a program $p$ represented by a vector of subroutines formed from the following instruction set:
+\begin{instructionset}
+\label{minsky4instruction}
+\begin{itemize}
+\hfill
+\item{$INC:$} $x_y = x_y + 1$; $ y\in{0,1}$\hfill\break -- i.e. increment counter $x_y$
+\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1$; $ y\in{0,1}$\hfill\break -- i.e. decrement counter $x_y$ if possible
+\item{$JMP:$} $I_p = i$; $ 1 \leq i \leq sizeof(p)$\hfill\break -- i.e. jump to $i$
+\item{$JIZ:$} if $x_y=0$ then: $ I_p = j$, else: $I_p = i$; $y\in{0,1} \land 1 \leq i,j \leq sizeof(p)$\hfill\break -- i.e. branch to $j$ if counter $x_y$ is zero otherwise jump to $i$
+\end{itemize}
+\end{instructionset}
+This rather simple instruction set can be simplified further to just two basic instructions. As we will show later, but first we need to proof that these representations really are equivalent.
+\begin{lemma}
+\label{lemma2btmtom4m}
+Any 2-band Turing machine can be represented by an equivalent machine $(x_0, x_1, p, I_p)$ where $x_0$ and $x_1$ are counters, $I_p$ is the program counter and $p$ is a program consisting of the instructions found in \autoref{minsky4instruction}.
+\begin{proof}
+%TODO 
+insert proof here
+\end{proof}
+\end{lemma}
 \subsection{Syntax and semantics}
+
+For the purpose of this thesis we will define the Minsky machine as follows:
+\begin{definition}
+A Minsky machine is a tuple $(x_0, x_1, p, I_p)$, where $x_0$ and $x_1$ are counters, $I_p$ is the program counter and $p$ is a program consisting of the instructions found in \autoref{minsky2instruction}:
+\begin{instructionset}
+\label{minsky2instruction}
+\hfill
+\begin{itemize}
+\item{$INC:$} $x_y = x_y + 1 \land I_p = i$; $ y\in{0,1} \land 0 \leq i < sizeof(p)$\hfill\break -- i.e. increment counter $x_y$ and jump to $i$
+\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1 \land I_p = i$, else: $I_p = j$; $ y\in{0,1} \land 0 \leq i,j < sizeof(p)$\hfill\break -- i.e. decrement counter $x_y$ and jump to $i$ if possible, branch to $j$ if not
+\end{itemize}
+\end{instructionset}
+\end{definition}
+\begin{theorem}
+Any 2-band Turing machine can be represented by an equivalent Minsky machine.
+\begin{proof}
+In order to prove the existence of an equivalent Minsky machine we will show that any program from \autoref{minsky4instruction} has an equivalent program from \autoref{minsky2instruction} and vice versa. After that we can use \autoref{lemma2btmtom4m} to show that that for every 2-band Turing machine there is an equivalent Minsky machine.
+%TODO 
+insert proof here
+\end{proof}
+\end{theorem}
+From this theorem follows, due to the Turing-completeness of the 2-band Turing machine, that the Minsky machine is also Turing complete.
+
 \subsection{Writing programs for the Minsky machine}
+While we now know that the Minsky machine is Turing complete, in practice writing programs can be challenging.
+The main problem seems obvious as there are only two registers to work with and a very limited instruction set to do so.
+Fortunately Minsky offered a solution by correctly encoding the input and output for the Minsky machine\cite{Minsky:1967:CFI:1095587}.
