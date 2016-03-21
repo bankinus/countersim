@@ -42,6 +42,7 @@ $(OBJDIR)/%.g: $(SOURCEDIR)/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $(DEPDIR)/$*.d
 	@rm -f $(DEPDIR)/$*.d.tmp
 
+#the following target was taken from "Autodependencies with GNU make" Scott McPeak, November 2001
 $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 	$(CC) $(CFLAGS) -MM $< > $(DEPDIR)/$*.d
