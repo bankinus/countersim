@@ -2,6 +2,44 @@
 \section{Memory}
 \subsection{Registers}
 \subsection{Program}
+Due to the nature of the internal representation of programs we also need to take into account the potential blow-up of storing these programs.
+While the internal simulator commands themselves are all of a constant size, the nature of our subroutine substitution means that a single line of code of the original program can be expanded into an entire subroutine of internal commands. If that subroutine also contains calls to other subroutines it is easy to see how the internal representation of a program in execution could demand the use of vastly more memory than the program in its textual form did.
+In order to simplify the calculations we will not focus on the actual text characters, but rather the number commands the program contains, neglecting the length of these commands and other syntax elements such as labels, routine headers and config commands.
+In order to get a rough idea of how large this blow-up could get at its worst, let us make some very pessimistic assumptions.
+Let n be the number of commands in the program, including all subroutines.
+This means that there can be only n non-empty subroutines.
+Since these routines can only call subroutines defined before them, the n-th routine can only call the n-1 subroutines before it.
+From this follows, considering that any subroutine cannot contain more than n instructions, that the n-th routine can at worst make n calls to the largest subroutine before it.
+Through simple induction over n this means that the n-th routine can at most expand to $n^{n}$ instruction. If this routine is the main routine it means that the entire program expands from n instructions in the source code to $n^{n}$ instructions in the simulators internal representation. This is of course less than ideal.
+
+Fortunately these assumptions cannot possibly be true all at once, but the example code \ref{exponentialcode} below will show that at least an exponential blow-up is entirely possible.
+\lstset{escapeinside={@(}{)@}}
+\begin{lstlisting}[frame=single, caption=code resulting in exponential blow-up]
+@(\label{exponentialcode})@
+def subroutine1 [next]
+	add 1
+	add 1 next
+
+def subroutine2 [next]
+	call subroutine1 s
+s:	call subroutine1 next
+
+def subroutine3 [next]
+	call subroutine2 s
+s:	call subroutine2 next
+
+...
+
+def subroutine$\frac{n}{2}-1$ [next]
+	call subroutine$\frac{n}{2}-2$ s
+s:	call subroutine$\frac{n}{2}-2$ next
+
+main
+	call subroutine$\frac{n}{2}-1$ s
+s:	call subroutine$\frac{n}{2}-1$ 0
+\end{lstlisting}
+It is immediately obvious that this program consists of n instructions that will expand into $2^{\frac{n}{2}}$ instructions when parsed into the internal representation. It is easy to see that one can construct a similar program for any other natural number.
+This means that the maximum blowup lies somewhere between $\lim_{x\to\infty}$ $x^{\frac{n}{x}}$ and $n^{n}$.
 \section{Runtime}
 \subsection{Simulator performance}
 \subsection{Computational complexities of Minsky programs}
