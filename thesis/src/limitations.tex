@@ -30,13 +30,13 @@ s:	call subroutine2 next
 
 ...
 
-def subroutine$\frac{n}{2}-1$ [next]
-	call subroutine$\frac{n}{2}-2$ s
-s:	call subroutine$\frac{n}{2}-2$ next
+def subroutine@($\frac{n}{2}-1$)@ [next]
+	call subroutine@($\frac{n}{2}-2$)@ s
+s:	call subroutine@($\frac{n}{2}-2$)@ next
 
 main
-	call subroutine$\frac{n}{2}-1$ s
-s:	call subroutine$\frac{n}{2}-1$ 0
+	call subroutine@($\frac{n}{2}-1$)@ s
+s:	call subroutine@($\frac{n}{2}-1$)@ 0
 \end{lstlisting}
 It is immediately obvious that this program consists of n instructions that will expand into $2^{\frac{n}{2}}$ instructions when parsed into the internal representation. It is easy to see that one can construct a similar program for any other natural number.
 This means that the maximum blowup lies somewhere between $2^{\frac{n}{2}}$ and $n^{n}$.
