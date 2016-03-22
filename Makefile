@@ -24,14 +24,14 @@ debug: gui
 debug: debug_app
 debug_app: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
 debug_app: $(OBJECTS:.o=.g) $(GUIOBJECTS)
-	$(CC) $^ -o countermachine $(LDFLAGS) $(LDLIBS)
+	$(CC) $^ -o countersim $(LDFLAGS) $(LDLIBS)
 
 gui:
 	cd source/gui && qmake && make
 gf: gui
 gf: app
 
-app: countermachine
+app: countersim
 
 $(OBJDIR)/%.g: $(SOURCEDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -52,10 +52,10 @@ $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $(DEPDIR)/$*.d
 	@rm -f $(DEPDIR)/$*.d.tmp
 
-countermachine: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
-countermachine: $(OBJECTS) $(GUIOBJECTS)
+countersim: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
+countersim: $(OBJECTS) $(GUIOBJECTS)
 	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -f countermachine $(OBJECTS) $(OBJECTS:.o=.g) $(DEPS)
+	rm -f countersim $(OBJECTS) $(OBJECTS:.o=.g) $(DEPS)
 	cd $(SOURCEDIR)/gui && make clean && rm -f Makefile
