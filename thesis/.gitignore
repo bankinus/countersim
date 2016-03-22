@@ -1,5 +1,6 @@
 README.txt
 *.pdf
+*.pdf_tex
 *.aux
 *.out
 *.gz

@@ -12,20 +12,45 @@ The two tape non-writing Turing machine consists of
 Both bands are initialized with a symbol marking their respective ends and are otherwise filled blanks.
 The machine can neither write, nor delete the symbols on either band.
 \end{definition}
-This means the state of the machine can be effectively described by a tuple $(p_0, p_1, s)$ with $p_0$, $p_1$ being the bands respective head positions and $s$ being the state of the finite state machine.
+This means the state of the machine can be effectively described by a tuple $(p_0, p_1, s)$ with $p_0$, $p_1$ being the bands respective head positions and $s$ being the state of the finite state machine. See \autoref{fig2bandstate} for a graphical example of a 2-band Turing machine. The example machine will move $p_0$ to the right and $p_1$ to the left until $p_1$ is 0.
+\begin{figure}[H]
+	\def\svgscale{0.3}
+	\input{img/twobandturingmachine.pdf_tex}
+	\caption{visualisation of 2-band TM}
+	\label{fig2bandstate}
+\end{figure}
 Minsky showed that any given Turing machine T can be represented by a two tape non-writing Turing machine T*\cite{10.2307/1970290}. He does this by first converting T to the equivalent 2-symbol Turing machine T' which can be obtained as described by Shannon\cite{Shannon1971-SHAAUT-2}. Then the resulting machine T' is converted to a two tape non-writing Turing machine. This thesis will not discuss the exact nature of this proof, but it can be found in the original paper. However we will utilize a similar idea  when we discuss how to write programs for the Minsky machine.
 It is immediately obvious that with the machine not being able to write or write on the tape, the machine can only move either of its heads left or right and check if it has reached the end of a tape. This means a more natural approach to viewing this machine would be to represent the tapes as counters $x_1$ and $x_2$. Accordingly the state machine could be represented as a program counter $I_p$ and a program $p$ represented by a vector of subroutines formed from the following instruction set:
 \begin{instructionset}
 \label{minsky4instruction}
 \begin{itemize}
 \hfill
-\item{$INC:$} $x_y = x_y + 1$; $ y\in{0,1}$\hfill\break -- i.e. increment counter $x_y$
-\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1$; $ y\in{0,1}$\hfill\break -- i.e. decrement counter $x_y$ if possible
-\item{$JMP:$} $I_p = i$; $ 1 \leq i \leq sizeof(p)$\hfill\break -- i.e. jump to $i$
-\item{$JIZ:$} if $x_y=0$ then: $ I_p = j$, else: $I_p = i$; $y\in{0,1} \land 1 \leq i,j \leq sizeof(p)$\hfill\break -- i.e. branch to $j$ if counter $x_y$ is zero otherwise jump to $i$
+\item{$INC:$} $x_y = x_y + 1$; | $ y\in{0,1}$\hfill\break -- i.e. increment counter $x_y$
+\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1$; | $ y\in{0,1}$\hfill\break -- i.e. decrement counter $x_y$ if possible
+\item{$JMP:$} $I_p = i$; | $ 0 \leq i \leq sizeof(p)$\hfill\break -- i.e. jump to $i$
+\item{$JIZ:$} if $x_y=0$ then: $ I_p = j$, else: $I_p = i$; | $y\in{0,1} \land 0 \leq i,j \leq sizeof(p)$\hfill\break -- i.e. branch to $j$ if counter $x_y$ is zero otherwise jump to $i$
 \end{itemize}
 \end{instructionset}
-This rather simple instruction set can be simplified further to just two basic instructions. As we will show later, but first we need to proof that these representations really are equivalent.
+This rather simple instruction set can be simplified further to just two basic instructions. One such instruction set will be given below and we will focus on a Minsky machine defined with just these two instructions for the remainder of this thesis.
+
+\subsection{Syntax and semantics}
+
+For the purpose of this thesis we will define the Minsky machine as follows:
+\begin{definition}
+A Minsky machine is a tuple $(x_0, x_1, p, I_p)$, where $x_0$ and $x_1$ are counters, $I_p$ is the program counter and $p$ is a program consisting of the instructions found in the following \autoref{minsky2instruction}:
+\begin{instructionset}
+\label{minsky2instruction}
+\hfill
+\begin{itemize}
+\item{$INC:$} $x_y = x_y + 1; I_p = i$; | $ y\in{0,1} \land 0 \leq i \leq sizeof(p)$\hfill\break -- i.e. increment counter $x_y$ and jump to $i$
+\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1; I_p = i$, else: $I_p = j$; | $ y\in{0,1} \land 0 \leq i,j \leq sizeof(p)$\hfill\break -- i.e. decrement counter $x_y$ and jump to $i$ if possible, branch to $j$ if not
+\end{itemize}
+\end{instructionset}
+\end{definition}
+Before we can define the semantics for computing on our Minsky machine, we will first define denotational semantics for \autoref{minsky2instruction}
+\begin{definition}
+
+\end{definition}
 \begin{lemma}
 \label{lemma2btmtom4m}
 Any 2-band Turing machine can be represented by an equivalent machine $(x_0, x_1, p, I_p)$ where $x_0$ and $x_1$ are counters, $I_p$ is the program counter and $p$ is a program consisting of the instructions found in \autoref{minsky4instruction}.
@@ -34,31 +59,45 @@ Any 2-band Turing machine can be represented by an equivalent machine $(x_0, x_1
 insert proof here
 \end{proof}
 \end{lemma}
-\subsection{Syntax and semantics}
-
-For the purpose of this thesis we will define the Minsky machine as follows:
-\begin{definition}
-A Minsky machine is a tuple $(x_0, x_1, p, I_p)$, where $x_0$ and $x_1$ are counters, $I_p$ is the program counter and $p$ is a program consisting of the instructions found in \autoref{minsky2instruction}:
-\begin{instructionset}
-\label{minsky2instruction}
-\hfill
-\begin{itemize}
-\item{$INC:$} $x_y = x_y + 1 \land I_p = i$; $ y\in{0,1} \land 0 \leq i < sizeof(p)$\hfill\break -- i.e. increment counter $x_y$ and jump to $i$
-\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1 \land I_p = i$, else: $I_p = j$; $ y\in{0,1} \land 0 \leq i,j < sizeof(p)$\hfill\break -- i.e. decrement counter $x_y$ and jump to $i$ if possible, branch to $j$ if not
-\end{itemize}
-\end{instructionset}
-\end{definition}
 \begin{theorem}
 Any 2-band Turing machine can be represented by an equivalent Minsky machine.
 \begin{proof}
 In order to prove the existence of an equivalent Minsky machine we will show that any program from \autoref{minsky4instruction} has an equivalent program from \autoref{minsky2instruction} and vice versa. After that we can use \autoref{lemma2btmtom4m} to show that that for every 2-band Turing machine there is an equivalent Minsky machine.
+
 %TODO 
 insert proof here
 \end{proof}
 \end{theorem}
-From this theorem follows, due to the Turing-completeness of the 2-band Turing machine, that the Minsky machine is also Turing complete.
+From this theorem immediately follows, due to the Turing-completeness of the 2-band Turing machine, that the Minsky machine is also Turing complete.
+\begin{corollary}
+The Minsky machine is Turing complete.
+\end{corollary}
+
+\subsection{Subroutines for the Minsky machine}
+In order to make writing programs for the Minsky machine easier it is helpful to introduce the notion of subroutines.
+For this we will introduce the notion of subroutines in a manner similar to how it was suggested by Shepherdson and Sturgis in 1963\cite{Shepherdson:1963:CRF:321160.321170}.
+First we need to extend our instruction set by a call instruction:
+\begin{instructionset}
+\label{minskycallinstruction}
+\hfill
+\begin{itemize}
+\item{$INC:$} $x_y = x_y + 1; I_p = i$; | $ y\in{0,1} \land 0 \leq i \leq sizeof(p)$\hfill\break -- i.e. increment counter $x_y$ and jump to $i$
+\item{$DEC:$} if $x_y > 0$ then: $x_y = x_y - 1; I_p = i$, else: $I_p = j$; | $ y\in{0,1} \land 0 \leq i,j \leq sizeof(p)$\hfill\break -- i.e. decrement counter $x_y$ and jump to $i$ if possible, branch to $j$ if not
+\item{$CALL:$} $subroutine$ $(registers)$ $[exits]$ | $registers$ and $exits$ are lists of positive integers and $subroutine$ is a positive integer
+\end{itemize}
+\end{instructionset}
+
+Since the desired behaviour of this new instruction is clearly dependent on other parts of the machine we will first extend the definition of the Minsky machine\ref{smm} to account for the existence of subroutines and then give denotational semantics for the new instruction set in the context of one such machine.
+\begin{definition}
+\label{smm}
+A subroutine Minsky machine is a tuple $(x_0, x_1, p', I_p, s)$, where $x_0$ and $x_1$ are counters, $I_p$ is the program counter and $p'$ is a program consisting of the instructions found in \autoref{minskycallinstruction} and $s$ is a list of subroutine programs also consisting of instructions from \autoref{minskycallinstruction}.
+\end{definition}
+
+
 
 \subsection{Writing programs for the Minsky machine}
 While we now know that the Minsky machine is Turing complete, in practice writing programs can be challenging.
 The main problem seems obvious as there are only two registers to work with and a very limited instruction set to do so.
 Fortunately Minsky offered a solution by correctly encoding the input and output for the Minsky machine\cite{Minsky:1967:CFI:1095587}.
+
+
