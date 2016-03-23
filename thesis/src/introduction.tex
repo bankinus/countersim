@@ -1,3 +1,15 @@
 \chapter{Introduction}
 \section{Historical context}
 \section{Motivation}
+One problem shared by all theoretical models of computation is that it can be hard to test them without the use of a simulator.
+For this reason there is a wide variety of simulators for various theoretical machine models\cite{Chakraborty:2011:FYA:2038876.2038893}.\\
+There are however few options available to those who are interested in counter machines, especially the Minsky machine, one of the simplest members of this class of machine models. To offer an option for the so inclined, this thesis presents countersim, a small and easy to use simulator for counter machines.\\
+Countersim can be used as an educational tool for university courses or for those who would like to explore these historical machine models. For this purpose countersim offers both a graphical mode to explore and test the behaviour of the machines, as well as a non-graphical mode that can be called from the command line. This second mode can be helpful for testing and grading the written programs in the context of a tutorial.\\
+It could also be of use for researchers who seek to test new algorithms and concepts, such as encodings, however it needs to be said that this can become impractical for even slightly large problems due to runtime constraints, as we will discuss later.
+\section{Overview}
+This thesis will begin with a short introduction to the theoretical models that countermachine simulates, before going into detail about the simulator itself, followed by a brief view on the limitations the simulator faces and finally an outlook on possible future improvements of the simulator.\\
+In \autoref{chap:background} we will begin with a definition of both counter machines in general and the Minsky machine in particular.\\
+In \autoref{chap:simulator} we will take a look at countersim itself, both how to use it and how it is implemented.\\
+In \autoref{chap:limitations} we will look at limitations the simulator faces, like memory and runtime limitations.\\
+In \autoref{chap:future} we will discuss possible future improvements of the simulator, to increase both its scope of applicability by adding more variants of counter machines and to increase its memory efficiency.\\
+At last in autoref{chap:conclusions} we will discuss the conclusion to draw from this work.
