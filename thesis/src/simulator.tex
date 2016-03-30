@@ -8,11 +8,18 @@
 \section{Implementation details}
 \subsection{Representing the program}
 In order to speed up the simulation the program is internally transformed into object form before execution. The parsing process will be explained in more detail below.\\
+The commands will 
 Subroutine calls are not represented in this form, since they are fully resolved by the parser. This may however not be an ideal solution due to problems we will discuss in \autoref{limit:program}, instead it may be a good idea to represent them as objects in future implementations, as will be discussed in \autoref{future:call}
 
 \subsection{Parsing the program}
 The parser sequentially reads the program and whenever it successfully recognizes a command it creates an equivalent Simulator\_command object, which is then added to the vector representing the program of the current subroutine.\\
 An exception to this is the call of a subroutine, in which case the parser inserts the entire program of that subroutine, making all necessary substitutions as specified in the call. This copy and substitution process is carried out by an object implementing the visitor pattern and needs to be implemented for each specific specialization of the Simulator\_command class, which is something to keep in mind when adding additional instructions to the simulator.
+
+Sometimes instructions may refer to registers by using identifiers. This will only be the case if said identifier has been named in the corresponding routine header. In this case the parser cannot know the actual number of this register, until it substitutes this subroutine for a call. Until then the parser will insert the corresponding position in the call of this identifier as a negative integer. This substitution happens when the parser reaches the end of the subroutine in question. The conversion of the string identifier to a negative integer makes the substitution process easier when parsing the actual calls of the subroutine. The numbers are negative so they can easily be distinguished from values that have already been resolved.
+
+Jump targets are slightly more complicated, since there are two cases of what an identifier might stand for. Firstly it can stand for a label in the same subroutine context. In this case the actual value can be inserted during the parsing of that subroutine, though it may not be possible to resolve this at the time the parser reads the instruction, since the label may often be found after the instruction using it, most likely when modelling an if clause.\\
+Secondly the identifier may refer to a named exit during a subroutine call. Resolving this case functions in almost the exact same manner as the substitution of named registers.\\
+This works even if the call parameter is itself an identifier that has not yet been resolved, at the time the call is parsed. In this case instead of substituting the call parameter for the actual target number, it simply substitutes the target with the named target specified in the call. The name in the substituted instructions will be resolved with all other instructions in the same context, when reaching the end of the routine.
 
 \subsection{Representing the machine's state}
 As we discussed in the previous chapter the state of a Minsky machine can be thought of as a triple $(x_0, x_1, I_p)$ with $x_0$, $x_1$ being the counters and $I_p$ being the program counter. Since these are merely three positive integers, we can easily model them as such.
