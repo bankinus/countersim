@@ -7,5 +7,20 @@
 \subsection{Requirements}
 \section{Implementation details}
 \subsection{Representing the program}
+In order to speed up the simulation the program is internally transformed into object form before execution. The parsing process will be explained in more detail below.\\
+Subroutine calls are not represented in this form, since they are fully resolved by the parser. This may however not be an ideal solution due to problems we will discuss in \autoref{limit:program}, instead it may be a good idea to represent them as objects in future implementations, as will be discussed in \autoref{future:call}
+
+\subsection{Parsing the program}
+The parser sequentially reads the program and whenever it successfully recognizes a command it creates an equivalent Simulator\_command object, which is then added to the vector representing the program of the current subroutine.\\
+An exception to this is the call of a subroutine, in which case the parser inserts the entire program of that subroutine, making all necessary substitutions as specified in the call. This copy and substitution process is carried out by an object implementing the visitor pattern and needs to be implemented for each specific specialization of the Simulator\_command class, which is something to keep in mind when adding additional instructions to the simulator.
+
 \subsection{Representing the machine's state}
+As we discussed in the previous chapter the state of a Minsky machine can be thought of as a triple $(x_0, x_1, I_p)$ with $x_0$, $x_1$ being the counters and $I_p$ being the program counter. Since these are merely three positive integers, we can easily model them as such.
+
+Since $I_p$ will be used to reference structures lying in the memory of the host system, it is obviously best described by the size\_t type, on most 64-bit platforms this will be an unsigned 64-bit integer. By definition any value that cannot by represented as a size\_t is indexing a program that is too large for the host system, so the size limitations should not be a problem.
+
+The counters are a slightly more complicated matter. The counters of the theoretical machine are by definition potentially infinitely large and many of the machine's theoretic properties rely strongly on this fact. Obviously this behaviour cannot be reproduced in a real simulator. It seems immediately obvious that big integers would allow to come reasonably close, so they may seem a natural way to implement the counters, however this is not the case with this simulator, instead counters are implemented as simple variables of type unsigned long long int. At first glance this may seem rather limited, but as we will discuss in more detail in \autoref{limit:registers}.
+\subsection{Executing programs}
+ 
 \subsection{Differences between the theoretical model and the simulated machine}
+\subsection{Graphical Library}
