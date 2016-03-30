@@ -1,6 +1,8 @@
 \chapter{Limitations of simulating counter machines}
+\label{chap:limitations}
 \section{Memory}
 \subsection{Registers}
+\label{limit:registers}
 \subsection{Program}
 Due to the nature of the internal representation of programs we also need to take into account the potential blow-up of storing these programs.
 While the internal simulator commands themselves are all of a constant size, the nature of our subroutine substitution means that a single line of code of the original program can be expanded into an entire subroutine of internal commands. If that subroutine also contains calls to other subroutines it is easy to see how the internal representation of a program in execution could demand the use of vastly more memory than the program in its textual form did.
