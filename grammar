@@ -1,33 +1,32 @@
-COUNTERMACHINEPROGRAM	:=	[PREPROCESSORCOMMANDS]{MINSKYPROG, URMPROG}
+countermachineprogram	:=	{minskyprogram, urmprogram}
 
-PREPROCESSORCOMMAND	:= <#> {SETMACHINEFLAG,SETREGISTER} <newline>
-SETMACHINEFLAG	:=	<machine>(MACHINE)
-MACHINE	:= {<minsky>, <urm>, LRMMACHINE}
-LRMMACHINE := <lrm> <integer>
-SETREGISTER	:= <set>(<integer>, <integer>)
+minskyprogram := minskytype [configcommand*] [minskysubroutine* 'main' NEWLINE]([label ':'] minskyinstruction NEWLINE)*
+minskytype := '#' 'machine' 'minsky' NEWLINE
+minskysubroutine := 'def' subroutinename registername* '['exitname*']' NEWLINE ([label ':'] minskyinstruction NEWLINE)*
+minskyinstruction := {madd, msub, subroutinecall}
+madd := 'add' target_register [target_instruction]
+msub := 'sub' target_register [target_instruction] target_instruction
 
-MINSKYPROG := [MINSKYSUB* <main> <newline>]([LABEL <:>] MINSKYINSTRUCTION <newline>)*
-MINSKYSUB := <def> SUBROUTINENAME REGISTERNAME* \[EXITNAME*\] <newline> ([LABEL <:>] MINSKYINSTRUCTION <newline>)*
-MINSKYINSTRUCTION := {MADD, MSUB, MSUBROUTINECALL}
-MADD := <add> TARGET_REGISTER [TARGET_INSTRUCTION]
-MSUB := <sub> TARGET_REGISTER [TARGET_INSTRUCTION] TARGET_INSTRUCTION
-MSUBROUTINECALL := <call> SUBROUTINENAME REGISTERNAME* \[EXITNAME*\]
+urmprogram := {urmtype, lrmtype} [configcommand*] [urmsubroutine*]([label ':'] urminstruction NEWLINE)*
+urmtype := '#' 'machine' 'urm' NEWLINE
+lrmtype := '#' 'machine' 'lrm' INTEGER NEWLINE
+urmsubroutine := 'def' subroutinename registername* '['exitname*']' NEWLINE ([label ':'] urminstruction NEWLINE)*
+urminstruction := {inc, dec, clear, copy, jump, jiz, subroutinecall}
+inc	:= 'p' target_register
+dec	:= 'd' target_register
+clear	:= 'o' target_register
+copy	:= 'c' target_register target_register
+jump	:= 'j' target_instruction
+jiz	:= 'j' target_register target_instruction
 
-URMPROG := [URMSUB*]([LABEL <:>] URMINSTRUCTION <newline>)*
-URMSUB := <def> SUBROUTINENAME REGISTERNAME* \[EXITNAME*\] <newline> ([LABEL <:>] URMINSTRUCTION <newline>)*
-URMINSTRUCTION := {INC, DEC, CLEAR, COPY, JUMP, JIZ, SUBROUTINECALL}
-INC	:= <p> TARGET_REGISTER
-DEC	:= <d> TARGET_REGISTER
-CLEAR	:= <o> TARGET_REGISTER
-COPY	:= <c> TARGET_REGISTER TARGET_REGISTER
-JUMP	:= <j> TARGET_INSTRUCTION
-JIZ	:= <j> TARGET_REGISTER TARGET_INSTRUCTION
-SUBROUTINECALL := <call> SUBROUTINENAME REGISTERNAME* \[EXITNAME*\]
+subroutinecall := 'call' subroutinename target_register* '['target_instruction*']'
+configcommand	:= '#' {setregister} NEWLINE
+setregister	:= 'set'INTEGER INTEGER
 
-TARGET_INSTRUCTION := {<integer>, <identifier>, <exit0>}
-TARGET_REGISTER := {<identifier>, <integer>}
-LABEL := <identifier>
-SUBROUTINENAME := <identifier>
-REGISTERNAME := <identifier>
-EXITNAME := <identifier>
+target_instruction := {INTEGER, NAME, 'exit0'}
+target_register := {INTEGER, NAME}
+label := NAME
+subroutinename := NAME
+registername := NAME
+exitname := NAME
 
