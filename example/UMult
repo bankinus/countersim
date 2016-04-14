@@ -1,18 +1,18 @@
 #machine urm
-loop0:	dec 2
-	jmp 2	clear1
-loop1:	dec 1
-	jmp 1	refill
+loop0:	jmp 1	clear0
+	dec 1
+loop1:	jmp 0	refill
+	dec 0
+	inc 2
 	inc 3
-	inc 4
 	jmp	loop1
-refill:	dec 4
-	jmp 4	loop0 
-	inc 1
+refill:	jmp 3	loop0
+	dec 3
+	inc 0
 	jmp	refill
-clear1:	dec 1
-	jmp 1 clear4 
-	jmp	clear1
-clear4:	dec 4
-	jmp 4 exit0 
-	jmp clear4
+clear0:	jmp 0 	clear3
+	dec 0 
+	jmp	clear0
+clear3:	dec 3
+	jmp 3 	exit0 
+	jmp 	clear3
