@@ -10,7 +10,6 @@ It also uses the program\_options library that is part of the boost library vers
 \section{Implementation details}
 \subsection{Representing the program}
 In order to speed up the simulation the program is internally transformed into object form before execution. The parsing process will be explained in more detail below.\\
-The commands will 
 Subroutine calls are not represented in this form, since they are fully resolved by the parser. This may however not be an ideal solution due to problems we will discuss in \autoref{limit:program}, instead it may be a good idea to represent them as objects in future implementations, as will be discussed in \autoref{future:call}
 
 \subsection{Parsing the program}
