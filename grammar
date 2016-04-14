@@ -1,23 +1,30 @@
-countermachineprogram	:=	{minskyprogram, urmprogram}
+countermachineprogram	:=	{minskyprogram, srmprogram, urmprogram}
 
 minskyprogram := minskytype [configcommand*] [minskysubroutine* 'main' NEWLINE]([label ':'] minskyinstruction NEWLINE)*
 minskytype := '#' 'machine' 'minsky' NEWLINE
 minskysubroutine := 'def' subroutinename registername* '['exitname*']' NEWLINE ([label ':'] minskyinstruction NEWLINE)*
-minskyinstruction := {madd, msub, subroutinecall}
-madd := 'add' target_register [target_instruction]
-msub := 'sub' target_register [target_instruction] target_instruction
+minskyinstruction := {add, sub, subroutinecall}
+add := 'add' target_register [target_instruction]
+sub := 'sub' target_register [target_instruction] target_instruction
+
+srmprogram := srmtype [configcommand*] [srmsubroutine* 'main' NEWLINE]([label ':'] srminstruction NEWLINE)*
+srmtype := '#' 'machine' 'srm' NEWLINE
+srmsubroutine := 'def' subroutinename registername* '['exitname*']' NEWLINE ([label ':'] srminstruction NEWLINE)*
+srminstruction := {mul, div, subroutinecall}
+mul := 'mul' target_register [target_instruction]
+div := 'div' target_register [target_instruction] target_instruction
 
 urmprogram := {urmtype, lrmtype} [configcommand*] [urmsubroutine*]([label ':'] urminstruction NEWLINE)*
 urmtype := '#' 'machine' 'urm' NEWLINE
 lrmtype := '#' 'machine' 'lrm' INTEGER NEWLINE
 urmsubroutine := 'def' subroutinename registername* '['exitname*']' NEWLINE ([label ':'] urminstruction NEWLINE)*
 urminstruction := {inc, dec, clear, copy, jump, jiz, subroutinecall}
-inc	:= 'p' target_register
-dec	:= 'd' target_register
-clear	:= 'o' target_register
-copy	:= 'c' target_register target_register
-jump	:= 'j' target_instruction
-jiz	:= 'j' target_register target_instruction
+inc	:= 'inc' target_register
+dec	:= 'dec' target_register
+clear	:= 'clr' target_register
+copy	:= 'cpy' target_register target_register
+jump	:= 'jmp' target_instruction
+jiz	:= 'jiz' target_register target_instruction
 
 subroutinecall := 'call' subroutinename target_register* '['target_instruction*']'
 configcommand	:= '#' {setregister} NEWLINE
