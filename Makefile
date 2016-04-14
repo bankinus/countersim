@@ -20,7 +20,7 @@ gui= -DGUI
 
 debug: CFLAGS += $(DEBUG)
 debug: LDFLAGS += $(DEBUG)
-debug: gui
+debug: gui_debug
 debug: debug_app
 debug_app: GUIOBJECTS= $(shell find $(SOURCEDIR)/gui -name "*.o")
 debug_app: $(OBJECTS:.o=.g) $(GUIOBJECTS)
@@ -28,6 +28,10 @@ debug_app: $(OBJECTS:.o=.g) $(GUIOBJECTS)
 
 gui:
 	cd source/gui && qmake && make
+
+gui_debug:
+	cd source/gui && qmake CONFIG+=debug && make
+
 gf: gui
 gf: app
 

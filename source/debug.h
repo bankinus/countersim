@@ -1,5 +1,5 @@
 #pragma once
-#define DEBUG
+
 #include <iostream>
 #include "context.h"
 #ifdef DEBUG
