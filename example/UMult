@@ -1,0 +1,18 @@
+#machine urm
+loop0:	dec 2
+	jmp 2	clear1
+loop1:	dec 1
+	jmp 1	refill
+	inc 3
+	inc 4
+	jmp	loop1
+refill:	dec 4
+	jmp 4	loop0 
+	inc 1
+	jmp	refill
+clear1:	dec 1
+	jmp 1 clear4 
+	jmp	clear1
+clear4:	dec 4
+	jmp 4 exit0 
+	jmp clear4

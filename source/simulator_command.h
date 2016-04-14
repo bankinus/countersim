@@ -49,6 +49,20 @@ class Target_command : virtual public Simulator_command
 		std::string get_target_name();
 };
 
+class Dual_target_command : virtual public Target_command
+{
+	protected:
+		long long int target2;
+		std::string target2_name;
+	public:
+		Dual_target_command() : target2_name(""){}
+		void set_target2(long long int number);
+		long long int get_target2();
+		void set_target2_name(std::string s);
+		std::string get_target2_name();
+
+};
+
 class Branch_command : virtual public Simulator_command
 {
 	protected:
@@ -88,7 +102,41 @@ class Mdiv_command : public Target_command, public Jump_command, public Branch_c
 	public:
 		virtual void accept (Routine_visitor *visitor) override;
 		virtual std::string toString() override;
+};
 
+class Uinc_command : public Target_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
+};
+
+class Udec_command : public Target_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
+};
+
+class Ucopy_command : public Dual_target_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
+};
+
+class Uclear_command : public Target_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
+};
+
+class Ujump_command : public Target_command, public Jump_command, public Branch_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
 };
 
 #include "routine_visitor.h"

@@ -95,30 +95,30 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 			}
 		}
 	}
-	else if (tokencmpr(s, "p")) {
-		t.set_type(Token::Uadd);
-		t.set_content("p");
-		s+=1;
+	else if (tokencmpr(s, "inc")) {
+		t.set_type(Token::Uinc);
+		t.set_content("inc");
+		s+=3;
 	}
-	else if (tokencmpr(s, "d")) {
-		t.set_type(Token::Usub);
-		t.set_content("d");
-		s+=1;
+	else if (tokencmpr(s, "dec")) {
+		t.set_type(Token::Udec);
+		t.set_content("dec");
+		s+=3;
 	}
-	else if (tokencmpr(s, "c")) {
+	else if (tokencmpr(s, "cpy")) {
 		t.set_type(Token::Ucopy);
-		t.set_content("c");
-		s+=1;
+		t.set_content("cpy");
+		s+=3;
 	}
-	else if (tokencmpr(s, "o")) {
+	else if (tokencmpr(s, "clr")) {
 		t.set_type(Token::Uclear);
-		t.set_content("o");
-		s+=1;
+		t.set_content("clr");
+		s+=3;
 	}
-	else if (tokencmpr(s, "j")) {
-		t.set_type(Token::Ujmp);
-		t.set_content("j");
-		s+=1;
+	else if (tokencmpr(s, "jmp")) {
+		t.set_type(Token::Ujump);
+		t.set_content("jmp");
+		s+=3;
 	}
 	else if (tokencmpr(s, "add")) {
 		t.set_type(Token::Madd);

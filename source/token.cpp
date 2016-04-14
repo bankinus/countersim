@@ -67,15 +67,15 @@ std::string Token::typeName(tokenType t){
 			return "mul";
 		case Mdiv:
 			return "div";
-		case Uadd:
+		case Uinc:
 			return "inc";
-		case Usub:
+		case Udec:
 			return "dec";
 		case Uclear:
 			return "clr";
 		case Ucopy:
 			return "cpy";
-		case Ujmp:
+		case Ujump:
 			return "jmp";
 		case Preproc:
 			return "#";

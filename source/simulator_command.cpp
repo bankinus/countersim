@@ -37,6 +37,22 @@ void Target_command::set_target_name(std::string s) {
 	target_name = s;
 }
 
+void Dual_target_command::set_target2(long long int number) {
+	target2 = number;
+}
+
+long long int Dual_target_command::get_target2() {
+	return target2;
+}
+
+std::string Dual_target_command::get_target2_name() {
+	return target2_name;
+}
+
+void Dual_target_command::set_target2_name(std::string s) {
+	target2_name = s;
+}
+
 void Jump_command::set_jump(long long int number) {
 	jump = number;
 }
@@ -109,3 +125,60 @@ std::string  Mdiv_command::toString () {
 void Mdiv_command::accept (Routine_visitor *visitor) {
 	visitor->visit(this);
 }
+
+std::string  Uinc_command::toString () {
+	std::stringstream ss;
+	ss << "inc " << target;
+	return ss.str();
+}
+
+void Uinc_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}
+
+std::string  Udec_command::toString () {
+	std::stringstream ss;
+	ss << "dec " << target;
+	return ss.str();
+}
+
+void Udec_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}
+
+std::string  Ucopy_command::toString () {
+	std::stringstream ss;
+	ss << "copy " << target << " " << target2;
+	return ss.str();
+}
+
+void Ucopy_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}
+
+std::string  Uclear_command::toString () {
+	std::stringstream ss;
+	ss << "clear " << target;
+	return ss.str();
+}
+
+void Uclear_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}
+
+std::string  Ujump_command::toString () {
+	std::stringstream ss;
+	if (jump==0){
+		ss << "jump " << target << " " << branch;
+	}
+	else {
+		ss << "jump " << jump;
+	}
+	return ss.str();
+}
+
+void Ujump_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}
+
+
