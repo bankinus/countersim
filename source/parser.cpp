@@ -251,15 +251,12 @@ template <> bool Parser::parse_instruction<Token::Minsky>(Context &context) {
 						return false;
 					case Token::Exit0:
 						sub_command->set_jump(0);
-						sub_command->set_branch(0);//set in case next token is newline
 						break;
 					case Token::Identifier:
 						sub_command->set_jump_name(t.get_content());
-						sub_command->set_branch_name(t.get_content());//set in case next token is newline
 						break;
 					case Token::Number:
 						sub_command->set_jump(t.get_numerical_value());
-						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
 						break;
 					default:
 						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
@@ -283,6 +280,9 @@ template <> bool Parser::parse_instruction<Token::Minsky>(Context &context) {
 						sub_command->set_branch(t.get_numerical_value());
 						break;
 					case Token::Newline:
+						sub_command->set_branch(sub_command->get_jump());
+						sub_command->set_branch_name(sub_command->get_jump_name());
+						sub_command->set_jump(0);
 						sub_command->set_jump_name("_next");
 						break;
 					default:
@@ -328,23 +328,23 @@ template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {Token 
 			return false;
 		case Token::Mmul:
 			{
-				Mmul_command *add_command = new Mmul_command();
+				Mmul_command *mul_command = new Mmul_command();
 				lexer.getNext(t);
 				/*target parameter*/
 				switch (t.get_type()){
 					case Token::nil:
 						error_stream << "lexing error in line " << line << Error_stream::endl;
-						delete add_command;
+						delete mul_command;
 						return false;
 					case Token::Identifier:
-						add_command->set_target_name(t.get_content());
+						mul_command->set_target_name(t.get_content());
 						break;
 					case Token::Number:
-						add_command->set_target(t.get_numerical_value());
+						mul_command->set_target(t.get_numerical_value());
 						break;
 					default:
 						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
-						delete add_command;
+						delete mul_command;
 						return false;
 				}
 				lexer.getNext(t);
@@ -352,47 +352,47 @@ template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {Token 
 				switch (t.get_type()){
 					case Token::nil:
 						error_stream << "lexing error in line " << line << Error_stream::endl;
-						delete add_command;
+						delete mul_command;
 						return false;
 					case Token::Exit0:
-						add_command->set_jump(0);
+						mul_command->set_jump(0);
 						break;
 					case Token::Identifier:
-						add_command->set_jump_name(t.get_content());
+						mul_command->set_jump_name(t.get_content());
 						break;
 					case Token::Number:
-						add_command->set_jump(t.get_numerical_value());
+						mul_command->set_jump(t.get_numerical_value());
 						break;
 					case Token::Newline:
-						add_command->set_jump_name("_next");
+						mul_command->set_jump_name("_next");
 						break;
 					default:
 						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
-						delete add_command;
+						delete mul_command;
 						return false;
 				}
-				command = add_command;
+				command = mul_command;
 			}
 			break;
 		case Token::Mdiv:
 			{
-				Mdiv_command* sub_command = new Mdiv_command();
+				Mdiv_command* div_command = new Mdiv_command();
 				lexer.getNext(t);
 				/*target parameter*/
 				switch (t.get_type()){
 					case Token::nil:
 						error_stream << "lexing error in line " << line << Error_stream::endl;
-						delete sub_command;
+						delete div_command;
 						return false;
 					case Token::Identifier:
-						sub_command->set_target_name(t.get_content());
+						div_command->set_target_name(t.get_content());
 						break;
 					case Token::Number:
-						sub_command->set_target(t.get_numerical_value());
+						div_command->set_target(t.get_numerical_value());
 						break;
 					default:
 						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
-						delete sub_command;
+						delete div_command;
 						return false;
 				}
 				lexer.getNext(t);
@@ -400,23 +400,20 @@ template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {Token 
 				switch (t.get_type()){
 					case Token::nil:
 						error_stream << "lexing error in line " << line << Error_stream::endl;
-						delete sub_command;
+						delete div_command;
 						return false;
 					case Token::Exit0:
-						sub_command->set_jump(0);
-						sub_command->set_branch(0);//set in case next token is newline
+						div_command->set_jump(0);
 						break;
 					case Token::Identifier:
-						sub_command->set_jump_name(t.get_content());
-						sub_command->set_branch_name(t.get_content());//set in case next token is newline
+						div_command->set_jump_name(t.get_content());
 						break;
 					case Token::Number:
-						sub_command->set_jump(t.get_numerical_value());
-						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
+						div_command->set_jump(t.get_numerical_value());
 						break;
 					default:
 						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
-						delete sub_command;
+						delete div_command;
 						return false;
 				}
 				lexer.getNext(t);
@@ -424,26 +421,30 @@ template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {Token 
 				switch (t.get_type()){
 					case Token::nil:
 						error_stream << "lexing error in line " << line << Error_stream::endl;
-						delete sub_command;
+						delete div_command;
 						return false;
 					case Token::Exit0:
-						sub_command->set_branch(0);
+						div_command->set_branch_name("");
+						div_command->set_branch(0);
 						break;
 					case Token::Identifier:
-						sub_command->set_branch_name(t.get_content());
+						div_command->set_branch_name(t.get_content());
 						break;
 					case Token::Number:
-						sub_command->set_branch(t.get_numerical_value());
+						div_command->set_branch(t.get_numerical_value());
 						break;
 					case Token::Newline:
-						sub_command->set_jump_name("_next");
+						div_command->set_branch(div_command->get_jump());
+						div_command->set_branch_name(div_command->get_jump_name());
+						div_command->set_jump(0);
+						div_command->set_jump_name("_next");
 						break;
 					default:
 						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
-						delete sub_command;
+						delete div_command;
 						return false;
 				}
-				command = sub_command;
+				command = div_command;
 			}
 			break;
 		default:
