@@ -563,8 +563,8 @@ template <> bool Parser::parse_instruction<Token::URM>(Context &context) {
 				lexer.getNext(t);
 				switch (t.get_type()){
 					case Token::Exit0:
-						jump_command->set_target_name("");
-						jump_command->set_target(0);
+						jump_command->set_branch_name("");
+						jump_command->set_branch(0);
 						break;
 					case Token::Identifier:
 						jump_command->set_branch_name(t.get_content());

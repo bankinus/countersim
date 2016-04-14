@@ -20,6 +20,15 @@ void Subroutine_inserter::copy_target(Target_command *command, Target_command *n
 	}
 }
 
+void Subroutine_inserter::copy_target2(Dual_target_command *command, Dual_target_command *newcommand){
+	if (command->get_target2()>=0) {
+		newcommand->set_target2(command->get_target2());
+	}
+	else {
+		newcommand->set_target2(registers[-(command->get_target2())]);
+	}
+}
+
 void Subroutine_inserter::copy_jump(Jump_command *command, Jump_command *newcommand){
 	if (command->get_jump()>=0) {
 		newcommand->set_jump(command->get_jump()+offset);
@@ -84,6 +93,59 @@ void Subroutine_inserter::visit(Mmul_command *command) {
 
 void Subroutine_inserter::visit(Mdiv_command *command) {
 	Mdiv_command *newcommand = new Mdiv_command();
+
+	prologue(command, newcommand);
+
+	copy_target(command, newcommand);
+	copy_jump(command, newcommand);
+	copy_branch(command, newcommand);
+
+	epilogue(command, newcommand);
+}
+
+void Subroutine_inserter::visit(Uinc_command *command) {
+	Uinc_command *newcommand = new Uinc_command();
+
+	prologue(command, newcommand);
+
+	copy_target(command, newcommand);
+
+	epilogue(command, newcommand);
+}
+
+void Subroutine_inserter::visit(Udec_command *command) {
+	Udec_command *newcommand = new Udec_command();
+
+	prologue(command, newcommand);
+
+	copy_target(command, newcommand);
+
+	epilogue(command, newcommand);
+}
+
+void Subroutine_inserter::visit(Ucopy_command *command) {
+	Ucopy_command *newcommand = new Ucopy_command();
+
+	prologue(command, newcommand);
+
+	copy_target(command, newcommand);
+	copy_target2(command, newcommand);
+
+	epilogue(command, newcommand);
+}
+
+void Subroutine_inserter::visit(Uclear_command *command) {
+	Uclear_command *newcommand = new Uclear_command();
+
+	prologue(command, newcommand);
+
+	copy_target(command, newcommand);
+
+	epilogue(command, newcommand);
+}
+
+void Subroutine_inserter::visit(Ujump_command *command) {
+	Ujump_command *newcommand = new Ujump_command();
 
 	prologue(command, newcommand);
 

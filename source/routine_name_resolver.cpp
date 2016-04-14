@@ -7,6 +7,12 @@ void Routine_name_resolver::resolve_target(Target_command *command){
 	}
 }
 
+void Routine_name_resolver::resolve_target2(Dual_target_command *command){
+	if (command->get_target2_name()!="") {
+		command->set_target2(context.get_reg(command->get_target2_name()));
+	}
+}
+
 void Routine_name_resolver::resolve_jump(Jump_command *command){
 	if (command->get_jump_name()!="") {
 		if (command->get_jump_name()=="_next") {
@@ -41,6 +47,29 @@ void Routine_name_resolver::visit(Mmul_command *command) {
 
 void Routine_name_resolver::visit(Mdiv_command *command) {
 	resolve_jump(command);
+	resolve_branch(command);
+}
+
+void Routine_name_resolver::visit(Uinc_command *command) {
+	resolve_target(command);
+}
+
+void Routine_name_resolver::visit(Udec_command *command) {
+	resolve_target(command);
+}
+
+void Routine_name_resolver::visit(Ucopy_command *command) {
+	resolve_target(command);
+	resolve_target2(command);
+}
+
+void Routine_name_resolver::visit(Uclear_command *command) {
+	resolve_target(command);
+}
+
+void Routine_name_resolver::visit(Ujump_command *command) {
+	resolve_jump(command);
+	resolve_target(command);
 	resolve_branch(command);
 }
 

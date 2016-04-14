@@ -25,5 +25,10 @@ class Execution_visitor : public Routine_visitor {
 		virtual void visit(Msub_command *command) override;
 		virtual void visit(Mmul_command *command) override;
 		virtual void visit(Mdiv_command *command) override;
+		virtual void visit(Uinc_command *command) override;
+		virtual void visit(Udec_command *command) override;
+		virtual void visit(Ucopy_command *command) override;
+		virtual void visit(Uclear_command *command) override;
+		virtual void visit(Ujump_command *command) override;
 };
 
