@@ -70,9 +70,6 @@ void Branch_command::set_branch_name(std::string s) {
 	branch_name = s;
 }
 
-void Madd_command::execute () {
-}
-
 std::string  Madd_command::toString () {
 	std::stringstream ss;
 	ss << "add " << target << " " << jump;
@@ -81,9 +78,6 @@ std::string  Madd_command::toString () {
 
 void Madd_command::accept (Routine_visitor *visitor) {
 	visitor->visit(this);
-}
-
-void Msub_command::execute () {
 }
 
 std::string  Msub_command::toString () {
@@ -96,3 +90,22 @@ void Msub_command::accept (Routine_visitor *visitor) {
 	visitor->visit(this);
 }
 
+std::string  Mmul_command::toString () {
+	std::stringstream ss;
+	ss << "mul " << target << " " << jump;
+	return ss.str();
+}
+
+void Mmul_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}
+
+std::string  Mdiv_command::toString () {
+	std::stringstream ss;
+	ss << "div " << target << " " << jump << " " << branch;
+	return ss.str();
+}
+
+void Mdiv_command::accept (Routine_visitor *visitor) {
+	visitor->visit(this);
+}

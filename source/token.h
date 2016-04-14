@@ -7,8 +7,10 @@ class Token
 	typedef enum tokenType_enum {Identifier, Number, Exit, Newline, EOP, Exit0,
 	                     Def, Main, Call, BracketL, BracketR, Colon,
 	                     Madd, Msub,
+								Mmul, Mdiv,
 	                     Uadd, Usub, Uclear, Ucopy, Ujmp,
-	                     Preproc, Machine, Setreg, LRM, URM, Minsky,
+	                     Preproc, Machine, Setreg,
+								LRM, URM, Minsky, SRM,
 	                     nil} tokenType;
 
 	private:
@@ -31,6 +33,7 @@ class Token
 
 	long long int get_numerical_value();
 	void set_numerical_value(long long int i);
+	static std::string typeName(tokenType t);
 };
 
 typedef Token::tokenType tokenType;

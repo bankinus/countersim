@@ -32,6 +32,23 @@ void Execution_visitor::visit(Msub_command *command) {
 	}
 }
 
+void Execution_visitor::visit(Mmul_command *command) {
+	Register *reg = simulation.get_register(0);
+	reg->set_value(reg->get_value()*command->get_target());
+	next = command->get_jump();
+}
+
+void Execution_visitor::visit(Mdiv_command *command) {
+	Register *reg = simulation.get_register(0);
+	if (reg->get_value()%command->get_target()==0) {
+		reg->set_value(reg->get_value()/command->get_target());
+		next = command->get_jump();
+	}
+	else {
+		next = command->get_branch();
+	}
+}
+
 size_t Execution_visitor::get_next() const{
 	return next;
 }

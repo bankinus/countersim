@@ -11,6 +11,12 @@ void Routine_visitor::visit(Madd_command *command) {
 void Routine_visitor::visit(Msub_command *command) {
 	return;
 }
+void Routine_visitor::visit(Mmul_command *command) {
+	return;
+}
+void Routine_visitor::visit(Mdiv_command *command) {
+	return;
+}
 void Routine_visitor::visit(Simulator_command *command) {
 	return;
 }

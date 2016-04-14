@@ -1,423 +1,170 @@
 #include "parser.h"
-#include "token.h"
-#include "lexer.h"
-#include "simulator_command.h"
-#include "context.h"
-#include "routine_name_resolver.h"
-#include "subroutine_inserter.h"
-#include <string>
 #include "error_stream.h"
+#include "subroutine_inserter.h"
+#include "routine_name_resolver.h"
 #include "debug.h"
+
+#include <string>
+#include <sstream>
+#include <algorithm>
+
+std::string expectation(std::vector<Token::tokenType> exp) {
+	std::stringstream ss;
+	for (Token::tokenType t : exp) {
+		ss << " " << Token::typeName(t);
+	}
+	return ss.str();
+}
+
+void Parser::unexpected_token(Token &t, std::vector<Token::tokenType> exp, std::vector<Token::tokenType> con) {
+	//print error
+	error_stream << "syntax error in line " << line << ": "
+		"expected " << expectation(exp) << ", received " << t.get_content() << Error_stream::endl;
+	//find continuation point
+	if (con.empty()) return;
+	while (t.get_type()!=Token::EOP && std::find(con.begin(), con.end(), t.get_type()) != con.end()) {
+		lexer.getNext(t);
+	}
+}
 
 Context *Parser::parse_simulator_program(const char *s) {
 	Token t;
-	const char *old;
-	const char *next;
-	Context *context = new Context();
-	next = s;
-	context->set_name("_config");
-	old = next;
-	Lexer::nextToken(next, t, &next);
-	while (t.get_type()==Token::Preproc) {
-		if (!parse_config_command(next, context, &next)) return NULL;
-		old = next;
-		Lexer::nextToken(next, t, &next);
-		context->current_line++;
+	line = 1;
+	lexer.setNext(s);
+	if (!swallow(Token::Preproc)) return NULL;
+	if (!swallow(Token::Machine)) return NULL;
+	lexer.getNext(t);
+	switch (t.get_type()) {
+		case Token::LRM:
+			lexer.getNext(t);
+			if (!(t.get_type()==Token::Number)) {
+				unexpected_token(t, {Token::Number});
+			}
+			else {
+				//TODO set limit
+			}
+		case Token::URM:
+			return parse_program<Token::URM>();
+			break;
+		case Token::SRM:
+			return parse_program<Token::SRM>();
+			break;
+		case Token::Minsky:
+			return parse_program<Token::Minsky>();
+			break;
+		default:
+			unexpected_token(t, {Token::LRM, Token::URM, Token::SRM, Token::Minsky});
+			return NULL;
+	}
+}
+
+template <Token::tokenType T> Context *Parser::parse_program() {
+	Token t;
+	bool subroutines = false;
+	if (!swallow(Token::Newline)) return NULL;
+	line++;
+	for (lexer.peekNext(t); t.get_type()==Token::Preproc; lexer.peekNext(t)) {
+		if (!parse_config_command()) return NULL;
+	}
+	for (lexer.peekNext(t); t.get_type()==Token::Def; lexer.peekNext(t)) {
+		Context *subroutine_context;
+		subroutine_context = parse_subroutine<T>();
+		if (subroutine_context==NULL) {
+			return NULL;
+		}
+		context_map[subroutine_context->get_name()] = subroutine_context;
+		subroutines = true;
+	}
+	if  (subroutines) {
+		if (!swallow(Token::Main)) {
+			return NULL;
+		}
+		if (!swallow(Token::Newline)) return NULL;
 		line++;
 	}
-	return parse_Minsky_program(old);
+	return parse_mainroutine<T>();
 }
 
-bool Parser::parse_config_command(const char *s, Context *context, const char **resnext) {
-	Token t;
-	const char* next;
-	next = s;
-	Lexer::nextToken(next, t, &next);
-	switch (t.get_type()) {
-		case Token::Machine:
-			Lexer::nextToken(next, t, &next);
-			switch (t.get_type()) {
-				case Token::Minsky:
-					//TODO set config
-					break;
-				case Token::URM:
-					//TODO set config
-					break;
-				case Token::LRM:
-					//TODO set config
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected machine type, received " << t.get_content() << Error_stream::endl;
-					goto error_config_command;
-			}
-			break;
-		case Token::Setreg:
-			Lexer::nextToken(next, t, &next);
-			switch (t.get_type()) {
-				case Token::Number:
-					//TODO set config
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected integer, received " << t.get_content() << Error_stream::endl;
-					goto error_config_command;
-			}
-			Lexer::nextToken(next, t, &next);
-			switch (t.get_type()) {
-				case Token::Number:
-					//TODO set config
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected integer, received " << t.get_content() << Error_stream::endl;
-					goto error_config_command;
-			}
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected config command, received " << t.get_content() << Error_stream::endl;
-			goto error_config_command;
-	}
-	Lexer::nextToken(next, t, &next);
-	switch (t.get_type()) {
-		case Token::Newline:
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected newline, received " << t.get_content() << Error_stream::endl;
-			goto error_config_command;
-	}
-	*resnext = next;
-	return true;
-	error_config_command:
-		*resnext = NULL;
-		return false;
-}
-
-Context *Parser::parse_Minsky_program(const char *s) {
-	Token t;
-	const char *old;
-	const char *next;
-	Context *context;
-	bool main;
-	main = false;
-	next = s;
-	while (!main) {
-		old = next;
-		Lexer::nextToken(next, t, &next);
-		switch (t.get_type()) {
-			case Token::Def:
-				Lexer::nextToken(next, t);
-				context = parse_Minsky_sub_routine(old);
-				if (context==NULL) goto error_parse_Minsky_program;
-				context_map[context->get_name()]=context;
-				next = context->next;
-				break;
-			case Token::Identifier:
-			case Token::Madd:
-			case Token::Msub:
-			case Token::EOP:
-				next=old;
-			case Token::Main:
-				Lexer::nextToken(next, t, &next);
-				switch (t.get_type()) {
-					case Token::Newline:
-						main = true;
-						line++;
-						break;
-					default:
-						error_stream << "syntax error in line " << line << ": "
-							"expected newline, received " << t.get_content() << Error_stream::endl;
-						goto error_parse_Minsky_program;
-						break;
-				}
-				break;
-			default:
-				error_stream << "syntax error in line " << line << ": "
-					"expected routine definition, received " << t.get_content() << Error_stream::endl;
-				goto error_parse_Minsky_program;
-		}
-	}
-	context = parse_Minsky_main_routine(next);
-	if (context==NULL) goto error_parse_Minsky_program;
-	/*cleanup*/
-	for (auto c: context_map) {
-		delete c.second;
-	}
-	return context;
-
-	error_parse_Minsky_program:
-		for (auto c: context_map) {
-			delete c.second;
-		}
-		return NULL;
-}
-
-Context *Parser::parse_URM_program(const char *s) {
-	return NULL;
-}
-
-Context *Parser::parse_URM_routine(const char *s) {
-	return NULL;
-}
-
-Context *Parser::parse_Minsky_main_routine(const char *s) {
+template <Token::tokenType T> Context *Parser::parse_mainroutine() {
 	Context *context = new Context();
-	context->set_name("main");
-	if (parse_Minsky_routine(s, context)!=NULL) {
-		return context;
-	}
-	return NULL;
+   context->set_name("main");
+	return parse_routine<T>(*context);
 }
 
-Context *Parser::parse_Minsky_sub_routine(const char *s) {
+template <Token::tokenType T> Context *Parser::parse_subroutine() {
 	Token t;
-	const char *old;
-	const char *next;
 	int i;
-	next = s;
 	Context *context = new Context();
-	Simulator_command *command;
-	/*parse routine header*/
-	Lexer::nextToken(next, t, &next);
-	switch (t.get_type()) {
-		case Token::Def:
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected def, received " << t.get_content() << Error_stream::endl;
-			goto error_parse_Minsky_routine;
+	if (!swallow(Token::Def)) return NULL;
+	lexer.getNext(t);
+	if (t.get_type()!=Token::Identifier) {
+		unexpected_token(t, {Token::Identifier});
+		return NULL;
 	}
-	/*parse name*/
-	Lexer::nextToken(next, t, &next);
-	switch (t.get_type()) {
-		case Token::Identifier:
-			context->set_name(t.get_content());
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected identifier, received " << t.get_content() << Error_stream::endl;
-			goto error_parse_Minsky_routine;
-	}
+	context->set_name(t.get_content());
 	/*parse registers*/
 	i = -1;
-	for (Lexer::nextToken(next, t, &next);t.get_type()==Token::Identifier; Lexer::nextToken(next, t, &next)) {
+	for (lexer.getNext(t);t.get_type()==Token::Identifier; lexer.getNext(t)) {
 		context->set_reg(t.get_content(), i);
 		i--;
 	}
-	switch (t.get_type()) {
-		case Token::BracketL:
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected [, received " << t.get_content() << Error_stream::endl;
-			goto error_parse_Minsky_routine;
+	if (t.get_type() != Token::BracketL) {
+		unexpected_token(t, {Token::BracketL});
+		return NULL;
 	}
 	/*parse exits*/
 	i = -1;
-	for (Lexer::nextToken(next, t, &next);t.get_type()==Token::Identifier; Lexer::nextToken(next, t, &next)) {
+	for (lexer.getNext(t);t.get_type()==Token::Identifier; lexer.getNext(t)) {
 		context->set_line(t.get_content(), i);
 		i--;
 	}
-	switch (t.get_type()) {
-		case Token::BracketR:
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected ], received " << t.get_content() << Error_stream::endl;
-			goto error_parse_Minsky_routine;
-	}
-	Lexer::nextToken(next, t, &next);
-	switch (t.get_type()) {
-		case Token::Newline:
-			line++;
-			break;
-		default:
-			error_stream << "syntax error in line " << line << ": "
-				"expected newline, received " << t.get_content() << Error_stream::endl;
-			goto error_parse_Minsky_routine;
-	}
-	if (parse_Minsky_routine(next, context)!=NULL) {
-		return context;
-	}
-	error_parse_Minsky_routine:
+	if (t.get_type() != Token::BracketR) {
+		unexpected_token(t, {Token::BracketR});
 		return NULL;
+	}
+	if (!swallow(Token::Newline)) return NULL;
+	line++;
+	return parse_routine<T>(*context);
 }
 
-Context *Parser::parse_Minsky_routine(const char *s, Context *context) {
+template <Token::tokenType T> Context *Parser::parse_routine(Context &context) {
 	Token t;
-	const char *old;
-	const char *next;
-	next = s;
-	Simulator_command *command;
+	bool fail;
 	while (1) {
-		old = next;
-		Lexer::nextToken(next, t, &next);
-		/*check for end of routine*/
+		lexer.peekNext(t);
 		if (t.get_type()==Token::EOP) break;
 		if (t.get_type()==Token::Def) break;
 		if (t.get_type()==Token::Main) break;
-		/*check for and parse label*/
-		switch (t.get_type()) {
-			case Token::Identifier:
-				context->set_line(t.get_content(), context->current_line);
-				Lexer::nextToken(next, t, &next);
-				switch (t.get_type()) {
-					case Token::Colon:
-						break;
-					default:
-						Lexer::nextToken(old, t, &next);
-						error_stream << "syntax error in line " << line << ": "
-							<< t.get_content() << " is not a valid command or label declaration" << Error_stream::endl;
-						goto error_parse_Minsky_routine;
-				}
-				break;
-			case Token::Madd:
-			case Token::Msub:
-			case Token::Call:
-				next = old;
-				break;
-			default:
-				Lexer::nextToken(old, t, &next);
-				error_stream << "syntax error in line " << line << ": "
-					<< t.get_content() << " is not a valid command or label declaration" << Error_stream::endl;
-				goto error_parse_Minsky_routine;
+		if (t.get_type()==Token::Identifier) {
+			context.set_line(t.get_content(), context.current_line);
+			lexer.getNext(t);
+			if (!swallow(Token::Colon, {Token::Newline})) {
+				fail = true;
+			}
 		}
-		/*parse command*/
-		if (!parse_Minsky_command(next, &next, &command, *context)){
-			goto error_parse_Minsky_routine;
-		}
-		else if (command!=NULL){
-			context->add_command(command);
-			context->current_line++;
-		}
+		if (!parse_instruction<T>(context)) fail=true;
 		line++;
 	}
-	context->next=old;
-	/*replace labels*/
-	Routine_name_resolver(*context).visitc(*context);
-	return context;
-	error_parse_Minsky_routine:
-		delete context;
+	if (fail) {
+		delete &context;
 		return NULL;
+	}
+	Routine_name_resolver(context).visitc(context);
+	return &context;
 }
 
-bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_command **res, Context &con) {
+template <> bool Parser::parse_instruction<Token::Minsky>(Context &context) {
 	Token t;
-	const char *next;
-	const char *old;
-	std::string routine_name;
-	std::vector<int> registers;
-	std::vector<int> exits;
-	std::vector<std::string> exit_names;
-	Context *subroutine;
-	next = s;
+	lexer.getNext(t);
 	Simulator_command *command = NULL;
-
-	Lexer::nextToken(next, t, &next);
 	switch (t.get_type()) {
-		case Token::nil:
-			error_stream << "lexing error in line " << line << ": " << t.get_content() << Error_stream::endl;
-			return false;
 		case Token::Call:
-			/*parse name*/
-			Lexer::nextToken(next, t, &next);
-			switch (t.get_type()) {
-				case Token::Identifier:
-					routine_name = t.get_content();
-					subroutine=context_map[routine_name];
-					if (subroutine==NULL) {
-						error_stream << "error in line " << line << ": "
-						" undefined reference to " << routine_name << Error_stream::endl;
-						return false;
-					}
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected identifier, received " << t.get_content() << Error_stream::endl;
-					return false;
-			}
-			/*parse registers*/
-			//TODO fix number of args
-			registers=std::vector<int>();
-			registers.push_back(0);
-			for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::BracketL; Lexer::nextToken(next, t, &next)) {
-				switch (t.get_type()) {
-					case Token::Number:
-						registers.push_back(t.get_numerical_value());
-						break;
-					case Token::Identifier:
-						registers.push_back(con.get_reg(t.get_content()));
-						break;
-					default:
-						error_stream << "syntax error in line " << line << ": "
-							"expected identifier or integer, received " << t.get_content() << Error_stream::endl;
-						return false;
-				}
-			}
-			switch (t.get_type()) {
-				case Token::BracketL:
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected [, received " << t.get_content() << Error_stream::endl;
-					return false;
-			}
-			/*parse exits*/
-			//TODO fix number of args
-			exits=std::vector<int>();
-			exit_names=std::vector<std::string>();
-			exits.push_back(0);
-			exit_names.push_back("");
-			for (Lexer::nextToken(next, t, &next);t.get_type()!=Token::BracketR; Lexer::nextToken(next, t, &next)) {
-				switch (t.get_type()) {
-					case Token::Exit0:
-						exits.push_back(0);
-						exit_names.push_back("");
-						break;
-					case Token::Number:
-						exits.push_back(t.get_numerical_value());
-						exit_names.push_back("");
-						break;
-					case Token::Identifier:
-						exits.push_back(0);
-						exit_names.push_back(t.get_content());
-						break;
-					default:
-						error_stream << "syntax error in line " << line << ": "
-							"expected identifier or integer, received " << t.get_content() << Error_stream::endl;
-						return false;
-				}
-			}
-			switch (t.get_type()) {
-				case Token::BracketR:
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected ], received " << t.get_content() << Error_stream::endl;
-					return false;
-			}
-			Lexer::nextToken(next, t, &next);
-			switch (t.get_type()) {
-				case Token::Newline:
-					break;
-				default:
-					error_stream << "syntax error in line " << line << ": "
-						"expected newline, received " << t.get_content() << Error_stream::endl;
-					return false;
-			}
-			{
-				Subroutine_inserter(con, registers, exits, exit_names).visitc(*subroutine);
-			}
-			*resnext=next;
-			*res=NULL;
-			return true;
-
+			if (parse_call(context)) return true;
+			return false;
 		case Token::Madd:
 			{
 				Madd_command *add_command = new Madd_command();
-				Lexer::nextToken(next, t, &next);
+				lexer.getNext(t);
 				/*target parameter*/
 				switch (t.get_type()){
 					case Token::nil:
@@ -437,13 +184,11 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						add_command->set_target(t.get_numerical_value());
 						break;
 					default:
-						error_stream << "syntax error in line " << line << ": "
-							<< t.get_content() << " is not a valid argument for add" << Error_stream::endl;
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
 						delete add_command;
 						return false;
 				}
-				old = next;
-				Lexer::nextToken(next, t, &next);
+				lexer.getNext(t);
 				/*next command parameter*/
 				switch (t.get_type()){
 					case Token::nil:
@@ -461,22 +206,9 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						break;
 					case Token::Newline:
 						add_command->set_jump_name("_next");
-						next = old;
 						break;
 					default:
-						error_stream << "syntax error in line " << line << ": "
-							<< t.get_content() << " is not a valid argument for add" << Error_stream::endl;
-						delete add_command;
-						return false;
-				}
-				Lexer::nextToken(next, t, &next);
-				/*newline*/
-				switch (t.get_type()){
-					case Token::Newline:
-						break;
-					default:
-						error_stream << "syntax error in line " << line << ": expected newline received "
-							<< t.get_content() << Error_stream::endl;
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
 						delete add_command;
 						return false;
 				}
@@ -486,7 +218,7 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 		case Token::Msub:
 			{
 				Msub_command* sub_command = new Msub_command();
-				Lexer::nextToken(next, t, &next);
+				lexer.getNext(t);
 				/*target parameter*/
 				switch (t.get_type()){
 					case Token::nil:
@@ -506,12 +238,11 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						sub_command->set_target(t.get_numerical_value());
 						break;
 					default:
-						error_stream << "syntax error in line " << line << ": "
-							<< t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
 						delete sub_command;
 						return false;
 				}
-				Lexer::nextToken(next, t, &next);
+				lexer.getNext(t);
 				/*jump or branch command parameter*/
 				switch (t.get_type()){
 					case Token::nil:
@@ -531,13 +262,11 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
 						break;
 					default:
-						error_stream << "syntax error in line " << line << ": "
-							<< t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
 						delete sub_command;
 						return false;
 				}
-				old = next;
-				Lexer::nextToken(next, t, &next);
+				lexer.getNext(t);
 				/*branch command parameter*/
 				switch (t.get_type()){
 					case Token::nil:
@@ -555,22 +284,9 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 						break;
 					case Token::Newline:
 						sub_command->set_jump_name("_next");
-						next = old;
 						break;
 					default:
-						error_stream << "syntax error in line " << line << ": "
-							<< t.get_content() << " is not a valid argument for sub" << Error_stream::endl;
-						delete sub_command;
-						return false;
-				}
-				Lexer::nextToken(next, t, &next);
-				/*newline*/
-				switch (t.get_type()){
-					case Token::Newline:
-						break;
-					default:
-						error_stream << "syntax error in line " << line << ": expected newline received "
-							<< t.get_content() << Error_stream::endl;
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
 						delete sub_command;
 						return false;
 				}
@@ -578,21 +294,149 @@ bool Parser::parse_Minsky_command(const char *s, const char**resnext, Simulator_
 			}
 			break;
 		default:
-			error_stream << "syntax error in line " << line << ": expected minsky machine command, received "
-				<< t.get_content() << Error_stream::endl;
+			unexpected_token(t, {Token::Call, Token::Madd, Token::Msub});
+			return false;
+	}
+	if (t.get_type()!=Token::Newline)
+		lexer.getNext(t);
+	/*newline*/
+	switch (t.get_type()){
+		case Token::Newline:
 			break;
+		default:
+			unexpected_token(t, {Token::Newline}, {Token::Newline});
+			if (command!=NULL)
+				delete command;
+			return false;
 	}
 	if (command!=NULL) {
-		command->set_line(con.current_line);
+		command->set_line(context.current_line);
+		context.current_line++;
 		command->set_actual_line(line);
-		*res=command;
-		*resnext=next;
+		context.add_command(command);
 		return true;
 	}
 	return false;
 }
 
-bool Parser::parse_URM_command(const char *s, const char **next, Simulator_command** res, Context &con) {
+template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {
+	return false;
+}
+
+template <> bool Parser::parse_instruction<Token::URM>(Context &context) {
+	return false;
+}
+
+bool Parser::parse_call(Context &context) {
+	Token t;
+	std::vector<int> registers;
+	std::vector<int> exits;
+	std::vector<std::string> exit_names;
+	std::string routine_name;
+	Context *subroutine;
+	/*parse name*/
+	lexer.getNext(t);
+	switch (t.get_type()) {
+		case Token::Identifier:
+			routine_name = t.get_content();
+			subroutine=context_map[routine_name];
+			if (subroutine==NULL) {
+				error_stream << "error in line " << line << ": "
+				" undefined reference to " << routine_name << Error_stream::endl;
+				return false;
+			}
+			break;
+		default:
+			unexpected_token(t, {Token::Newline});
+			return false;
+	}
+	/*parse registers*/
+	//TODO fix number of args
+	registers=std::vector<int>();
+	registers.push_back(0);
+	for (lexer.getNext(t);t.get_type()!=Token::BracketL; lexer.getNext(t)) {
+		switch (t.get_type()) {
+			case Token::Number:
+				registers.push_back(t.get_numerical_value());
+				break;
+			case Token::Identifier:
+				registers.push_back(context.get_reg(t.get_content()));
+				break;
+			default:
+				unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+				return false;
+		}
+	}
+	/*parse exits*/
+	//TODO fix number of args
+	exits=std::vector<int>();
+	exit_names=std::vector<std::string>();
+	exits.push_back(0);
+	exit_names.push_back("");
+	for (lexer.getNext(t);t.get_type()!=Token::BracketR; lexer.getNext(t)) {
+		switch (t.get_type()) {
+			case Token::Exit0:
+				exits.push_back(0);
+				exit_names.push_back("");
+				break;
+			case Token::Number:
+				exits.push_back(t.get_numerical_value());
+				exit_names.push_back("");
+				break;
+			case Token::Identifier:
+				exits.push_back(0);
+				exit_names.push_back(t.get_content());
+				break;
+			default:
+				unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+				return false;
+		}
+	}
+	if (!swallow(Token::Newline, {Token::Newline})) return false;
+	Subroutine_inserter(context, registers, exits, exit_names).visitc(*subroutine);
+	return true;
+}
+
+bool Parser::parse_config_command() {
+	Token t;
+	if (!swallow(Token::Preproc)) return false;
+	lexer.getNext(t);
+	switch (t.get_type()) {
+		case Token::Setreg:
+			size_t reg;
+			lexer.getNext(t);
+			switch (t.get_type()) {
+				case Token::Number:
+					reg = t.get_numerical_value();
+					break;
+				default:
+					unexpected_token(t, {Token::Number}, {Token::Newline});
+					return false;
+			}
+			lexer.getNext(t);
+			switch (t.get_type()) {
+				case Token::Number:
+					//TODO set reg
+					break;
+				default:
+					unexpected_token(t, {Token::Number}, {Token::Newline});
+					return false;
+			}
+			break;
+		default:
+			unexpected_token(t, {Token::Setreg}, {Token::Newline});
+			return false;
+	}
+	if (!swallow(Token::Newline, {Token::Newline})) return false;
+	line ++;
+	return true;
+}
+
+bool Parser::swallow(Token::tokenType type, std::vector<Token::tokenType> con) {
+	Token t;
+	lexer.getNext(t);
+	if (t.get_type()==type) return true;
+	unexpected_token(t, {type}, con);
 	return false;
 }
 

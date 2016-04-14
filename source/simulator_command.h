@@ -10,7 +10,6 @@ class Simulator_command
 	public:
 		Simulator_command() : line(0), actual_line(0){};
 		virtual ~Simulator_command(){}
-		virtual void execute () = 0;
 		virtual void accept (Routine_visitor *visitor);
 		virtual std::string toString() = 0;
 
@@ -66,7 +65,6 @@ class Branch_command : virtual public Simulator_command
 class Madd_command : public Target_command, public Jump_command
 {
 	public:
-		virtual void execute () override;
 		virtual void accept (Routine_visitor *visitor) override;
 		virtual std::string toString() override;
 };
@@ -74,9 +72,24 @@ class Madd_command : public Target_command, public Jump_command
 class Msub_command : public Target_command, public Jump_command, public Branch_command
 {
 	public:
-		virtual void execute () override;
 		virtual void accept (Routine_visitor *visitor) override;
 		virtual std::string toString() override;
 };
+
+class Mmul_command : public Target_command, public Jump_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
+};
+
+class Mdiv_command : public Target_command, public Jump_command, public Branch_command
+{
+	public:
+		virtual void accept (Routine_visitor *visitor) override;
+		virtual std::string toString() override;
+
+};
+
 #include "routine_visitor.h"
 

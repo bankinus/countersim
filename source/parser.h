@@ -1,33 +1,28 @@
 #pragma once
 #include "simulator_command.h"
 #include "context.h"
+#include "token.h"
+#include "lexer.h"
 #include <unordered_map>
 
 class Parser {
 	protected:
-	std::unordered_map<std::string, Context*> context_map;
-	unsigned long long int line;
+		std::unordered_map<std::string, Context*> context_map;
+		unsigned long long int line;
+		Lexer lexer;
 	public:
-	Parser () : context_map(), line(1){}
-	Context *parse_simulator_program(const char *s);
+		Parser () : context_map(), line(1){}
+		Context *parse_simulator_program(const char *s);
 
 	protected:
-	bool parse_config_command(const char *s, Context *context, const char**next);
-
-	Context *parse_Minsky_program(const char *s);
-
-	Context *parse_URM_program(const char *s);
-
-	Context *parse_URM_routine(const char *s);
-
-	Context *parse_Minsky_routine(const char *s, Context *context);
-
-	Context *parse_Minsky_sub_routine(const char *s);
-
-	Context *parse_Minsky_main_routine(const char *s);
-
-	bool parse_Minsky_command(const char *s, const char **next, Simulator_command **res, Context &con);
-
-	bool parse_URM_command(const char *s, const char **next, Simulator_command **res, Context &con);
+		template <Token::tokenType> Context *parse_program();
+		template <Token::tokenType> Context *parse_mainroutine();
+		template <Token::tokenType> Context *parse_subroutine();
+		template <Token::tokenType> Context *parse_routine(Context &context);
+		template <Token::tokenType> bool parse_instruction(Context &con);
+		bool parse_call(Context &con);
+		bool parse_config_command();
+		bool swallow(Token::tokenType type, std::vector<Token::tokenType> con = {});
+		void unexpected_token(Token &t, std::vector<Token::tokenType> exp={}, std::vector<Token::tokenType> con={});
 };
 

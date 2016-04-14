@@ -130,6 +130,16 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("sub");
 		s+=3;
 	}
+	else if (tokencmpr(s, "mul")) {
+		t.set_type(Token::Mmul);
+		t.set_content("mul");
+		s+=3;
+	}
+	else if (tokencmpr(s, "div")) {
+		t.set_type(Token::Mdiv);
+		t.set_content("div");
+		s+=3;
+	}
 	else if (tokencmpr(s, "def")) {
 		t.set_type(Token::Def);
 		t.set_content("def");
@@ -138,6 +148,11 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 	else if (tokencmpr(s, "set")) {
 		t.set_type(Token::Setreg);
 		t.set_content("set");
+		s+=3;
+	}
+	else if (tokencmpr(s, "srm")) {
+		t.set_type(Token::SRM);
+		t.set_content("srm");
 		s+=3;
 	}
 	else if (tokencmpr(s, "lrm")) {
@@ -217,5 +232,22 @@ void Lexer::nextToken(const char *s, Token &t) {
 
 void Lexer::nextToken(const char *s, Token &t, const char** n) {
 	*n = _nextToken (s, t, true);
+}
+
+void Lexer::setNext(const char *s) {
+	pos = s;
+}
+
+void Lexer::getNext(Token &t) {
+	nextToken(pos, t, &pos);
+}
+
+void Lexer::getNext(const char *s, Token &t) {
+	pos = s;
+	nextToken(pos, t, &pos);
+}
+
+void Lexer::peekNext(Token &t) {
+	nextToken(pos, t);
 }
 
