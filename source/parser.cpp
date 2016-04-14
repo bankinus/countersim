@@ -175,7 +175,7 @@ template <> bool Parser::parse_instruction<Token::Minsky>(Context &context) {
 						add_command->set_target_name(t.get_content());
 						break;
 					case Token::Number:
-						if (t.get_numerical_value() > 1) {
+						if (t.get_numerical_value() < 0 || t.get_numerical_value() > 1) {
 							error_stream << "error in line " << line << ": register "
 								<< t.get_content() << " is out of range" << Error_stream::endl;
 							delete add_command;
@@ -319,7 +319,156 @@ template <> bool Parser::parse_instruction<Token::Minsky>(Context &context) {
 	return false;
 }
 
-template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {
+template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {Token t;
+	lexer.getNext(t);
+	Simulator_command *command = NULL;
+	switch (t.get_type()) {
+		case Token::Call:
+			if (parse_call(context)) return true;
+			return false;
+		case Token::Mmul:
+			{
+				Mmul_command *add_command = new Mmul_command();
+				lexer.getNext(t);
+				/*target parameter*/
+				switch (t.get_type()){
+					case Token::nil:
+						error_stream << "lexing error in line " << line << Error_stream::endl;
+						delete add_command;
+						return false;
+					case Token::Identifier:
+						add_command->set_target_name(t.get_content());
+						break;
+					case Token::Number:
+						add_command->set_target(t.get_numerical_value());
+						break;
+					default:
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+						delete add_command;
+						return false;
+				}
+				lexer.getNext(t);
+				/*next command parameter*/
+				switch (t.get_type()){
+					case Token::nil:
+						error_stream << "lexing error in line " << line << Error_stream::endl;
+						delete add_command;
+						return false;
+					case Token::Exit0:
+						add_command->set_jump(0);
+						break;
+					case Token::Identifier:
+						add_command->set_jump_name(t.get_content());
+						break;
+					case Token::Number:
+						add_command->set_jump(t.get_numerical_value());
+						break;
+					case Token::Newline:
+						add_command->set_jump_name("_next");
+						break;
+					default:
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+						delete add_command;
+						return false;
+				}
+				command = add_command;
+			}
+			break;
+		case Token::Mdiv:
+			{
+				Mdiv_command* sub_command = new Mdiv_command();
+				lexer.getNext(t);
+				/*target parameter*/
+				switch (t.get_type()){
+					case Token::nil:
+						error_stream << "lexing error in line " << line << Error_stream::endl;
+						delete sub_command;
+						return false;
+					case Token::Identifier:
+						sub_command->set_target_name(t.get_content());
+						break;
+					case Token::Number:
+						sub_command->set_target(t.get_numerical_value());
+						break;
+					default:
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+						delete sub_command;
+						return false;
+				}
+				lexer.getNext(t);
+				/*jump or branch command parameter*/
+				switch (t.get_type()){
+					case Token::nil:
+						error_stream << "lexing error in line " << line << Error_stream::endl;
+						delete sub_command;
+						return false;
+					case Token::Exit0:
+						sub_command->set_jump(0);
+						sub_command->set_branch(0);//set in case next token is newline
+						break;
+					case Token::Identifier:
+						sub_command->set_jump_name(t.get_content());
+						sub_command->set_branch_name(t.get_content());//set in case next token is newline
+						break;
+					case Token::Number:
+						sub_command->set_jump(t.get_numerical_value());
+						sub_command->set_branch(t.get_numerical_value());//set in case next token is newline
+						break;
+					default:
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+						delete sub_command;
+						return false;
+				}
+				lexer.getNext(t);
+				/*branch command parameter*/
+				switch (t.get_type()){
+					case Token::nil:
+						error_stream << "lexing error in line " << line << Error_stream::endl;
+						delete sub_command;
+						return false;
+					case Token::Exit0:
+						sub_command->set_branch(0);
+						break;
+					case Token::Identifier:
+						sub_command->set_branch_name(t.get_content());
+						break;
+					case Token::Number:
+						sub_command->set_branch(t.get_numerical_value());
+						break;
+					case Token::Newline:
+						sub_command->set_jump_name("_next");
+						break;
+					default:
+						unexpected_token(t, {Token::Identifier, Token::Number}, {Token::Newline});
+						delete sub_command;
+						return false;
+				}
+				command = sub_command;
+			}
+			break;
+		default:
+			unexpected_token(t, {Token::Call, Token::Mmul, Token::Mdiv});
+			return false;
+	}
+	if (t.get_type()!=Token::Newline)
+		lexer.getNext(t);
+	/*newline*/
+	switch (t.get_type()){
+		case Token::Newline:
+			break;
+		default:
+			unexpected_token(t, {Token::Newline}, {Token::Newline});
+			if (command!=NULL)
+				delete command;
+			return false;
+	}
+	if (command!=NULL) {
+		command->set_line(context.current_line);
+		context.current_line++;
+		command->set_actual_line(line);
+		context.add_command(command);
+		return true;
+	}
 	return false;
 }
 

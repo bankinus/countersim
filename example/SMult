@@ -1,0 +1,9 @@
+#machine srm
+loop0:	div 3  loop1 clear2 
+loop1:	div 2  inc5 refill 
+inc5:	mul 5  inc7 
+inc7:	mul 7  loop1 
+refill:	div 7  inc2 loop0 
+inc2:	mul 2  refill 
+clear2:	div 2  clear2 clear7 
+clear7:	div 7  clear7 exit0 

@@ -1,5 +1,5 @@
 #machine minsky
-#set 0 31
+#set 1 0
 def moveto0 [finished]
 loop: sub 1 finished
 add 0 loop
