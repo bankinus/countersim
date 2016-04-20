@@ -175,6 +175,11 @@ const char * _nextToken(const char *s, class Token &t, bool next) {
 		t.set_content("main");
 		s+=4;
 	}
+	else if (tokencmpr(s, "break")) {
+		t.set_type(Token::Break);
+		t.set_content("break");
+		s+=5;
+	}
 	else if (tokencmpr(s, "exit0")) {
 		t.set_type(Token::Exit0);
 		t.set_content("exit0");

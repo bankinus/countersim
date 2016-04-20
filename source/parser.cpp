@@ -708,6 +708,19 @@ bool Parser::parse_config_command() {
 					return false;
 			}
 			break;
+		case Token::Break:
+			size_t breakpoint;
+			lexer.getNext(t);
+			switch (t.get_type()) {
+				case Token::Number:
+					breakpoint = t.get_numerical_value();
+					break;
+				default:
+					unexpected_token(t, {Token::Number}, {Token::Newline});
+					return false;
+			}
+			break;
+
 		default:
 			unexpected_token(t, {Token::Setreg}, {Token::Newline});
 			return false;

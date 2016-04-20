@@ -9,7 +9,7 @@ class Token
 	                     Madd, Msub,
 								Mmul, Mdiv,
 	                     Uinc, Udec, Uclear, Ucopy, Ujump,
-	                     Preproc, Machine, Setreg,
+	                     Preproc, Machine, Setreg, Break,
 								LRM, URM, Minsky, SRM,
 	                     nil} tokenType;
 

@@ -27,8 +27,9 @@ jump	:= 'jmp' target_instruction
 jiz	:= 'jiz' target_register target_instruction
 
 subroutinecall := 'call' subroutinename target_register* '['target_instruction*']'
-configcommand	:= '#' {setregister} NEWLINE
+configcommand	:= '#' {setregister, break} NEWLINE
 setregister	:= 'set'INTEGER INTEGER
+break	:= 'break' INTEGER
 
 target_instruction := {INTEGER, NAME, 'exit0'}
 target_register := {INTEGER, NAME}
