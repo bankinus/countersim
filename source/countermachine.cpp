@@ -92,6 +92,7 @@ int main (int argc, char ** argv) {
 			}
 		}
 		else {
+			std::cout << "enter registers (end register input by sending ctr-d):" << std::endl;
 			for (size_t i=0; !std::cin.eof() && (i<simulation.get_max_reg() || simulation.get_max_reg()==0); i++){
 				unsigned long long int val;
 				if (!(std::cin >> val)) {
@@ -114,8 +115,16 @@ int main (int argc, char ** argv) {
 			bool done = false;
 			while (!done && !std::cin.eof()) {
 				char cmd;
+				std::cout << "enter command (h for help):" << std::endl;
 				std::cin >> cmd;
 				switch (cmd) {
+					case 'h':
+						std::cout << "available commands are:" << std::endl;
+						std::cout << "\th: display commands" << std::endl;
+						std::cout << "\ts: single step" << std::endl;
+						std::cout << "\tr: run program to completion" << std::endl;
+						std::cout << "\tq: quit" << std::endl;
+						break;
 					case 's':
 						done = !exe.step_visitc(*context);
 						if (done) break;
