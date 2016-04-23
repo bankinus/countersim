@@ -3,8 +3,8 @@
 
 class Error_stream {
 	private:
-		std::stringstream buf;
 		bool console;
+		std::stringstream buf;
 	public:
 		Error_stream() : console(true), buf(){}
 		Error_stream(bool b) : console(b), buf(){}

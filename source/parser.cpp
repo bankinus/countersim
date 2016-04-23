@@ -129,7 +129,7 @@ template <Token::tokenType T> Context *Parser::parse_subroutine() {
 
 template <Token::tokenType T> Context *Parser::parse_routine(Context &context) {
 	Token t;
-	bool fail;
+	bool fail = false;
 	while (1) {
 		lexer.peekNext(t);
 		if (t.get_type()==Token::EOP) break;

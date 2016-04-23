@@ -7,6 +7,7 @@ void Subroutine_inserter::prologue(Simulator_command *command, Simulator_command
 }
 
 void Subroutine_inserter::epilogue(Simulator_command *command, Simulator_command *newcommand){
+	(void) command;
 	parentcontext.add_command(newcommand);
 	parentcontext.current_line++;
 }

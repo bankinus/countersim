@@ -5,10 +5,10 @@
 class Subroutine_inserter : public Routine_visitor {
 	protected:
 		long long int offset;
+		Context &parentcontext;
 		std::vector<int> registers;
 		std::vector<int> exits;
 		std::vector<std::string> exit_names;
-		Context &parentcontext;
 		void prologue(Simulator_command *command, Simulator_command *newcommand);
 		void epilogue(Simulator_command *command, Simulator_command *newcommand);
 		void copy_target(Target_command *command, Target_command *newcommand);

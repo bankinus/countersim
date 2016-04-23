@@ -31,6 +31,7 @@ class DebugStream {
 	DebugStream() {}
 
 	template <typename T> DebugStream& operator<<(T t) {
+		(void) t;
 		return *this;
 	}
 	DebugStream& operator<<(std::ostream& (*f)(std::ostream&));

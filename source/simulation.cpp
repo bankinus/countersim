@@ -17,7 +17,7 @@ Register *Simulation::get_register(size_t num) {
 	else if (max_reg<num || max_reg==0) {
 		size_t old = registers.size();
 		registers.resize(num+1);
-		for (int i= old; i<num; i++) {
+		for (size_t i= old; i<num; i++) {
 			registers[i] = Register();
 		}
 		return &(registers[num]);

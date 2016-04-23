@@ -9,7 +9,8 @@
 #ifndef DEBUG
 DebugStream& DebugStream::operator<<(std::ostream& (*f)(std::ostream&))
 {
-    return *this;
+	(void) f;
+	return *this;
 }
 DebugStream debug;
 #endif
@@ -38,7 +39,6 @@ void _lexertest() {
 }
 
 void _parse_Minsky_program_test() {
-	Simulator_command *command;
 	Context *con;
 	Parser parser;
 	char *buf;

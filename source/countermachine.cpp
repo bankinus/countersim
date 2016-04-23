@@ -111,7 +111,7 @@ int main (int argc, char ** argv) {
 		}
 		else {
 			std::cin.clear();
-			bool done;
+			bool done = false;
 			while (!done && !std::cin.eof()) {
 				char cmd;
 				std::cin >> cmd;
