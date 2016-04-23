@@ -10,7 +10,6 @@ DESTDIR = ../
 OBJECTS_DIR = ../build
 QMAKE_CXXFLAGS += -std=c++11
 QT = core gui
-CONFIG += console
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
