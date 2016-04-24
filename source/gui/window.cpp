@@ -16,6 +16,7 @@
 
 /*includes from c++ stl*/
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -265,7 +266,9 @@ void writeToConsole(const std::string &s) {
 	console->verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);
 }
 
-int graphical_execution (int argc, char **argv, boost::program_options::variables_map v_map) {
+int graphical_execution (int argc, char **argv, QCommandLineParser &parser) {
+	std::string inputfile("");
+	std::string registerfile("");
 	is_running = false;
 	app = new Simulator_app(argc, argv);
 	QScrollArea *window = new QScrollArea();
@@ -381,18 +384,33 @@ int graphical_execution (int argc, char **argv, boost::program_options::variable
 	QObject::connect(add_register_button, SIGNAL (clicked()), app, SLOT (add_register()));
 
 	/*check for program file to load*/
-	if(v_map.count("input-file")) {
+	if (parser.isSet("input-file")) {
+		inputfile = parser.value("input-file").toStdString();
+	} else if (parser.positionalArguments().size() > 0) {
+		inputfile = parser.positionalArguments()[0].toStdString();
+	}
+	if(inputfile != "") {
 		std::stringstream bufstream;
-		std::ifstream filestream(v_map["input-file"].as<std::string>().c_str());
+		std::ifstream filestream(inputfile);
+		if (!filestream.is_open()) {
+			//TODO proper error stream
+			std::cerr << "error: could not open file:" << inputfile << "\n";
+			return 0;
+		}
 		bufstream << filestream.rdbuf();
 		editor->setPlainText(bufstream.str().c_str());
 	}
 	/*check for register file to load*/
-	if (v_map.count("register-file")) {
-		std::ifstream reg_in_stream(v_map["register-file"].as<std::string>());
+	if (parser.isSet("register-file")) {
+		registerfile = parser.value("register-file").toStdString();
+	} else if (parser.positionalArguments().size() > 1) {
+		registerfile = parser.positionalArguments()[1].toStdString();
+	}
+	if (registerfile != "") {
+		std::ifstream reg_in_stream(registerfile);
 		if (!reg_in_stream.is_open()) {
 			//TODO proper error stream
-			std::cerr << "error: could not open file:" << v_map["register-file"].as<std::string>() << "\n";
+			std::cerr << "error: could not open file:" << registerfile << "\n";
 			return 0;
 		}
 		for (size_t i=0; !reg_in_stream.eof(); i++){

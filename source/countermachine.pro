@@ -15,11 +15,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 macx {
     QMAKE_CXX = clang++
-    LIBS += -lboost_program_options-mt
 }
 unix {
     QMAKE_CXX = clang++
-    LIBS += -lboost_program_options
 }
 # TODO: specify this for windows
 

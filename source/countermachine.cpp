@@ -9,66 +9,60 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <boost/program_options.hpp>
+#include <QCommandLineParser>
 
-namespace po = boost::program_options;
 
 /* This is file contains the main function for the simulator
  */
 
 int main (int argc, char ** argv) {
+	std::string inputfile("");
+	std::string registerfile("");
 	//Declare the supported options.
-	po::options_description description("useage: countermachine [program] [register-presets] [options]\nAllowed options");
-	description.add_options()
-		("input-file", po::value<std::string>(), "path to file containing the program")
-		("register-file", po::value<std::string>(), "path to file containing register inputs")
-		("gui,g", "if this flag is set program simulator runs in graphical mode")
-		("run,r", "if this flag is set program simulator runs program to completion upon start")
-		("help,h", "produce help message")
-		;
-	
-	po::positional_options_description pos;
-	pos.add("input-file", 1);
-	pos.add("register-file", 2);
-	
-	po::variables_map v_map;
-	try {
-	po::store(po::command_line_parser(argc, argv).
-	          options(description).positional(pos).run(), v_map);
-	} catch (po::error &e) {
-		std::cerr << "error:" << e.what() << "\n";
-		return 0;
-	}
-	po::notify(v_map);
-	
-	if (v_map.count("help")) {
-		std::cout << description << "\n";
-		return 1;
-	}
-	
-	if (v_map.count("input-file")) {
-		debug << "reading program from file: " 
-		     << v_map["input-file"].as<std::string>() << "\n";
+	QCommandLineParser parser;
+	parser.addPositionalArgument("input-file", "path to file containing the program", "[input-file]");
+	parser.addPositionalArgument("register-file", "path to file containing the register inputs", "[register-file]");
+	parser.addOption(QCommandLineOption(QStringList() << "i" << "input-file",
+		"path to file containing the program", "input-file"));
+	parser.addOption(QCommandLineOption(QStringList() << "f" << "register-file",
+		"path to file containing input register", "register-file"));
+	parser.addOption(QCommandLineOption(QStringList() << "g" << "gui",
+		"if this flag is set program simulator runs in graphical mode"));
+	parser.addOption(QCommandLineOption(QStringList() << "r" << "run",
+		"if this flag is set program simulator runs program to completion upon start"));
+	parser.addVersionOption();
+	parser.addHelpOption();
+	parser.process(QCoreApplication(argc, argv));
+
+	if (parser.isSet("input-file")) {
+		inputfile = parser.value("input-file").toStdString();
+	} else if (parser.positionalArguments().size() > 0) {
+		inputfile = parser.positionalArguments()[0].toStdString();
 	} else {
-		if (!v_map.count("gui")) {
+		if (!parser.isSet("gui")) {
 			std::cerr << "error: no inputfile specified in non graphical mode\n";
 			return 0;
 		}
 	}
+	if (parser.isSet("register-file")) {
+		registerfile = parser.value("register-file").toStdString();
+	} else if (parser.positionalArguments().size() > 1) {
+		registerfile = parser.positionalArguments()[1].toStdString();
+	}
 
-	if (v_map.count("gui")) {
+	if (parser.isSet("gui")) {
 		//run in console mode
 		error_stream.set_console(false);
-		return graphical_execution(argc, argv, v_map);
+		return graphical_execution(argc, argv, parser);
 	}
 	else {
 		//run in console mode
 		Simulation simulation;
 		std::string program;
 		//load program
-		std::ifstream filestream(v_map["input-file"].as<std::string>());
+		std::ifstream filestream(inputfile);
 		if (!filestream.is_open()) {
-			std::cerr << "error: could not open file:" << v_map["input-file"].as<std::string>() << "\n";
+			std::cerr << "error: could not open file:" << inputfile << "\n";
 			return 0;
 		}
 		std::stringstream bufstream;
@@ -78,10 +72,10 @@ int main (int argc, char ** argv) {
 		Context *context = Parser().parse_simulator_program(program.c_str());
 		if (context==NULL) return 0;
 		//enter registers
-		if (v_map.count("register-file")) {
-			std::ifstream reg_in_stream(v_map["input-file"].as<std::string>());
+		if (registerfile != "") {
+			std::ifstream reg_in_stream(registerfile);
 			if (!reg_in_stream.is_open()) {
-				std::cerr << "error: could not open file:" << v_map["input-file"].as<std::string>() << "\n";
+				std::cerr << "error: could not open file:" << registerfile << "\n";
 				return 0;
 			}
 			for (size_t i=0; !reg_in_stream.eof(); i++){
@@ -107,7 +101,7 @@ int main (int argc, char ** argv) {
 		}
 		//run program
 		Execution_visitor exe(simulation);
-		if (v_map.count("run")) {
+		if (parser.isSet("run")) {
 			exe.visitc(*context);
 		}
 		else {
