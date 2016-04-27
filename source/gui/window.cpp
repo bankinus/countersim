@@ -217,7 +217,7 @@ void Simulator_app::run() {
 	size_t last;
 	do {
 		last = exe->get_next();
-	} while (!exe->step_visitc(*context));
+	} while (exe->step_visitc(*context));
 	/*update simulator interface*/
 	lastLine->setText(QString("last: ") + QString::number(context->get_program()[last-1]->get_actual_line()));
 	lastLine->adjustSize();
