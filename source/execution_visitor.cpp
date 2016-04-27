@@ -2,16 +2,28 @@
 
 void Execution_visitor::visitc(Context &context) {
 	while (next!=0) {
-		step_visitc(context);
+		if(!step_visitc(context)) break;
+	}
+	if (next==0) {
+		finished = true;
 	}
 }
 
 bool Execution_visitor::step_visitc(Context &context) {
-	if (next==0) return false;
+	if (next==0) {
+		finished = true;
+		return false;
+	}
 	Simulator_command *command = context.get_program()[next-1];
 	command->accept(this);
 	cyclecount++;
-	if (next==0) return false;
+	if (next==0) {
+		finished = true;
+		return false;
+	}
+	if (context.get_program()[next-1]->get_breakpoint()) {
+		return false;
+	}
 	return true;
 }
 
@@ -99,4 +111,7 @@ size_t Execution_visitor::get_cycle_count() const{
 	return cyclecount;
 }
 
+bool Execution_visitor::get_finished() const{
+	return finished;
+}
 

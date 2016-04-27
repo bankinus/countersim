@@ -11,8 +11,9 @@ class Execution_visitor : public Routine_visitor {
 		Simulation &simulation;
 		size_t next;
 		long long unsigned int cyclecount;
+		bool finished;
 	public:
-		Execution_visitor(Simulation &s) : simulation(s), next(1), cyclecount(0) {}
+		Execution_visitor(Simulation &s) : simulation(s), next(1), cyclecount(0), finished(false) {}
 		virtual ~Execution_visitor() {}
 
 		size_t get_next() const;
@@ -20,6 +21,7 @@ class Execution_visitor : public Routine_visitor {
 
 		virtual void visitc(Context &context) override;
 		bool step_visitc(Context &context);
+		bool get_finished() const;
 
 		virtual void visit(Madd_command *command) override;
 		virtual void visit(Msub_command *command) override;

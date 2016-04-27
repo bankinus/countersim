@@ -4,6 +4,7 @@
 void Subroutine_inserter::prologue(Simulator_command *command, Simulator_command *newcommand){
 	newcommand->set_line(command->get_line());
 	newcommand->set_actual_line(command->get_actual_line());
+	newcommand->set_breakpoint(command->get_breakpoint());
 }
 
 void Subroutine_inserter::epilogue(Simulator_command *command, Simulator_command *newcommand){

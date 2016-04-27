@@ -17,6 +17,14 @@ void Simulator_command::set_actual_line (long long int i) {
 	actual_line = i;
 }
 
+bool Simulator_command::get_breakpoint () {
+	return breakpoint;
+}
+
+void Simulator_command::set_breakpoint (bool b) {
+	breakpoint = b;
+}
+
 void Simulator_command::accept (Routine_visitor *visitor) {
 	visitor->visit(this);
 }

@@ -7,8 +7,9 @@ class Simulator_command
 	protected:
 		long long int line;
 		long long int actual_line;
+		bool breakpoint;
 	public:
-		Simulator_command() : line(0), actual_line(0){};
+		Simulator_command() : line(0), actual_line(0), breakpoint(false){};
 		virtual ~Simulator_command(){}
 		virtual void accept (Routine_visitor *visitor);
 		virtual std::string toString() = 0;
@@ -17,6 +18,8 @@ class Simulator_command
 		void set_line(long long int i);
 		long long int get_actual_line();
 		void set_actual_line(long long int i);
+		bool get_breakpoint();
+		void set_breakpoint(bool b);
 };
 
 class Jump_command : virtual public Simulator_command

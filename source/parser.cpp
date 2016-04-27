@@ -294,6 +294,9 @@ template <> bool Parser::parse_instruction<Token::Minsky>(Context &context) {
 		command->set_line(context.current_line);
 		context.current_line++;
 		command->set_actual_line(line);
+		if (std::find(breakpoints.begin(), breakpoints.end(), line) != breakpoints.end()) {
+			command->set_breakpoint(true);
+		}
 		context.add_command(command);
 		return true;
 	}
@@ -429,6 +432,9 @@ template <> bool Parser::parse_instruction<Token::SRM>(Context &context) {
 		command->set_line(context.current_line);
 		context.current_line++;
 		command->set_actual_line(line);
+		if (std::find(breakpoints.begin(), breakpoints.end(), line) != breakpoints.end()) {
+			command->set_breakpoint(true);
+		}
 		context.add_command(command);
 		return true;
 	}
@@ -606,6 +612,9 @@ template <> bool Parser::parse_instruction<Token::URM>(Context &context) {
 		command->set_line(context.current_line);
 		context.current_line++;
 		command->set_actual_line(line);
+		if (std::find(breakpoints.begin(), breakpoints.end(), line) != breakpoints.end()) {
+			command->set_breakpoint(true);
+		}
 		context.add_command(command);
 		return true;
 	}
@@ -714,6 +723,7 @@ bool Parser::parse_config_command() {
 			switch (t.get_type()) {
 				case Token::Number:
 					breakpoint = t.get_numerical_value();
+					breakpoints.push_back(breakpoint);
 					break;
 				default:
 					unexpected_token(t, {Token::Number}, {Token::Newline});

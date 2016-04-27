@@ -4,14 +4,16 @@
 #include "token.h"
 #include "lexer.h"
 #include <unordered_map>
+#include <vector>
 
 class Parser {
 	protected:
 		std::unordered_map<std::string, Context*> context_map;
 		unsigned long long int line;
 		Lexer lexer;
+		std::vector<size_t> breakpoints;
 	public:
-		Parser () : context_map(), line(1){}
+		Parser () : context_map(), line(1), lexer(), breakpoints(){}
 		Context *parse_simulator_program(const char *s);
 
 	protected:

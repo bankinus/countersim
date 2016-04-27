@@ -212,13 +212,12 @@ void Simulator_app::run() {
 		exe = new Execution_visitor(simulation);
 		is_running=true;
 	}
-	writeToConsole(exe->get_cycle_count()>0?"began running after"+std::to_string(exe->get_cycle_count())+"\n":"began running\n");
+	writeToConsole(exe->get_cycle_count()>0?"began running after "+std::to_string(exe->get_cycle_count())+" steps\n":"began running\n");
 	app->processEvents();
 	size_t last;
 	do {
 		last = exe->get_next();
-		exe->step_visitc(*context);
-	} while (exe->get_next()!=0);
+	} while (!exe->step_visitc(*context));
 	/*update simulator interface*/
 	lastLine->setText(QString("last: ") + QString::number(context->get_program()[last-1]->get_actual_line()));
 	lastLine->adjustSize();
@@ -230,7 +229,7 @@ void Simulator_app::run() {
 	                         context->get_program()[exe->get_next()-1]->get_actual_line():
 	                         0));
 	updateRegisters();
-	if (exe->get_next()==0) {
+	if (exe->get_finished()) {
 		/*end simulation*/
 		writeToConsole("finished execution after "+std::to_string(exe->get_cycle_count())+" steps\n");
 		for (RegisterDisplayLine *line : registerDisplayLines) {
@@ -247,6 +246,7 @@ void Simulator_app::run() {
 void Simulator_app::stop() {
 	if (is_running){
 		/*end simulation*/
+		writeToConsole("aborted execution after "+std::to_string(exe->get_cycle_count())+" steps\n");
 		for (RegisterDisplayLine *line : registerDisplayLines) {
 			line->unlock();
 		}

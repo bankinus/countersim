@@ -120,7 +120,8 @@ int main (int argc, char ** argv) {
 						std::cout << "\tq: quit" << std::endl;
 						break;
 					case 's':
-						done = !exe.step_visitc(*context);
+						exe.step_visitc(*context);
+						done = exe.get_finished();
 						if (done) break;
 						//print register content after step
 						std::cout << "register content after step:" << std::endl;
@@ -131,7 +132,14 @@ int main (int argc, char ** argv) {
 						break;
 					case 'r': 
 						exe.visitc(*context);
-						done = true;
+						done = exe.get_finished();
+						if (done) break;
+						//print register content after step
+						std::cout << "register content after step:" << std::endl;
+						for (const Register &reg: simulation.get_registers()) {
+							std::cout << reg.get_value() << std::endl;
+						}
+						std::cout << "next is line:" << exe.get_next() << std::endl;
 						break;
 					case 'q':
 						return 0;
