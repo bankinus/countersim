@@ -39,10 +39,8 @@ int main (int argc, char ** argv) {
 	} else if (parser.positionalArguments().size() > 0) {
 		inputfile = parser.positionalArguments()[0].toStdString();
 	} else {
-		if (!parser.isSet("gui")) {
-			std::cerr << "error: no inputfile specified in non graphical mode\n";
-			return 0;
-		}
+		error_stream.set_console(false);
+		return graphical_execution(argc, argv, parser);
 	}
 	if (parser.isSet("register-file")) {
 		registerfile = parser.value("register-file").toStdString();
