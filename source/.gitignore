@@ -1,3 +1,4 @@
 moc_*.cpp
 *_plugin_import.cpp
 Makefile
+*_plugin_import.cpp
