@@ -1,0 +1,24 @@
+#machine minsky
+def moveto0 [finished]
+loop:     sub 1 finished
+          add 0 loop
+def mult2 [finished]
+loop:     sub 0 cleanup
+          add 1
+          add 1 loop
+cleanup:  call moveto0 [finished]
+def div3 [finished fail]
+div30:    sub 0 cleanup
+div31:    sub 0 reverse1
+div32:    sub 0 reverse2
+          add 1 div30
+reverse2: add 0
+reverse1: add 0
+reverse : sub 1 fail
+          add 0
+          add 0
+          add 0 reverse
+cleanup:  call moveto0 [finished]
+main
+loop0:    call div3 [loop1 exit0]
+loop1:    call mult2 [loop0]

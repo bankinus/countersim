@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET = countersim 
 DEPENDPATH += . gui
 INCLUDEPATH += . gui
-DESTDIR = ../
+DESTDIR = ../bin
 OBJECTS_DIR = ../build
 QMAKE_CXXFLAGS += -std=c++11
 QT = core gui

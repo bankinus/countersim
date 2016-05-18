@@ -1,12 +1,180 @@
 \chapter{The simulator}
 \label{chap:simulator}
+\lstset{
+  language=counterlang,
+  basicstyle=\small,
+  identifierstyle=\color{blue},
+  numbers=left,
+  numberstyle=\tiny,
+  keywordstyle=\color{black}\bfseries,
+  commentstyle=\color{red}
+}
 \section{Syntax and semantics}
+Since countersim is able to simulate 3 different machine types, it stands to reason that valid programs accepted by the simulator are really consisting of one of three seprate, but similar languages.
+\setlength{\grammarindent}{5.5cm}
+\begin{definition}[counter\_machine\_program]
+\hfill
+\begin{grammar}
+<counter\_machine\_program> ::= <minsky\_program>
+                           \alt <srm\_program>
+                           \alt <urm\_program>
+\end{grammar}
+\end{definition}
+
+The grammar for these three kinds of programs will be defined in the following sections for each of the three supported machine types.\\
+Despite their differences, all of these languages share a certain general structure. Programs in all three languages make up a subset of the following more general language.
+
+\setlength{\grammarindent}{5cm}
+\begin{definition}
+\hfill
+\begin{grammar}
+<program> ::= <some\_declaration>\\{}[<config\_command\_line>*]\\{}[<some\_subroutine>* 'main' NEWLINE]\\<some\_routine\_body>
+
+<some\_declaration> ::= '\#' 'machine' <some\_machine\_name> NEWLINE
+
+<some\_machine\_name> ::= 'minsky'
+                     \alt 'urm'
+                     \alt 'lrm' INTEGER
+                     \alt 'srm'
+
+<config\_command\_line> ::= '\#' <config\_command> NEWLINE
+
+<config\_command> ::= 'set' INTEGER INTEGER
+                 \alt 'break' INTEGER
+
+<some\_subroutine> ::= 'def' <subroutine\_name> NAME* '['NAME*']'NEWLINE\\<some\_routine\_body> 
+
+<some\_routinebody> ::= ([<label> ':'] <some\_instruction> NEWLINE)*
+
+<some\_instruction> ::= <minsky\_instruction>
+                   \alt <srm\_instruction>
+                   \alt <urm\_instruction>
+\end{grammar}
+\end{definition}
+
+Every program must begin with a declaration of its machine type. While it's not explicitly stated in this generalised form, this declaration must of course match the instruction set used by the program.\\
+This declaration is followed by any number of config commands. These are not part of the actual program, but instead configure the simulator, eg. setting a breakpoint.\\
+This is followed by any number of subroutines, each consisting of a subroutine head, followed by a routine body.\\
+The head declares the names of the parameters. The parameters immediately following the routine name are registers, while the parameters surrounded by square brackets denote exits.\\
+The routine body is a series of any number of instruction lines. The instructions must come from the same instruction set and must match the declared machine type and may be preceded by an optional label to address the line for jump instructions.\\
+
+\subsection{Config commands}
+
+\subsection{two-register Minsky machine}
+
+\begin{definition}
+\hfill
+\begin{grammar}
+<minsky\_program> ::= <minsky\_declaration>\\{}[<config\_command\_line>*]\\{}[<minsky\_subroutine>* 'main' NEWLINE]\\<minsky\_routine\_body>
+
+<minsky\_declaration> ::= '\#' 'machine' 'minsky' NEWLINE
+
+<config\_command\_line> ::= '\#' <config\_command> NEWLINE
+
+<config\_command> ::= 'set' INTEGER INTEGER
+                 \alt 'break' INTEGER
+
+<minsky\_subroutine> ::= 'def' <subroutine\_name> NAME* '['NAME*']'NEWLINE\\<minsky\_routine\_body> 
+
+<minsky\_routinebody> ::= ([<label> ':'] <minsky\_instruction> NEWLINE)*
+
+<minsky\_instruction> ::= <minsky\_add>
+                     \alt <minsky\_sub>
+                     \alt <call\_subroutine>
+
+<minsky\_add> ::= 'add' <register> <line> NEWLINE
+
+<minsky\_sub> ::= 'sub' <register> <line> [<line>] NEWLINE
+
+<call\_subroutine> ::= 'call' <subroutine\_name> register* '['line*']'NEWLINE
+
+<register> ::= INTEGER
+          \alt NAME
+
+<line> ::= INTEGER
+       \alt NAME
+\end{grammar}
+\end{definition}
+
+\lstinputlisting{../example/MAdd}
+
+\subsection{single-register Minsky machine}
+
+\begin{definition}
+\hfill
+\begin{grammar}
+<srm\_program> ::= <srm\_declaration>\\{}[<config\_command\_line>*]\\{}[<srm\_subroutine>* 'main' NEWLINE]\\<srm\_routine\_body>
+
+<srm\_declaration> ::= '\#' 'machine' 'srm' NEWLINE
+
+<config\_command\_line> ::= '\#' <config\_command> NEWLINE
+
+<config\_command> ::= 'set' INTEGER INTEGER
+                 \alt 'break' INTEGER
+
+<srm\_subroutine> ::= 'def' <subroutine\_name> NAME* '['NAME*']'NEWLINE\\<srm\_routine\_body> 
+
+<srm\_routinebody> ::= ([<label> ':'] <srm\_instruction> NEWLINE)*
+
+<srm\_instruction> ::= <srm\_mul>
+                  \alt <srm\_div>
+                  \alt <call\_subroutine>
+
+<srm\_mul> ::= 'mul' <register> <line> NEWLINE
+
+<srm\_div> ::= 'div' <register> <line> [<line>] NEWLINE
+
+<call\_subroutine> ::= 'call' <subroutine\_name> register* '['line*']'NEWLINE
+
+<register> ::= INTEGER
+          \alt NAME
+
+<line> ::= INTEGER
+       \alt NAME
+\end{grammar}
+\end{definition}
+
+\lstinputlisting{../example/SMult}
+
+\subsection{universal register machine}
+
+\begin{definition}
+\hfill
+\begin{grammar}
+<urm\_program> ::= <urm\_declaration>\\{}[<config\_command\_line>*]\\{}[<urm\_subroutine>* 'main' NEWLINE]\\<urm\_routine\_body>
+
+<urm\_declaration> ::= '\#' 'machine' 'urm' NEWLINE
+
+<config\_command\_line> ::= '\#' <config\_command> NEWLINE
+
+<config\_command> ::= 'set' INTEGER INTEGER
+                 \alt 'break' INTEGER
+
+<urm\_subroutine> ::= 'def' <subroutine\_name> NAME* '['NAME*']'NEWLINE\\<urm\_routine\_body> 
+
+<urm\_routinebody> ::= ([<label> ':'] <urm\_instruction> NEWLINE)*
+
+<urm\_instruction> ::= <urm\_add>
+                     \alt <urm\_sub>
+                     \alt <call\_subroutine>
+
+<urm\_inc> ::= 'inc' <register> NEWLINE
+
+<urm\_dec> ::= 'dec' <register> NEWLINE
+
+<call\_subroutine> ::= 'call' <subroutine\_name> register* '['line*']'NEWLINE
+
+<urm\_jmp> ::= 'jmp' <line> NEWLINE
+
+<urm\_jmp> ::= 'jmp' <register> <line> NEWLINE
+\end{grammar}
+\end{definition}
+
+\lstinputlisting{../example/UMult}
+
 \section{Usage of the simulator}
 \subsection{None-graphical mode}
 \subsection{Graphical user interface}
-\subsection{Requirements}
-For licensing reasons countersim is written to be dynamically linked against the QT library version 4.8, so the library needs to be present in order to successfully run countersim.\\
-It also uses the program\_options library that is part of the boost library version 1.55.0.
 \section{Implementation details}
 \subsection{Representing the program}
 In order to speed up the simulation the program is internally transformed into object form before execution. The parsing process will be explained in more detail below.\\
@@ -31,4 +199,6 @@ The counters are a slightly more complicated matter. The counters of the theoret
 \subsection{Executing programs}
  
 \subsection{Differences between the theoretical model and the simulated machine}
+
 \subsection{Graphical Library}
+

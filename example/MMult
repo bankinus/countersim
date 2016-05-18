@@ -1,83 +1,82 @@
 #machine minsky
-#set 1 0
 def moveto0 [finished]
-loop: sub 1 finished
-add 0 loop
+loop:     sub 1 finished
+          add 0 loop
 def mult2 [finished]
-loop: sub 0 cleanup
-add 1
-add 1 loop
-cleanup: call moveto0 [finished]
+loop:     sub 0 cleanup
+          add 1
+          add 1 loop
+cleanup:  call moveto0 [finished]
 def mult5 [finished]
-loop: sub 0 cleanup
-add 1
-add 1
-add 1
-add 1
-add 1 loop
-cleanup: call moveto0 [finished]
+loop:     sub 0 cleanup
+          add 1
+          add 1
+          add 1
+          add 1
+          add 1 loop
+cleanup:  call moveto0 [finished]
 def mult7 [finished]
-loop: sub 0 cleanup
-add 1
-add 1
-add 1
-add 1
-add 1
-add 1
-add 1 loop
-cleanup: call moveto0 [finished]
+loop:     sub 0 cleanup
+          add 1
+          add 1
+          add 1
+          add 1
+          add 1
+          add 1
+          add 1 loop
+cleanup:  call moveto0 [finished]
 def div7 [finished fail]
-div70	:sub 0 cleanup
-div71	:sub 0 reverse1
-div72	:sub 0 reverse2
-div73	:sub 0 reverse3
-div74	:sub 0 reverse4
-div75	:sub 0 reverse5
-div76	:sub 0 reverse6
-add 1 div70
-reverse6	: add 0
-reverse5	: add 0
-reverse4	: add 0
-reverse3	: add 0
-reverse2	: add 0
-reverse1	: add 0
-reverse	: sub 1 fail
-add 0
-add 0
-add 0
-add 0
-add 0
-add 0
-add 0 reverse
-cleanup: call moveto0 [finished]
+div70:    sub 0 cleanup
+div71:    sub 0 reverse1
+div72:    sub 0 reverse2
+div73:    sub 0 reverse3
+div74:    sub 0 reverse4
+div75:    sub 0 reverse5
+div76:    sub 0 reverse6
+          add 1 div70
+reverse6: add 0
+reverse5: add 0
+reverse4: add 0
+reverse3: add 0
+reverse2: add 0
+reverse1: add 0
+reverse : sub 1 fail
+          add 0
+          add 0
+          add 0
+          add 0
+          add 0
+          add 0
+          add 0 reverse
+cleanup:  call moveto0 [finished]
 def div3 [finished fail]
-div30	:sub 0 cleanup
-div31	:sub 0 reverse1
-div32	:sub 0 reverse2
-add 1 div30
-reverse2	: add 0
-reverse1	: add 0
-reverse	: sub 1 fail
-add 0
-add 0
-add 0 reverse
-cleanup: call moveto0 [finished]
+div30:    sub 0 cleanup
+div31:    sub 0 reverse1
+div32:    sub 0 reverse2
+          add 1 div30
+reverse2: add 0
+reverse1: add 0
+reverse : sub 1 fail
+          add 0
+          add 0
+          add 0 reverse
+cleanup:  call moveto0 [finished]
 def div2 [finished fail]
-div20	:sub 0 cleanup
-div21	:sub 0 reverse1
-add 1 div20
-reverse1	: add 0
-reverse	: sub 1 fail
-add 0
-add 0 reverse
-cleanup: call moveto0 [finished]
+div20:    sub 0 cleanup
+div21:    sub 0 reverse1
+          add 1 div20
+reverse1: add 0
+reverse : sub 1 fail
+          add 0
+          add 0 reverse
+cleanup:  call moveto0 [finished]
 main
-clear1: sub 1 clear1 loop0
-loop0: call div3 [loop1 clear2]
-loop1: call div2 [inc5 refill]
-inc5:	call mult5 [inc7]
-inc7:	call mult7 [loop1]
-refill: call div7 [inc2 loop0]
-inc2: call mult2 [refill]
-clear2: call div2 [clear2 clear7]
-clear7: call div7 [clear7 exit0]
+clear1:   sub 1 clear1 loop0
+loop0:    call div3 [loop1 clear2]
+loop1:    call div2 [inc5 refill]
+inc5:     call mult5 [inc7]
+inc7:     call mult7 [loop1]
+refill:   call div7 [inc2 loop0]
+inc2:     call mult2 [refill]
+clear2:   call div2 [clear2 clear7]
+clear7:   call div7 [clear7 exit0]

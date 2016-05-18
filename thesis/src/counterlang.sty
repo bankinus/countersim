@@ -1,0 +1,25 @@
+\ProvidesPackage{src/counterlang}
+
+\lstdefinelanguage{counterlang}
+{
+  morecomment=[l]{\#},
+  % list of keywords
+  morekeywords={
+    def,
+    main,
+    add,
+    sub,
+    inc,
+    dec,
+    call,
+    cpy,
+    jmp,
+    clr,
+    div,
+    mul,
+    \[,
+    \],
+    :
+  },
+  sensitive=true % keywords are case-sensitive
+}
